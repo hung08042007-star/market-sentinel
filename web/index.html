@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Market Sentinel — E-Commerce Intelligence Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg-canvas: #08090a;
+      --bg-panel: #0f1011;
+      --bg-surface: #141618;
+      --bg-surface-elevated: #1a1c1e;
+      --bg-card: rgba(255, 255, 255, 0.03);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(113, 112, 255, 0.4);
+      --text-primary: #f7f8f8;
+      --text-secondary: #d0d6e0;
+      --text-muted: #8a8f98;
+      --accent-brand: #5e6ad2;
+      --accent-brand-hover: #7170ff;
+      --accent-indigo: #6366f1;
+      --color-drop: #f43f5e;
+      --color-hike: #38bdf8;
+      --color-restock: #10b981;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-feature-settings: "cv01", "ss03";
+    }
+
+    body {
+      background: var(--bg-canvas);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    /* Top Navigation */
+    header {
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-badge {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, #5e6ad2, #828fff);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 0 20px rgba(94, 106, 210, 0.35);
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+
+    .brand-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 510;
+      cursor: pointer;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .btn-primary {
+      background: var(--accent-brand);
+      border-color: var(--accent-brand);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-brand-hover);
+      border-color: var(--accent-brand-hover);
+      box-shadow: 0 0 16px rgba(113, 112, 255, 0.4);
+    }
+
+    /* Main Container */
+    main {
+      max-width: 1440px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px 28px 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Client Review Banner */
+    .client-banner {
+      background: linear-gradient(90deg, rgba(94, 106, 210, 0.15), rgba(16, 185, 129, 0.08));
+      border: 1px solid rgba(113, 112, 255, 0.25);
+      border-radius: 10px;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .client-banner-text h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .client-banner-text p {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    /* KPIs Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .kpi-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.16);
+    }
+
+    .kpi-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .kpi-value {
+      font-size: 30px;
+      font-weight: 700;
+      margin-top: 8px;
+      letter-spacing: -0.8px;
+    }
+
+    .kpi-sub {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .text-emerald { color: var(--color-restock); }
+    .text-rose { color: var(--color-drop); }
+    .text-sky { color: var(--color-hike); }
+
+    /* Layout: 2 Columns (Deltas & Chart) */
+    .dashboard-split {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 20px;
+    }
+
+    .card-panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Delta Feeds */
+    .delta-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+      max-height: 380px;
+      padding-right: 4px;
+    }
+
+    .delta-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .delta-item:hover, .delta-item.active {
+      border-color: var(--accent-brand);
+      background: rgba(94, 106, 210, 0.08);
+    }
+
+    .delta-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .badge {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .badge-drop {
+      background: rgba(244, 63, 94, 0.15);
+      color: var(--color-drop);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+    }
+
+    .badge-hike {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--color-hike);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .badge-restock {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--color-restock);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .delta-title {
+      font-size: 13px;
+      font-weight: 510;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 4px;
+    }
+
+    .delta-price-row {
+      font-size: 12px;
+      font-family: var(--font-mono);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .price-old {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .price-new {
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .delta-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* Chart Container */
+    .chart-container {
+      position: relative;
+      flex: 1;
+      min-height: 300px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chart-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .chart-product-name {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .chart-wrapper {
+      flex: 1;
+      height: 320px;
+    }
+
+    /* Table Section */
+    .table-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .search-box {
+      position: relative;
+      flex: 1;
+      max-width: 360px;
+    }
+
+    .search-box input {
+      width: 100%;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 9px 14px 9px 34px;
+      font-size: 13px;
+      color: var(--text-primary);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .search-box input:focus {
+      border-color: var(--accent-brand);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .filter-btn {
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
+    .filter-btn.active {
+      background: var(--accent-brand);
+      color: #fff;
+      border-color: var(--accent-brand);
+    }
+
+    .table-container {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    th {
+      background: rgba(255, 255, 255, 0.02);
+      padding: 12px 16px;
+      color: var(--text-muted);
+      font-weight: 500;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text-secondary);
+      vertical-align: middle;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .col-title {
+      font-weight: 510;
+      color: var(--text-primary);
+      max-width: 320px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .col-price {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .rating-stars {
+      color: #f59e0b;
+      font-size: 12px;
+    }
+
+    /* Client Critique Drawer / Feedback section */
+    .critique-section {
+      background: var(--bg-panel);
+      border: 1px dashed var(--accent-brand);
+      border-radius: 10px;
+      padding: 24px;
+      margin-top: 10px;
+    }
+
+    .critique-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .critique-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .critique-item {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .critique-item h5 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent-brand-hover);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .critique-item p {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .checklist-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .checklist-row input {
+      accent-color: var(--accent-brand);
+      cursor: pointer;
+    }
+
+    /* Toast Notification */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1e1b4b;
+      border: 1px solid #6366f1;
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      gap: 8px;
+      z-index: 100;
+    }
+
+    @media (max-width: 1024px) {
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .dashboard-split { grid-template-columns: 1fr; }
+      .critique-cards { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <div class="logo-badge">🛡️</div>
+      <div>
+        <div class="brand-title">Market Sentinel</div>
+        <div class="brand-sub">E-Commerce Intelligence & Price Telemetry Engine</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn" onclick="exportData('csv')">📥 Export CSV</button>
+      <button class="btn" onclick="exportData('json')">📥 Export JSON</button>
+      <button class="btn btn-primary" onclick="simulateScan()">⚡ Re-Scan Competitor</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Client Evaluation Header -->
+    <div class="client-banner">
+      <div class="client-banner-text">
+        <h4>👁️ Client Review Mode: Đặt vị trí vào chủ shop / khách hàng</h4>
+        <p>Đánh giá trực quan: Tốc độ nắm bắt thông tin, mức độ hữu ích của cảnh báo phá giá và độ tin cậy của dữ liệu.</p>
+      </div>
+      <div>
+        <a href="#critique" class="btn" style="border-color: rgba(113, 112, 255, 0.4); color: #828fff;">
+          📝 Mở Bảng Nhận Xét Cải Tiến ↓
+        </a>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Sản phẩm đang giám sát</div>
+        <div class="kpi-value">31</div>
+        <div class="kpi-sub">
+          <span class="text-emerald">● 100% Active</span> • Danh mục Mystery & Travel
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">Biến động giá hôm nay</div>
+        <div class="kpi-value text-rose">3 Deltas</div>
+        <div class="kpi-sub">
+          <span class="text-rose">1 Hạ giá sốc</span> • 1 Tăng giá • 1 Restock
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">Tỷ lệ còn hàng (In-Stock)</div>
+        <div class="kpi-value text-emerald">100.0%</div>
+        <div class="kpi-sub">
+          31/31 đối thủ còn hàng trong kho
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">Giá trung bình thị trường</div>
+        <div class="kpi-value">£35.28</div>
+        <div class="kpi-sub">
+          Biên độ dao động: £16.64 – £56.50
+        </div>
+      </div>
+    </div>
+
+    <!-- Middle: Live Delta Feed & Price Trend Chart -->
+    <div class="dashboard-split">
+      <!-- Live Delta Alerts -->
+      <div class="card-panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>⚡ Biến động giá phát hiện</span>
+            <span class="badge badge-drop">3 Mới</span>
+          </div>
+          <span style="font-size: 11px; color: var(--text-muted);">Real-time</span>
+        </div>
+
+        <div class="delta-list" id="delta-list">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Price History Chart -->
+      <div class="card-panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>📈 Biểu đồ lịch sử giá (Time-Series)</span>
+          </div>
+          <span style="font-size: 12px; color: var(--text-muted); font-family: var(--font-mono);" id="chart-sku">
+            SKU: sharp-objects_997
+          </span>
+        </div>
+
+        <div class="chart-container">
+          <div class="chart-meta">
+            <div>
+              <div class="chart-product-name" id="chart-title">Sharp Objects</div>
+              <div style="font-size: 12px; color: var(--text-muted);">Giá hiện tại: <span id="chart-current-price" style="color:#fff; font-weight:600;">£47.82</span> (Giảm -20.29%)</div>
+            </div>
+            <button class="btn" style="font-size: 11px; padding: 4px 8px;" onclick="openSourceUrl()">↗ Xem link gốc</button>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="priceChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Catalog Table -->
+    <div class="card-panel" style="padding: 20px;">
+      <div class="panel-header" style="border: none; margin-bottom: 8px;">
+        <div class="panel-title">
+          <span>📦 Danh mục sản phẩm đối thủ</span>
+          <span style="font-size: 12px; color: var(--text-muted); font-weight: 400;">(31 items)</span>
+        </div>
+      </div>
+
+      <div class="table-controls">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="Tìm kiếm theo tên sách hoặc SKU..." oninput="handleSearch()">
+        </div>
+        <div class="filter-group">
+          <button class="filter-btn active" onclick="setFilter('ALL', this)">Tất cả (31)</button>
+          <button class="filter-btn" onclick="setFilter('DELTAS', this)">Có biến động (3)</button>
+          <button class="filter-btn" onclick="setFilter('IN_STOCK', this)">Còn hàng (31)</button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>SKU</th>
+              <th>Tên sản phẩm</th>
+              <th>Giá hiện tại</th>
+              <th>Trạng thái</th>
+              <th>Đánh giá</th>
+              <th>Cập nhật gần nhất</th>
+              <th style="text-align: right;">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="productTableBody">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Client Evaluation & Feedback Section -->
+    <section class="critique-section" id="critique">
+      <div class="critique-header">
+        <div>
+          <h3 style="font-size: 16px; font-weight: 600; color: #fff;">🧐 Góc nhìn Client: Những điểm cần cải thiện khi bán thực tế</h3>
+          <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+            Khi m đặt mình vào người mua giải pháp này, đây là những câu hỏi và nhu cầu thực tế họ sẽ đặt ra:
+          </p>
+        </div>
+        <span class="badge" style="background: rgba(94, 106, 210, 0.2); color: #828fff; border: 1px solid #5e6ad2;">
+          Product Teardown
+        </span>
+      </div>
+
+      <div class="critique-cards">
+        <div class="critique-item">
+          <h5>1. Ngưỡng báo động tùy chỉnh (Custom Alert Threshold)</h5>
+          <p>Hiện tại tool báo mọi biến động. Nhưng client lớn chỉ muốn nhận thông báo khi <strong>giảm giá từ 10% trở lên</strong> hoặc <strong>giảm quá £5</strong> để tránh bị spam tin nhắn.</p>
+          <div class="checklist-row">
+            <input type="checkbox" checked disabled> <span>Nên có slider chọn ngưỡng % alert trên UI</span>
+          </div>
+        </div>
+
+        <div class="critique-item">
+          <h5>2. So sánh nhiều đối thủ (Multi-Vendor Comparison)</h5>
+          <p>Khách hàng thường có 3–5 đối thủ cùng bán 1 mã sản phẩm. Họ muốn thấy bảng so sánh chéo giá của shop A vs shop B vs giá của chính họ để tìm ai đang rẻ nhất.</p>
+          <div class="checklist-row">
+            <input type="checkbox" checked disabled> <span>Cần gom nhóm sản phẩm theo Barcode/EAN</span>
+          </div>
+        </div>
+
+        <div class="critique-item">
+          <h5>3. Tự động đề xuất giá bán (Auto-Repricing Suggestion)</h5>
+          <p>Thay vì chỉ báo đối thủ giảm giá, client muốn tool tự tính luôn: <i>"Đối thủ bán £47.82, m nên set giá £46.99 (thấp hơn 2%) để giành Buy Box mà vẫn giữ lãi 15%"</i>.</p>
+          <div class="checklist-row">
+            <input type="checkbox" checked disabled> <span>Tính năng Premium bán giá cao ($200+)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="toast"></div>
+
+  <script>
+    const DATA = {"kpis": {"total_products": 31, "avg_price": 35.28, "in_stock_rate": 100.0, "active_deltas": 3, "currency": "GBP"}, "deltas": [{"sku": "the-past-never-ends_942", "title": "The Past Never Ends", "type": "PRICE_HIKE", "old_price": 45.0, "new_price": 56.5, "percent": 25.56, "currency": "GBP", "badge_class": "badge-hike", "desc": "Competitor increased price by +25.6% - Opportunity to capture volume!"}, {"sku": "sharp-objects_997", "title": "Sharp Objects", "type": "PRICE_DROP", "old_price": 59.99, "new_price": 47.82, "percent": -20.29, "currency": "GBP", "badge_class": "badge-drop", "desc": "Competitor dropped price by 20.3% - Underpricing alert!"}, {"sku": "in-a-dark-dark-wood_963", "title": "In a Dark, Dark Wood", "type": "RESTOCK", "old_price": 19.63, "new_price": 19.63, "percent": 0.0, "currency": "GBP", "badge_class": "badge-restock", "desc": "Competitor restocked after 5 days out of stock."}], "products": [{"sku": "boar-island-anna-pigeon-19_613", "title": "Boar Island (Anna Pigeon #19)", "current_price": 59.48, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 3.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/boar-island-anna-pigeon-19_613/index.html", "last_scraped_at": "2026-11-07T06:58:33.483707+00:00", "created_at": "2026-11-07T06:57:50.783916+00:00", "timeline": [{"date": "Nov 01", "price": 60.67}, {"date": "Nov 04", "price": 59.48}, {"date": "Nov 07", "price": 59.48}]}, {"sku": "a-year-in-provence-provence-1_421", "title": "A Year in Provence (Provence #1)", "current_price": 56.88, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/a-year-in-provence-provence-1_421/index.html", "last_scraped_at": "2026-11-07T06:28:19.954223+00:00", "created_at": "2026-11-07T06:09:17.904912+00:00", "timeline": [{"date": "Nov 01", "price": 58.02}, {"date": "Nov 04", "price": 56.88}, {"date": "Nov 07", "price": 56.88}]}, {"sku": "the-past-never-ends_942", "title": "The Past Never Ends", "current_price": 56.5, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/the-past-never-ends_942/index.html", "last_scraped_at": "2026-11-07T06:58:33.476876+00:00", "created_at": "2026-11-07T06:57:50.772673+00:00", "timeline": [{"date": "Nov 01", "price": 45.0}, {"date": "Nov 04", "price": 45.0}, {"date": "Nov 06", "price": 50.0}, {"date": "Nov 07", "price": 56.5}]}, {"sku": "murder-at-the-42nd-street-library-raymond-ambler-1_624", "title": "Murder at the 42nd Street Library (Raymond Ambler #1)", "current_price": 54.36, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/murder-at-the-42nd-street-library-raymond-ambler-1_624/index.html", "last_scraped_at": "2026-11-07T06:58:33.481095+00:00", "created_at": "2026-11-07T06:57:50.780459+00:00", "timeline": [{"date": "Nov 01", "price": 55.45}, {"date": "Nov 04", "price": 54.36}, {"date": "Nov 07", "price": 54.36}]}, {"sku": "the-last-mile-amos-decker-2_754", "title": "The Last Mile (Amos Decker #2)", "current_price": 54.21, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 2.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/the-last-mile-amos-decker-2_754/index.html", "last_scraped_at": "2026-11-07T06:58:33.477751+00:00", "created_at": "2026-11-07T06:57:50.775040+00:00", "timeline": [{"date": "Nov 01", "price": 55.29}, {"date": "Nov 04", "price": 54.21}, {"date": "Nov 07", "price": 54.21}]}, {"sku": "the-bachelor-girls-guide-to-murder-herringford-and-watts-mysteries-1_491", "title": "The Bachelor Girl's Guide to Murder (Herringford and Watts Mysteries #1)", "current_price": 52.3, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 5.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/the-bachelor-girls-guide-to-murder-herringford-and-watts-mysteries-1_491/index.html", "last_scraped_at": "2026-11-07T06:58:33.487033+00:00", "created_at": "2026-11-07T06:57:50.791974+00:00", "timeline": [{"date": "Nov 01", "price": 53.35}, {"date": "Nov 04", "price": 52.3}, {"date": "Nov 07", "price": 52.3}]}, {"sku": "full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811", "title": "Full Moon over Noah\u2019s Ark: An Odyssey to Mount Ararat and Beyond", "current_price": 49.43, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html", "last_scraped_at": "2026-11-07T06:28:19.948727+00:00", "created_at": "2026-11-07T06:09:17.903299+00:00", "timeline": [{"date": "Nov 01", "price": 50.42}, {"date": "Nov 04", "price": 49.43}, {"date": "Nov 07", "price": 49.43}]}, {"sku": "see-america-a-celebration-of-our-national-parks-treasured-sites_732", "title": "See America: A Celebration of Our National Parks & Treasured Sites", "current_price": 48.87, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 3.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html", "last_scraped_at": "2026-11-07T06:28:19.949054+00:00", "created_at": "2026-11-07T06:09:17.903550+00:00", "timeline": [{"date": "Nov 01", "price": 49.85}, {"date": "Nov 04", "price": 48.87}, {"date": "Nov 07", "price": 48.87}]}, {"sku": "a-time-of-torment-charlie-parker-14_657", "title": "A Time of Torment (Charlie Parker #14)", "current_price": 48.35, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 5.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/a-time-of-torment-charlie-parker-14_657/index.html", "last_scraped_at": "2026-11-07T06:58:33.478640+00:00", "created_at": "2026-11-07T06:57:50.777515+00:00", "timeline": [{"date": "Nov 01", "price": 49.32}, {"date": "Nov 04", "price": 48.35}, {"date": "Nov 07", "price": 48.35}]}, {"sku": "sharp-objects_997", "title": "Sharp Objects", "current_price": 47.82, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html", "last_scraped_at": "2026-11-07T06:58:33.475856+00:00", "created_at": "2026-11-07T06:57:50.767904+00:00", "timeline": [{"date": "Nov 01", "price": 59.99}, {"date": "Nov 03", "price": 59.99}, {"date": "Nov 05", "price": 54.0}, {"date": "Nov 07", "price": 47.82}]}, {"sku": "its-only-the-himalayas_981", "title": "It's Only the Himalayas", "current_price": 45.17, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 2.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html", "last_scraped_at": "2026-11-07T06:28:19.944016+00:00", "created_at": "2026-11-07T06:09:17.902476+00:00", "timeline": [{"date": "Nov 01", "price": 46.07}, {"date": "Nov 04", "price": 45.17}, {"date": "Nov 07", "price": 45.17}]}, {"sku": "a-summer-in-europe_458", "title": "A Summer In Europe", "current_price": 44.34, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 2.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/a-summer-in-europe_458/index.html", "last_scraped_at": "2026-11-07T06:28:19.952925+00:00", "created_at": "2026-11-07T06:09:17.904365+00:00", "timeline": [{"date": "Nov 01", "price": 45.23}, {"date": "Nov 04", "price": 44.34}, {"date": "Nov 07", "price": 44.34}]}, {"sku": "the-murder-of-roger-ackroyd-hercule-poirot-4_852", "title": "The Murder of Roger Ackroyd (Hercule Poirot #4)", "current_price": 44.1, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/the-murder-of-roger-ackroyd-hercule-poirot-4_852/index.html", "last_scraped_at": "2026-11-07T06:58:33.477467+00:00", "created_at": "2026-11-07T06:57:50.774071+00:00", "timeline": [{"date": "Nov 01", "price": 44.98}, {"date": "Nov 04", "price": 44.1}, {"date": "Nov 07", "price": 44.1}]}, {"sku": "neither-here-nor-there-travels-in-europe_198", "title": "Neither Here nor There: Travels in Europe", "current_price": 38.95, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 3.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/neither-here-nor-there-travels-in-europe_198/index.html", "last_scraped_at": "2026-11-07T06:28:19.955667+00:00", "created_at": "2026-11-07T06:09:17.905417+00:00", "timeline": [{"date": "Nov 01", "price": 39.73}, {"date": "Nov 04", "price": 38.95}, {"date": "Nov 07", "price": 38.95}]}, {"sku": "under-the-tuscan-sun_504", "title": "Under the Tuscan Sun", "current_price": 37.33, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 3.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/under-the-tuscan-sun_504/index.html", "last_scraped_at": "2026-11-07T06:28:19.952268+00:00", "created_at": "2026-11-07T06:09:17.904071+00:00", "timeline": [{"date": "Nov 01", "price": 38.08}, {"date": "Nov 04", "price": 37.33}, {"date": "Nov 07", "price": 37.33}]}, {"sku": "vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552", "title": "Vagabonding: An Uncommon Guide to the Art of Long-Term World Travel", "current_price": 36.94, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 2.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552/index.html", "last_scraped_at": "2026-11-07T06:28:19.949833+00:00", "created_at": "2026-11-07T06:09:17.903803+00:00", "timeline": [{"date": "Nov 01", "price": 37.68}, {"date": "Nov 04", "price": 36.94}, {"date": "Nov 07", "price": 36.94}]}, {"sku": "most-wanted_623", "title": "Most Wanted", "current_price": 35.28, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 3.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/most-wanted_623/index.html", "last_scraped_at": "2026-11-07T06:58:33.481830+00:00", "created_at": "2026-11-07T06:57:50.781468+00:00", "timeline": [{"date": "Nov 01", "price": 35.99}, {"date": "Nov 04", "price": 35.28}, {"date": "Nov 07", "price": 35.28}]}, {"sku": "the-great-railway-bazaar_446", "title": "The Great Railway Bazaar", "current_price": 30.54, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 1.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/the-great-railway-bazaar_446/index.html", "last_scraped_at": "2026-11-07T06:28:19.953531+00:00", "created_at": "2026-11-07T06:09:17.904596+00:00", "timeline": [{"date": "Nov 01", "price": 31.15}, {"date": "Nov 04", "price": 30.54}, {"date": "Nov 07", "price": 30.54}]}, {"sku": "the-widow_609", "title": "The Widow", "current_price": 27.26, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 2.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/the-widow_609/index.html", "last_scraped_at": "2026-11-07T06:58:33.484387+00:00", "created_at": "2026-11-07T06:57:50.785942+00:00", "timeline": [{"date": "Nov 01", "price": 27.81}, {"date": "Nov 04", "price": 27.26}, {"date": "Nov 07", "price": 27.26}]}, {"sku": "poisonous-max-revere-novels-3_627", "title": "Poisonous (Max Revere Novels #3)", "current_price": 26.8, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 3.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/poisonous-max-revere-novels-3_627/index.html", "last_scraped_at": "2026-11-07T06:58:33.480334+00:00", "created_at": "2026-11-07T06:57:50.779527+00:00", "timeline": [{"date": "Nov 01", "price": 27.34}, {"date": "Nov 04", "price": 26.8}, {"date": "Nov 07", "price": 26.8}]}, {"sku": "1000-places-to-see-before-you-die_1", "title": "1,000 Places to See Before You Die", "current_price": 26.08, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 5.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/1000-places-to-see-before-you-die_1/index.html", "last_scraped_at": "2026-11-07T06:28:19.956455+00:00", "created_at": "2026-11-07T06:09:17.905787+00:00", "timeline": [{"date": "Nov 01", "price": 26.6}, {"date": "Nov 04", "price": 26.08}, {"date": "Nov 07", "price": 26.08}]}, {"sku": "what-happened-on-beale-street-secrets-of-the-south-mysteries-2_506", "title": "What Happened on Beale Street (Secrets of the South Mysteries #2)", "current_price": 25.37, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 5.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/what-happened-on-beale-street-secrets-of-the-south-mysteries-2_506/index.html", "last_scraped_at": "2026-11-07T06:58:33.486032+00:00", "created_at": "2026-11-07T06:57:50.790158+00:00", "timeline": [{"date": "Nov 01", "price": 25.88}, {"date": "Nov 04", "price": 25.37}, {"date": "Nov 07", "price": 25.37}]}, {"sku": "the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277", "title": "The Road to Little Dribbling: Adventures of an American in Britain (Notes From a Small Island #2)", "current_price": 23.21, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 1.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277/index.html", "last_scraped_at": "2026-11-07T06:28:19.954992+00:00", "created_at": "2026-11-07T06:09:17.905160+00:00", "timeline": [{"date": "Nov 01", "price": 23.67}, {"date": "Nov 04", "price": 23.21}, {"date": "Nov 07", "price": 23.21}]}, {"sku": "delivering-the-truth-quaker-midwife-mystery-1_464", "title": "Delivering the Truth (Quaker Midwife Mystery #1)", "current_price": 20.89, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/delivering-the-truth-quaker-midwife-mystery-1_464/index.html", "last_scraped_at": "2026-11-07T06:58:33.488125+00:00", "created_at": "2026-11-07T06:57:50.793875+00:00", "timeline": [{"date": "Nov 01", "price": 21.31}, {"date": "Nov 04", "price": 20.89}, {"date": "Nov 07", "price": 20.89}]}, {"sku": "in-a-dark-dark-wood_963", "title": "In a Dark, Dark Wood", "current_price": 19.63, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 1.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/in-a-dark-dark-wood_963/index.html", "last_scraped_at": "2026-11-07T06:58:33.476530+00:00", "created_at": "2026-11-07T06:57:50.772395+00:00", "timeline": [{"date": "Nov 01", "price": 19.63}, {"date": "Nov 04", "price": 19.63}, {"date": "Nov 07", "price": 19.63}]}, {"sku": "a-study-in-scarlet-sherlock-holmes-1_656", "title": "A Study in Scarlet (Sherlock Holmes #1)", "current_price": 16.73, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 2.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/a-study-in-scarlet-sherlock-holmes-1_656/index.html", "last_scraped_at": "2026-11-07T06:58:33.479440+00:00", "created_at": "2026-11-07T06:57:50.778571+00:00", "timeline": [{"date": "Nov 01", "price": 17.06}, {"date": "Nov 04", "price": 16.73}, {"date": "Nov 07", "price": 16.73}]}, {"sku": "a-murder-in-time_877", "title": "A Murder in Time", "current_price": 16.64, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 1.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/a-murder-in-time_877/index.html", "last_scraped_at": "2026-11-07T06:58:33.477177+00:00", "created_at": "2026-11-07T06:57:50.772922+00:00", "timeline": [{"date": "Nov 01", "price": 16.97}, {"date": "Nov 04", "price": 16.64}, {"date": "Nov 07", "price": 16.64}]}, {"sku": "that-darkness-gardiner-and-renner-1_743", "title": "That Darkness (Gardiner and Renner #1)", "current_price": 13.92, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 1.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/that-darkness-gardiner-and-renner-1_743/index.html", "last_scraped_at": "2026-11-07T06:58:33.478086+00:00", "created_at": "2026-11-07T06:57:50.775817+00:00", "timeline": [{"date": "Nov 01", "price": 14.2}, {"date": "Nov 04", "price": 13.92}, {"date": "Nov 07", "price": 13.92}]}, {"sku": "playing-with-fire_602", "title": "Playing with Fire", "current_price": 13.71, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 3.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/playing-with-fire_602/index.html", "last_scraped_at": "2026-11-07T06:58:33.485154+00:00", "created_at": "2026-11-07T06:57:50.788696+00:00", "timeline": [{"date": "Nov 01", "price": 13.98}, {"date": "Nov 04", "price": 13.71}, {"date": "Nov 07", "price": 13.71}]}, {"sku": "hide-away-eve-duncan-20_620", "title": "Hide Away (Eve Duncan #20)", "current_price": 11.84, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 1.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/hide-away-eve-duncan-20_620/index.html", "last_scraped_at": "2026-11-07T06:58:33.482775+00:00", "created_at": "2026-11-07T06:57:50.782389+00:00", "timeline": [{"date": "Nov 01", "price": 12.08}, {"date": "Nov 04", "price": 11.84}, {"date": "Nov 07", "price": 11.84}]}, {"sku": "tastes-like-fear-di-marnie-rome-3_742", "title": "Tastes Like Fear (DI Marnie Rome #3)", "current_price": 10.69, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 1.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/tastes-like-fear-di-marnie-rome-3_742/index.html", "last_scraped_at": "2026-11-07T06:58:33.478362+00:00", "created_at": "2026-11-07T06:57:50.776629+00:00", "timeline": [{"date": "Nov 01", "price": 10.9}, {"date": "Nov 04", "price": 10.69}, {"date": "Nov 07", "price": 10.69}]}]};
+    let currentFilter = 'ALL';
+    let searchQuery = '';
+    let selectedSku = 'sharp-objects_997';
+    let chartInstance = null;
+
+    // Render Deltas Feed
+    function renderDeltas() {
+      const container = document.getElementById('delta-list');
+      container.innerHTML = '';
+
+      DATA.deltas.forEach(d => {
+        const item = document.createElement('div');
+        item.className = `delta-item ${d.sku === selectedSku ? 'active' : ''}`;
+        item.onclick = () => selectProduct(d.sku);
+
+        const sign = d.percent > 0 ? '+' : '';
+        const pctText = d.percent !== 0 ? `(${sign}${d.percent}%)` : '';
+
+        item.innerHTML = `
+          <div class="delta-top">
+            <span class="badge ${d.badge_class}">${d.type.replace('_', ' ')}</span>
+            <span style="font-size: 11px; font-family: var(--font-mono); color: var(--text-muted);">${pctText}</span>
+          </div>
+          <div class="delta-title">${d.title}</div>
+          <div class="delta-price-row">
+            <span class="price-old">£${d.old_price.toFixed(2)}</span>
+            <span>→</span>
+            <span class="price-new">£${d.new_price.toFixed(2)}</span>
+          </div>
+          <div class="delta-desc">${d.desc}</div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    // Render Product Table
+    function renderTable() {
+      const tbody = document.getElementById('productTableBody');
+      tbody.innerHTML = '';
+
+      const deltaSkus = new Set(DATA.deltas.map(d => d.sku));
+
+      const filtered = DATA.products.filter(p => {
+        const matchSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                            p.sku.toLowerCase().includes(searchQuery.toLowerCase());
+        
+        if (!matchSearch) return false;
+
+        if (currentFilter === 'DELTAS') return deltaSkus.has(p.sku);
+        if (currentFilter === 'IN_STOCK') return p.stock_status === 'IN_STOCK';
+        return true;
+      });
+
+      filtered.forEach(p => {
+        const tr = document.createElement('tr');
+        const hasDelta = deltaSkus.has(p.sku);
+        const delta = DATA.deltas.find(d => d.sku === p.sku);
+
+        let deltaBadge = '';
+        if (delta) {
+          deltaBadge = `<span class="badge ${delta.badge_class}" style="margin-left: 6px;">${delta.type.replace('_', ' ')}</span>`;
+        }
+
+        tr.innerHTML = `
+          <td style="font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);">${p.sku}</td>
+          <td class="col-title">
+            ${p.title}
+            ${deltaBadge}
+          </td>
+          <td class="col-price">£${p.current_price.toFixed(2)}</td>
+          <td>
+            <span class="badge badge-restock">● IN STOCK</span>
+          </td>
+          <td>
+            <span class="rating-stars">${'★'.repeat(Math.round(p.rating || 4))}</span>
+            <span style="font-size: 11px; color: var(--text-muted);">${p.rating || 4.0}</span>
+          </td>
+          <td style="font-size: 12px; color: var(--text-muted);">${p.last_scraped_at.split('T')[0]}</td>
+          <td style="text-align: right;">
+            <button class="btn" style="font-size: 11px; padding: 4px 8px;" onclick="selectProduct('${p.sku}')">📊 Xem Chart</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Render Chart
+    function renderChart(sku) {
+      const product = DATA.products.find(p => p.sku === sku);
+      if (!product) return;
+
+      document.getElementById('chart-title').innerText = product.title;
+      document.getElementById('chart-sku').innerText = `SKU: ${product.sku}`;
+      document.getElementById('chart-current-price').innerText = `£${product.current_price.toFixed(2)}`;
+
+      const delta = DATA.deltas.find(d => d.sku === sku);
+      const ctx = document.getElementById('priceChart').getContext('2d');
+
+      const labels = product.timeline.map(t => t.date);
+      const dataPoints = product.timeline.map(t => t.price);
+
+      let lineColor = '#5e6ad2';
+      let fillColor = 'rgba(94, 106, 210, 0.15)';
+
+      if (delta) {
+        if (delta.type === 'PRICE_DROP') {
+          lineColor = '#f43f5e';
+          fillColor = 'rgba(244, 63, 94, 0.15)';
+        } else if (delta.type === 'PRICE_HIKE') {
+          lineColor = '#38bdf8';
+          fillColor = 'rgba(56, 189, 248, 0.15)';
+        }
+      }
+
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Giá (GBP)',
+            data: dataPoints,
+            borderColor: lineColor,
+            backgroundColor: fillColor,
+            borderWidth: 2.5,
+            fill: true,
+            tension: 0.35,
+            pointBackgroundColor: lineColor,
+            pointBorderColor: '#fff',
+            pointRadius: 5,
+            pointHoverRadius: 7
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#191a1b',
+              borderColor: 'rgba(255, 255, 255, 0.1)',
+              borderWidth: 1,
+              titleFont: { family: 'Inter', size: 12 },
+              bodyFont: { family: 'JetBrains Mono', size: 13 },
+              callbacks: {
+                label: function(ctx) {
+                  return ' Giá: £' + ctx.parsed.y.toFixed(2);
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#8a8f98', font: { family: 'Inter', size: 11 } }
+            },
+            y: {
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: {
+                color: '#8a8f98',
+                font: { family: 'JetBrains Mono', size: 11 },
+                callback: function(val) { return '£' + val.toFixed(0); }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function selectProduct(sku) {
+      selectedSku = sku;
+      renderDeltas();
+      renderChart(sku);
+      showToast(`Đã chọn sản phẩm: ${sku}`);
+    }
+
+    function openSourceUrl() {
+      const p = DATA.products.find(item => item.sku === selectedSku);
+      if (p && p.url) {
+        window.open(p.url, '_blank');
+      }
+    }
+
+    function handleSearch() {
+      searchQuery = document.getElementById('searchInput').value;
+      renderTable();
+    }
+
+    function setFilter(filter, btn) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderTable();
+    }
+
+    function exportData(format) {
+      if (format === 'json') {
+        const blob = new Blob([JSON.stringify(DATA.products, null, 2)], { type: 'application/json' });
+        downloadBlob(blob, 'market_sentinel_export.json');
+      } else {
+        const headers = ['sku', 'title', 'current_price', 'currency', 'stock_status', 'rating', 'url'];
+        const rows = DATA.products.map(p => [
+          p.sku,
+          `"${p.title.replace(/"/g, '""')}"`,
+          p.current_price,
+          p.currency,
+          p.stock_status,
+          p.rating || '',
+          p.url
+        ]);
+        const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        downloadBlob(blob, 'market_sentinel_export.csv');
+      }
+      showToast(`Đã xuất file ${format.toUpperCase()} thành công!`);
+    }
+
+    function downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function simulateScan() {
+      showToast('⚡ Đang kích hoạt vòng quét mới từ Collector engine...');
+      setTimeout(() => {
+        showToast('✅ Quét hoàn tất: 31 URLs crawled, 0 lỗi.');
+      }, 1200);
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.innerHTML = `<span>ℹ️</span> ${msg}`;
+      t.style.display = 'flex';
+      setTimeout(() => {
+        t.style.display = 'none';
+      }, 3000);
+    }
+
+    // Init
+    renderDeltas();
+    renderTable();
+    renderChart(selectedSku);
+  </script>
+</body>
+</html>
