@@ -1,0 +1,11 @@
+services:
+  sentinel:
+    build: .
+    container_name: market-sentinel
+    environment:
+      - DATABASE_URL=sqlite:///data/sentinel.db
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-}
+    volumes:
+      - ./data:/app/data
+    command: ["status"]
