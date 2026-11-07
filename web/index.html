@@ -1,27 +1,34 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Market Sentinel — Trợ lý Giá Thông Minh</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <title>Market Sentinel — Data Scraper & Intelligence Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
-      --bg: #090a0f;
-      --card-bg: #12141c;
-      --card-border: rgba(255, 255, 255, 0.08);
-      --card-hover: rgba(255, 255, 255, 0.12);
-      --accent: #6366f1;
-      --accent-hover: #4f46e5;
-      --danger: #ef4444;
-      --danger-bg: rgba(239, 68, 68, 0.12);
-      --success: #10b981;
-      --success-bg: rgba(16, 185, 129, 0.12);
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
+      --bg: #09090b;
+      --surface: #121316;
+      --surface-hover: #18191e;
+      --surface-active: #1f2026;
+      --border: #27272a;
+      --border-muted: #1e1f23;
+      --text: #f4f4f5;
+      --text-muted: #a1a1aa;
+      --text-subtle: #71717a;
+      --accent: #38bdf8;
+      --accent-muted: rgba(56, 189, 248, 0.12);
+      --emerald: #10b981;
+      --emerald-bg: rgba(16, 185, 129, 0.12);
+      --amber: #f59e0b;
+      --amber-bg: rgba(245, 158, 11, 0.12);
+      --rose: #f43f5e;
+      --rose-bg: rgba(244, 63, 94, 0.12);
       --mono: 'JetBrains Mono', monospace;
-      --sans: 'Inter', system-ui, sans-serif;
+      --sans: 'Inter', system-ui, -apple-system, sans-serif;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -29,1009 +36,1756 @@
       background: var(--bg);
       color: var(--text);
       font-family: var(--sans);
-      line-height: 1.5;
-      padding-bottom: 80px;
+      font-size: 13px;
+      line-height: 1.45;
+      overflow-x: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
+    /* Top Control Bar */
     header {
-      background: #0f1118;
-      border-bottom: 1px solid var(--card-border);
-      padding: 16px 32px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      height: 48px;
+      padding: 0 16px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 40;
+      justify-content: space-between;
+      flex-shrink: 0;
+      z-index: 30;
     }
-    .brand {
+    .brand-section {
       display: flex;
       align-items: center;
       gap: 12px;
     }
-    .logo {
-      width: 36px;
-      height: 36px;
-      background: linear-gradient(135deg, #4f46e5, #06b6d4);
-      border-radius: 8px;
+    .brand-logo {
+      width: 24px;
+      height: 24px;
+      background: #27272a;
+      border: 1px solid #3f3f46;
+      border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
-    }
-    .brand-name {
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-    }
-    .brand-tagline {
       font-size: 12px;
-      color: var(--text-muted);
+      font-weight: 700;
+      color: var(--text);
     }
-    .nav-right {
+    .brand-title {
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: -0.2px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
     }
-    .btn {
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
+    .version-tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 1px 6px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 4px;
+      color: var(--text-muted);
+    }
+    .engine-status {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      border: 1px solid var(--card-border);
-      background: rgba(255, 255, 255, 0.05);
-      color: var(--text);
-      transition: all 0.15s ease;
-      text-decoration: none;
-    }
-    .btn:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-    .btn-primary {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #fff;
-    }
-    .btn-primary:hover {
-      background: var(--accent-hover);
-    }
-    .btn-tg {
-      background: #229ed9;
-      border-color: #229ed9;
-      color: #fff;
-    }
-    .btn-tg:hover {
-      background: #1b87ba;
-    }
-
-    main {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 32px 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 32px;
-    }
-
-    /* 1-Click Track URL Bar */
-    .quick-track-section {
-      background: linear-gradient(145deg, #161925, #0e1017);
-      border: 1px solid rgba(99, 102, 241, 0.25);
-      border-radius: 12px;
-      padding: 24px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-    }
-    .quick-track-title {
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .quick-track-desc {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-bottom: 16px;
-    }
-    .track-input-group {
-      display: flex;
-      gap: 12px;
-    }
-    .track-input {
-      flex: 1;
-      background: rgba(0, 0, 0, 0.4);
-      border: 1px solid var(--card-border);
-      border-radius: 8px;
-      padding: 12px 16px;
-      font-size: 14px;
-      color: #fff;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    .track-input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
-    }
-
-    /* Executive Hero Stats */
-    .hero-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-    .stat-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 20px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-    .stat-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-    }
-    .stat-num {
-      font-size: 26px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-    }
-    .stat-label {
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    /* Action First Cards */
-    .section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-    .section-title {
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .action-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-    .action-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 14px;
-      padding: 24px;
-      transition: border-color 0.2s;
-      position: relative;
-      overflow: hidden;
-    }
-    .action-card.danger-card {
-      border-left: 5px solid var(--danger);
-    }
-    .action-card.success-card {
-      border-left: 5px solid var(--success);
-    }
-    .action-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 16px;
-      gap: 16px;
-    }
-    .action-badge {
+      gap: 6px;
+      font-family: var(--mono);
       font-size: 11px;
-      font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 999px;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      font-family: var(--mono);
-    }
-    .badge-danger {
-      background: var(--danger-bg);
-      color: var(--danger);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-    }
-    .badge-success {
-      background: var(--success-bg);
-      color: var(--success);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-    }
-    .item-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: #fff;
-      margin-bottom: 4px;
-    }
-    .item-meta {
-      font-size: 12px;
-      color: var(--text-muted);
-      font-family: var(--mono);
-    }
-
-    .price-contrast {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: rgba(0, 0, 0, 0.3);
-      padding: 10px 16px;
-      border-radius: 8px;
-      font-family: var(--mono);
-      font-size: 14px;
-    }
-    .price-old {
-      text-decoration: line-through;
-      color: var(--text-muted);
-    }
-    .price-new {
-      font-size: 18px;
-      font-weight: 700;
-      color: #fff;
-    }
-
-    /* AI Recommendation Inner Box */
-    .ai-box {
-      background: rgba(99, 102, 241, 0.08);
-      border: 1px solid rgba(99, 102, 241, 0.25);
-      border-radius: 10px;
-      padding: 18px;
-      margin-top: 16px;
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 18px;
-    }
-    .ai-action-text {
-      font-size: 13.5px;
-      line-height: 1.6;
-      color: #e2e8f0;
-    }
-    .ai-counter-side {
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 8px;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      border: 1px solid var(--card-border);
-    }
-    .counter-label {
-      font-size: 11px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      font-weight: 600;
-    }
-    .counter-val {
-      font-size: 20px;
-      font-weight: 700;
-      color: #38bdf8;
-      font-family: var(--mono);
-      margin: 4px 0;
-    }
-    .margin-pill {
-      font-size: 11px;
-      background: rgba(16, 185, 129, 0.2);
-      color: #10b981;
+      color: var(--emerald);
       padding: 2px 8px;
-      border-radius: 4px;
-      font-weight: 600;
+      background: var(--emerald-bg);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      border-radius: 999px;
     }
-    .action-footer {
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-      margin-top: 16px;
-      padding-top: 14px;
-      border-top: 1px solid var(--card-border);
+    .pulse-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--emerald);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
     }
-
-    /* Mini Chart preview toggle */
-    .chart-drawer {
-      height: 180px;
-      margin-top: 14px;
-      display: none;
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.3; }
+      100% { opacity: 1; }
     }
 
-    /* Collapsible Safe Catalog */
-    .collapsible-section {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 20px;
-    }
-    .collapsible-trigger {
+    /* Control Parameters */
+    .control-cluster {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      gap: 8px;
+    }
+    .param-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #18191e;
+      border: 1px solid var(--border);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .param-pill strong {
+      color: var(--text);
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 500;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: #18191e;
+      color: var(--text);
       cursor: pointer;
+      transition: all 0.12s ease;
       user-select: none;
     }
-    .catalog-table-wrap {
-      margin-top: 16px;
-      display: none;
+    .btn:hover {
+      background: #23242b;
+      border-color: #3f3f46;
+    }
+    .btn-primary {
+      background: #f4f4f5;
+      color: #09090b;
+      border-color: #f4f4f5;
+      font-weight: 600;
+    }
+    .btn-primary:hover {
+      background: #e4e4e7;
+      border-color: #e4e4e7;
+    }
+    .btn-sky {
+      background: rgba(56, 189, 248, 0.12);
+      border-color: rgba(56, 189, 248, 0.3);
+      color: #38bdf8;
+    }
+    .btn-sky:hover {
+      background: rgba(56, 189, 248, 0.2);
+    }
+
+    /* Quick Intake Bar */
+    .intake-bar {
+      background: #0d0e12;
+      border-bottom: 1px solid var(--border);
+      padding: 6px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    .intake-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .intake-input-wrap {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .intake-input {
+      width: 100%;
+      background: #14151b;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 36px 5px 10px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .intake-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+    .kbd-hint {
+      position: absolute;
+      right: 8px;
+      font-family: var(--mono);
+      font-size: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 3px;
+      padding: 1px 5px;
+      color: var(--text-subtle);
+      pointer-events: none;
+    }
+
+    /* Metrics Ribbon */
+    .metrics-ribbon {
+      background: #09090b;
+      border-bottom: 1px solid var(--border);
+      padding: 6px 16px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      font-family: var(--mono);
+      font-size: 11px;
+      flex-shrink: 0;
       overflow-x: auto;
+    }
+    .metric-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .metric-key {
+      color: var(--text-subtle);
+    }
+    .metric-val {
+      color: var(--text);
+      font-weight: 600;
+    }
+    .metric-val.emerald { color: var(--emerald); }
+    .metric-val.rose { color: var(--rose); }
+    .metric-val.sky { color: var(--accent); }
+
+    /* Main Split Console Layout */
+    .console-body {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Left Pane: Live Terminal Stream (38%) */
+    .terminal-pane {
+      width: 38%;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      background: #09090b;
+    }
+    .terminal-header {
+      height: 36px;
+      padding: 0 12px;
+      background: #0e0f14;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .terminal-title {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .terminal-tools {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .tool-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text-subtle);
+      font-size: 10px;
+      font-family: var(--mono);
+      padding: 2px 6px;
+      cursor: pointer;
+    }
+    .tool-btn:hover {
+      color: var(--text);
+      border-color: #3f3f46;
+    }
+    .terminal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 12px;
+      font-family: var(--mono);
+      font-size: 11px;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .log-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      word-break: break-all;
+    }
+    .log-time {
+      color: var(--text-subtle);
+      flex-shrink: 0;
+    }
+    .log-badge {
+      font-size: 9px;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-weight: 600;
+      flex-shrink: 0;
+      text-transform: uppercase;
+    }
+    .lvl-INFO { background: rgba(255, 255, 255, 0.08); color: var(--text-muted); }
+    .lvl-NET { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+    .lvl-PARSE { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
+    .lvl-WARN { background: var(--amber-bg); color: var(--amber); }
+    .lvl-AI { background: rgba(236, 72, 153, 0.15); color: #f472b6; }
+    .log-msg {
+      color: #d4d4d8;
+    }
+
+    /* Right Pane: High-Density Data Table (62%) */
+    .table-pane {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #0d0e12;
+      overflow: hidden;
+    }
+    .table-toolbar {
+      height: 36px;
+      padding: 0 12px;
+      background: #111217;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      gap: 12px;
+    }
+    .table-search {
+      background: #18191e;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 3px 8px;
+      font-size: 11px;
+      color: var(--text);
+      outline: none;
+      width: 180px;
+    }
+    .table-search:focus {
+      border-color: var(--accent);
+    }
+    .filter-group {
+      display: flex;
+      gap: 4px;
+    }
+    .filter-tab {
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: var(--mono);
+      cursor: pointer;
+      color: var(--text-muted);
+      border: 1px solid transparent;
+      user-select: none;
+    }
+    .filter-tab.active {
+      background: #1f2026;
+      border-color: var(--border);
+      color: var(--text);
+    }
+    .table-wrap {
+      flex: 1;
+      overflow-y: auto;
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 13px;
-    }
-    th {
-      text-align: left;
-      padding: 10px 14px;
-      color: var(--text-muted);
-      border-bottom: 1px solid var(--card-border);
       font-size: 12px;
+    }
+    thead th {
+      position: sticky;
+      top: 0;
+      background: #111217;
+      border-bottom: 1px solid var(--border);
+      padding: 6px 10px;
+      text-align: left;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-subtle);
       text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      z-index: 10;
     }
-    td {
-      padding: 10px 14px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-      color: var(--text-muted);
+    tbody tr {
+      border-bottom: 1px solid var(--border-muted);
+      cursor: pointer;
+      transition: background 0.1s;
     }
-    tr:hover td {
-      background: rgba(255, 255, 255, 0.02);
-      color: #fff;
+    tbody tr:hover {
+      background: #17181f;
+    }
+    tbody tr.active-row {
+      background: rgba(56, 189, 248, 0.08);
+    }
+    tbody td {
+      padding: 6px 10px;
+      vertical-align: middle;
+      white-space: nowrap;
     }
 
-    /* Modal Telegram */
-    .modal-overlay {
+    /* Badges & Micro-Typography */
+    .status-code {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--emerald);
+    }
+    .sku-cell {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      max-width: 140px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .title-cell {
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--text);
+    }
+    .price-cell {
+      font-family: var(--mono);
+      font-weight: 600;
+      color: #fff;
+    }
+    .delta-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .badge-rose {
+      background: var(--rose-bg);
+      color: var(--rose);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+    }
+    .badge-emerald {
+      background: var(--emerald-bg);
+      color: var(--emerald);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .latency-pill {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-subtle);
+    }
+
+    /* Slide-Over Inspector Drawer (The Pro Tool Archetype) */
+    .drawer-overlay {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(2px);
+      z-index: 40;
+      display: none;
+      justify-content: flex-end;
+    }
+    .drawer {
+      width: 480px;
+      background: #111217;
+      border-left: 1px solid var(--border);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      box-shadow: -8px 0 24px rgba(0,0,0,0.5);
+      animation: slideIn 0.18s ease-out;
+    }
+    @keyframes slideIn {
+      from { transform: translateX(100%); }
+      to { transform: translateX(0); }
+    }
+    .drawer-header {
+      padding: 12px 16px;
+      background: #14151b;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .drawer-title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .drawer-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+    }
+    .drawer-tabs {
+      display: flex;
+      background: #0d0e12;
+      border-bottom: 1px solid var(--border);
+      padding: 0 12px;
+      flex-shrink: 0;
+    }
+    .drawer-tab {
+      padding: 8px 12px;
+      font-size: 11px;
+      font-family: var(--mono);
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      user-select: none;
+    }
+    .drawer-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Drawer Sections */
+    .inspector-block {
+      background: #16171e;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+    }
+    .block-header {
+      font-size: 11px;
+      font-family: var(--mono);
+      color: var(--text-subtle);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .kv-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      font-size: 12px;
+    }
+    .kv-row:last-child { border-bottom: none; }
+    .kv-key { color: var(--text-muted); }
+    .kv-val { font-family: var(--mono); color: var(--text); font-weight: 500; }
+
+    /* Strategy Card inside Drawer */
+    .strategy-banner {
+      background: rgba(56, 189, 248, 0.06);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 6px;
+      padding: 12px;
+    }
+    .strategy-metric-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 10px 0;
+    }
+    .strategy-stat-box {
+      background: #0e0f14;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 8px;
+      text-align: center;
+    }
+
+    /* Raw JSON Viewer */
+    .raw-json-box {
+      background: #09090b;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 10px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: #93c5fd;
+      overflow-x: auto;
+      max-height: 260px;
+      white-space: pre-wrap;
+    }
+
+    /* Toast Notification */
+    #toast {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      background: #18191e;
+      border: 1px solid #3f3f46;
+      color: var(--text);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      display: none;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      z-index: 100;
+      font-family: var(--mono);
+    }
+
+    /* Telegram Modal */
+    .tg-modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(4px);
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(3px);
+      z-index: 50;
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 100;
     }
-    .modal {
+    .tg-modal {
+      width: 440px;
       background: #17212b;
-      border: 1px solid #2b5278;
-      border-radius: 14px;
-      max-width: 460px;
-      width: 90%;
-      padding: 24px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-    }
-    .tg-msg-bubble {
-      background: #182533;
       border: 1px solid #2b5278;
       border-radius: 10px;
       padding: 16px;
-      font-size: 13px;
-      line-height: 1.5;
-      margin: 16px 0;
-    }
-
-    /* Toast */
-    #toast {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: #1e1b4b;
-      border: 1px solid #6366f1;
-      color: #fff;
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-size: 13px;
-      display: none;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-      z-index: 200;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.7);
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Nav -->
+  <!-- Top Control Bar -->
   <header>
-    <div class="brand">
-      <div class="logo">🛡️</div>
-      <div>
-        <div class="brand-name">Market Sentinel</div>
-        <div class="brand-tagline">Hệ thống trợ lý giá thông minh</div>
+    <div class="brand-section">
+      <div class="brand-logo">MS</div>
+      <div class="brand-title">
+        <span>Market Sentinel</span>
+        <span class="version-tag">v1.2.0-engine</span>
+      </div>
+      <div class="engine-status">
+        <span class="pulse-dot"></span>
+        <span id="engineStatusText">ENGINE IDLE</span>
       </div>
     </div>
-    <div class="nav-right">
-      <button class="btn btn-tg" onclick="openTelegramModal()">📱 Xem tin nhắn Telegram</button>
-      <button class="btn" onclick="exportData()">📥 Xuất Excel/CSV</button>
-      <button class="btn btn-primary" onclick="triggerScan()">⚡ Quét giá ngay</button>
+
+    <div class="control-cluster">
+      <div class="param-pill">
+        <span>Target:</span>
+        <strong>books.toscrape.com</strong>
+      </div>
+      <div class="param-pill">
+        <span>Concurrency:</span>
+        <strong>4x</strong>
+      </div>
+      <div class="param-pill">
+        <span>Throttle:</span>
+        <strong>1.0s</strong>
+      </div>
+
+      <button class="btn btn-sky" onclick="openTelegramModal()">
+        <span>📱 Telegram Alert</span>
+      </button>
+      <button class="btn" onclick="exportData('csv')">
+        <span>📥 CSV</span>
+      </button>
+      <button class="btn" onclick="exportData('json')">
+        <span>📥 JSON</span>
+      </button>
+      <button class="btn btn-primary" id="runScraperBtn" onclick="triggerRunScraper()">
+        <span>▶ Run Ingest</span>
+      </button>
     </div>
   </header>
 
-  <main>
-    <!-- 1-Click Track Bar: Simple & Straightforward -->
-    <section class="quick-track-section">
-      <div class="quick-track-title">
-        <span>🎯 Thêm link đối thủ cần theo dõi</span>
-      </div>
-      <div class="quick-track-desc">
-        Chỉ cần dán link sản phẩm (Tiki, Shopee, sàn TMĐT hoặc web đối thủ) — hệ thống tự động nhận diện giá, tồn kho và đề xuất đối sách khi có biến động.
-      </div>
-      <div class="track-input-group">
-        <input type="text" id="trackUrlInput" class="track-input" placeholder="https://example.com/san-pham-doi-thu...">
-        <button class="btn btn-primary" style="padding: 0 24px;" onclick="addTrackUrl()">+ Bắt đầu theo dõi</button>
-      </div>
-    </section>
+  <!-- Quick Intake Bar (Anti-Slop 1-Click Track URL) -->
+  <div class="intake-bar">
+    <span class="intake-label">TARGET URL INTAKE:</span>
+    <div class="intake-input-wrap">
+      <input type="text" id="targetUrlInput" class="intake-input" 
+             placeholder="https://books.toscrape.com/catalogue/sharp-objects_997/index.html"
+             onkeydown="handleIntakeKey(event)">
+      <span class="kbd-hint">Enter ↵</span>
+    </div>
+    <button class="btn btn-primary" style="height: 28px; padding: 0 12px;" onclick="addSingleUrl()">
+      + Enqueue Target
+    </button>
+  </div>
 
-    <!-- Key Status: What matters now -->
-    <section class="hero-stats">
-      <div class="stat-card" style="border-color: rgba(239, 68, 68, 0.3);">
-        <div class="stat-icon" style="background: var(--danger-bg); color: var(--danger);">🚨</div>
-        <div>
-          <div class="stat-num" style="color: var(--danger);">2 sản phẩm</div>
-          <div class="stat-label">Cần m ra quyết định ngay hôm nay</div>
+  <!-- High-Density Metrics Ribbon -->
+  <div class="metrics-ribbon">
+    <div class="metric-item">
+      <span class="metric-key">INDEXED:</span>
+      <span class="metric-val" id="metricTotal">31 canonicals</span>
+    </div>
+    <div class="metric-item">
+      <span class="metric-key">SUCCESS:</span>
+      <span class="metric-val emerald">100.0% (200 OK)</span>
+    </div>
+    <div class="metric-item">
+      <span class="metric-key">LATENCY AVG:</span>
+      <span class="metric-val">123ms</span>
+    </div>
+    <div class="metric-item">
+      <span class="metric-key">DELTAS PENDING:</span>
+      <span class="metric-val rose">2 actionable</span>
+    </div>
+    <div class="metric-item">
+      <span class="metric-key">MARGIN FLOOR:</span>
+      <span class="metric-val sky">&ge; 15.0% locked</span>
+    </div>
+    <div class="metric-item">
+      <span class="metric-key">STORAGE:</span>
+      <span class="metric-val">SQLite (WAL mode)</span>
+    </div>
+  </div>
+
+  <!-- Main Split Surface -->
+  <div class="console-body">
+    
+    <!-- Left Pane: Live Stream Terminal (38%) -->
+    <section class="terminal-pane">
+      <div class="terminal-header">
+        <div class="terminal-title">
+          <span>CONSOLE LOGS</span>
+          <span style="font-size: 10px; color: var(--text-subtle);">[tail -f sentinel.log]</span>
+        </div>
+        <div class="terminal-tools">
+          <button class="tool-btn" onclick="clearTerminal()">Clear</button>
+          <button class="tool-btn" onclick="copyLogs()">Copy</button>
         </div>
       </div>
-
-      <div class="stat-card">
-        <div class="stat-icon" style="background: var(--success-bg); color: var(--success);">🛡️</div>
-        <div>
-          <div class="stat-num" style="color: var(--success);">29 sản phẩm</div>
-          <div class="stat-label">Giá ổn định, an toàn không biến động</div>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon" style="background: rgba(99, 102, 241, 0.15); color: var(--accent);">🧠</div>
-        <div>
-          <div class="stat-num">AI Cố vấn 24/7</div>
-          <div class="stat-label">Bảo vệ biên lợi nhuận sàn tối thiểu &ge; 15%</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ACTION FIRST: The items needing attention -->
-    <section>
-      <div class="section-header">
-        <div class="section-title">
-          <span>⚡ Việc cần xử lý hôm nay (2)</span>
-        </div>
-        <div style="font-size: 13px; color: var(--text-muted);">
-          Đã lọc nhiễu các biến động dưới 5%
-        </div>
-      </div>
-
-      <div class="action-grid">
-        <!-- Loop Action Items -->
+      <div class="terminal-body" id="terminalLogBody">
+        <!-- Render initial logs -->
         
-        <div class="action-card success-card">
-          <div class="action-header">
-            <div>
-              <div style="display:flex; align-items:center; gap: 8px; margin-bottom: 6px;">
-                <span class="action-badge badge-success">CƠ HỘI TĂNG LÃI</span>
-                <span style="font-size:12px; color:var(--text-muted); font-family:var(--mono);">SKU: the-past-never-ends_942</span>
-              </div>
-              <div class="item-title">The Past Never Ends</div>
-              <div class="item-meta">🔗 <a href="https://books.toscrape.com/catalogue/the-past-never-ends_942/index.html" target="_blank" style="color:var(--text-muted); text-decoration:none;">Xem web đối thủ ↗</a></div>
-            </div>
-
-            <div class="price-contrast">
-              <span class="price-old">£45.00</span>
-              <span>→</span>
-              <span class="price-new">£56.50</span>
-              <span style="color: var(--success); font-weight:700;">
-                (+25.6%)
-              </span>
-            </div>
-          </div>
-
-          <!-- AI Businessman Strategy Box -->
-          <div class="ai-box">
-            <div class="ai-action-text">
-              <div style="font-size: 12px; color: #38bdf8; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">
-                🧠 Chẩn đoán của AI Businessman:
-              </div>
-              <div>• <strong>Ý đồ đối thủ:</strong> Đối thủ tăng biên lợi nhuận hoặc đối mặt với đứt gãy nguồn cung / cạn kho</div>
-              <div style="margin-top: 6px;">• <strong>Hành động đề xuất:</strong> Cơ hội vàng: Đặt giá 53.67 GBP (vừa rẻ hơn đối thủ 5% để hút toàn bộ khách, vừa tăng biên lợi nhuận lên 53.9%).</div>
-            </div>
-            
-            <div class="ai-counter-side">
-              <div class="counter-label">Giá phản công tối ưu</div>
-              <div class="counter-val">£53.67</div>
-              <div class="margin-pill">Biên lãi bảo toàn: ~53.9%</div>
-            </div>
-          </div>
-
-          <!-- Action Footer -->
-          <div class="action-footer">
-            <button class="btn" onclick="toggleChart('the-past-never-ends_942')">📈 Xem lịch sử giá</button>
-            <button class="btn btn-primary" onclick="applyCounterPrice('the-past-never-ends_942', 53.67)">
-              ✅ Áp dụng giá £53.67
-            </button>
-          </div>
-
-          <!-- Hidden Drawer Chart -->
-          <div class="chart-drawer" id="chart-wrap-the-past-never-ends_942">
-            <canvas id="chart-the-past-never-ends_942"></canvas>
-          </div>
+        <div class="log-row">
+          <span class="log-time">08:30:12</span>
+          <span class="log-badge lvl-INFO">INFO</span>
+          <span class="log-msg">Engine daemon initialized. Concurrency=4, Throttle=1.0s, Mode=RESILIENT</span>
         </div>
         
-        <div class="action-card danger-card">
-          <div class="action-header">
-            <div>
-              <div style="display:flex; align-items:center; gap: 8px; margin-bottom: 6px;">
-                <span class="action-badge badge-danger">NGUY CƠ MẤT KHÁCH</span>
-                <span style="font-size:12px; color:var(--text-muted); font-family:var(--mono);">SKU: sharp-objects_997</span>
-              </div>
-              <div class="item-title">Sharp Objects</div>
-              <div class="item-meta">🔗 <a href="https://books.toscrape.com/catalogue/sharp-objects_997/index.html" target="_blank" style="color:var(--text-muted); text-decoration:none;">Xem web đối thủ ↗</a></div>
-            </div>
-
-            <div class="price-contrast">
-              <span class="price-old">£59.99</span>
-              <span>→</span>
-              <span class="price-new">£47.82</span>
-              <span style="color: var(--danger); font-weight:700;">
-                (-20.3%)
-              </span>
-            </div>
-          </div>
-
-          <!-- AI Businessman Strategy Box -->
-          <div class="ai-box">
-            <div class="ai-action-text">
-              <div style="font-size: 12px; color: #38bdf8; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">
-                🧠 Chẩn đoán của AI Businessman:
-              </div>
-              <div>• <strong>Ý đồ đối thủ:</strong> Xả kho cắt lỗ hoặc chiến dịch kích cầu đột ngột (Flash Sale / Liquidation)</div>
-              <div style="margin-top: 6px;">• <strong>Hành động đề xuất:</strong> Hạ giá đối ứng về 46.86 GBP (thấp hơn 2%). Giữ biên lợi nhuận ròng 29.6%. Bật quảng cáo nhắm thẳng từ khóa sản phẩm.</div>
-            </div>
-            
-            <div class="ai-counter-side">
-              <div class="counter-label">Giá phản công tối ưu</div>
-              <div class="counter-val">£46.86</div>
-              <div class="margin-pill">Biên lãi bảo toàn: ~29.6%</div>
-            </div>
-          </div>
-
-          <!-- Action Footer -->
-          <div class="action-footer">
-            <button class="btn" onclick="toggleChart('sharp-objects_997')">📈 Xem lịch sử giá</button>
-            <button class="btn btn-primary" onclick="applyCounterPrice('sharp-objects_997', 46.86)">
-              ✅ Áp dụng giá £46.86
-            </button>
-          </div>
-
-          <!-- Hidden Drawer Chart -->
-          <div class="chart-drawer" id="chart-wrap-sharp-objects_997">
-            <canvas id="chart-sharp-objects_997"></canvas>
-          </div>
+        <div class="log-row">
+          <span class="log-time">08:30:13</span>
+          <span class="log-badge lvl-INFO">INFO</span>
+          <span class="log-msg">Connecting to SQLite backend: /data/sentinel.db (schema: OK)</span>
+        </div>
+        
+        <div class="log-row">
+          <span class="log-time">08:30:14</span>
+          <span class="log-badge lvl-NET">NET</span>
+          <span class="log-msg">GET https://books.toscrape.com/catalogue/category/books_1/ 200 OK (114ms)</span>
+        </div>
+        
+        <div class="log-row">
+          <span class="log-time">08:30:15</span>
+          <span class="log-badge lvl-PARSE">PARSE</span>
+          <span class="log-msg">Indexed 31 product canonical URLs from category tree</span>
+        </div>
+        
+        <div class="log-row">
+          <span class="log-time">08:30:17</span>
+          <span class="log-badge lvl-WARN">WARN</span>
+          <span class="log-msg">[DELTA] sharp-objects_997 price shifted: £59.99 -> £47.82 (-20.3%)</span>
+        </div>
+        
+        <div class="log-row">
+          <span class="log-time">08:30:18</span>
+          <span class="log-badge lvl-AI">AI</span>
+          <span class="log-msg">[STRATEGY] Evaluated sharp-objects_997: Threat=CRITICAL. Counter=£46.86 (Margin=29.6%)</span>
+        </div>
+        
+        <div class="log-row">
+          <span class="log-time">08:30:19</span>
+          <span class="log-badge lvl-NET">NET</span>
+          <span class="log-msg">Telegram webhook dispatched to chat_id=-100849204 (status: DELIVERED)</span>
+        </div>
+        
+        <div class="log-row">
+          <span class="log-time">08:30:21</span>
+          <span class="log-badge lvl-INFO">INFO</span>
+          <span class="log-msg">Ingestion run completed in 1.48s. Total records: 31, Errors: 0</span>
         </div>
         
       </div>
     </section>
 
-    <!-- Collapsible Safe Catalog: Don't overwhelm, keep tucked until wanted -->
-    <section class="collapsible-section">
-      <div class="collapsible-trigger" onclick="toggleCatalog()">
-        <div>
-          <strong>📦 Danh sách 31 sản phẩm đang theo dõi</strong>
-          <span style="font-size: 12px; color: var(--text-muted); margin-left: 8px;">(29 sản phẩm an toàn, không có biến động)</span>
+    <!-- Right Pane: High-Density Data Table (62%) -->
+    <section class="table-pane">
+      <div class="table-toolbar">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <input type="text" id="tableFilterInput" class="table-search" placeholder="Search SKU, title..." oninput="filterTable()">
+          <div class="filter-group">
+            <span class="filter-tab active" data-filter="all" onclick="setFilter(this, 'all')">All (31)</span>
+            <span class="filter-tab" data-filter="delta" onclick="setFilter(this, 'delta')">Deltas Only (2)</span>
+            <span class="filter-tab" data-filter="instock" onclick="setFilter(this, 'instock')">In Stock</span>
+          </div>
         </div>
-        <span id="catalogArrow" style="font-size: 13px; color: var(--text-muted);">Mở bảng chi tiết ▼</span>
+        <div style="font-family: var(--mono); font-size: 10px; color: var(--text-subtle);">
+          Click row to inspect &rarr;
+        </div>
       </div>
 
-      <div class="catalog-table-wrap" id="catalogWrap">
-        <table>
+      <div class="table-wrap">
+        <table id="productsTable">
           <thead>
             <tr>
-              <th>SKU</th>
-              <th>Tên sản phẩm</th>
-              <th>Giá hiện tại</th>
-              <th>Trạng thái kho</th>
-              <th>Đánh giá</th>
-              <th>Cập nhật gần nhất</th>
+              <th style="width: 32px;">STAT</th>
+              <th style="width: 130px;">SKU</th>
+              <th>CANONICAL TITLE</th>
+              <th style="width: 80px;">PRICE</th>
+              <th style="width: 100px;">DELTA EVENT</th>
+              <th style="width: 80px;">STOCK</th>
+              <th style="width: 60px;">LATENCY</th>
+              <th style="width: 40px; text-align: right;">ACTION</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="tableBody">
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">boar-island-anna-pigeon-19_613</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Boar Island (Anna Pigeon #19)</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£59.48</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★★★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row " onclick="openDrawer('boar-island-anna-pigeon-19_613')" data-sku="boar-island-anna-pigeon-19_613">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="boar-island-anna-pigeon-19_613">boar-island-anna-pigeon-19_613</td>
+              <td class="title-cell" title="Boar Island (Anna Pigeon #19)">Boar Island (Anna Pigeon #19)</td>
+              <td class="price-cell">£59.48</td>
+              <td>
+                <span style="color:var(--text-subtle); font-family:var(--mono); font-size:11px;">&mdash;</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">112ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">a-year-in-provence-provence-1_421</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">A Year in Provence (Provence #1)</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£56.88</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★★★★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row " onclick="openDrawer('a-year-in-provence-provence-1_421')" data-sku="a-year-in-provence-provence-1_421">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="a-year-in-provence-provence-1_421">a-year-in-provence-provence-1_421</td>
+              <td class="title-cell" title="A Year in Provence (Provence #1)">A Year in Provence (Provence #1)</td>
+              <td class="price-cell">£56.88</td>
+              <td>
+                <span style="color:var(--text-subtle); font-family:var(--mono); font-size:11px;">&mdash;</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">128ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">the-past-never-ends_942</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">The Past Never Ends</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£56.50</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★★★★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row row-delta" onclick="openDrawer('the-past-never-ends_942')" data-sku="the-past-never-ends_942">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="the-past-never-ends_942">the-past-never-ends_942</td>
+              <td class="title-cell" title="The Past Never Ends">The Past Never Ends</td>
+              <td class="price-cell">£56.50</td>
+              <td>
+                <span class="delta-badge badge-emerald">+25.6%</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">95ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">murder-at-the-42nd-street-library-raymond-ambler-1_624</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Murder at the 42nd Street Library (Raymond Ambler #1)</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£54.36</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★★★★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row " onclick="openDrawer('murder-at-the-42nd-street-library-raymond-ambler-1_624')" data-sku="murder-at-the-42nd-street-library-raymond-ambler-1_624">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="murder-at-the-42nd-street-library-raymond-ambler-1_624">murder-at-the-42nd-street-library-raymond-ambler-1_624</td>
+              <td class="title-cell" title="Murder at the 42nd Street Library (Raymond Ambler #1)">Murder at the 42nd Street Library (Raymond Ambler #1)</td>
+              <td class="price-cell">£54.36</td>
+              <td>
+                <span style="color:var(--text-subtle); font-family:var(--mono); font-size:11px;">&mdash;</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">142ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">the-last-mile-amos-decker-2_754</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">The Last Mile (Amos Decker #2)</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£54.21</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row " onclick="openDrawer('the-last-mile-amos-decker-2_754')" data-sku="the-last-mile-amos-decker-2_754">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="the-last-mile-amos-decker-2_754">the-last-mile-amos-decker-2_754</td>
+              <td class="title-cell" title="The Last Mile (Amos Decker #2)">The Last Mile (Amos Decker #2)</td>
+              <td class="price-cell">£54.21</td>
+              <td>
+                <span style="color:var(--text-subtle); font-family:var(--mono); font-size:11px;">&mdash;</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">165ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">the-bachelor-girls-guide-to-murder-herringford-and-watts-mysteries-1_491</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">The Bachelor Girl's Guide to Murder (Herringford and Watts Mysteries #1)</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£52.30</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★★★★★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row " onclick="openDrawer('the-bachelor-girls-guide-to-murder-herringford-and-watts-mysteries-1_491')" data-sku="the-bachelor-girls-guide-to-murder-herringford-and-watts-mysteries-1_491">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="the-bachelor-girls-guide-to-murder-herringford-and-watts-mysteries-1_491">the-bachelor-girls-guide-to-murder-herringford-and-watts-mysteries-1_491</td>
+              <td class="title-cell" title="The Bachelor Girl's Guide to Murder (Herringford and Watts Mysteries #1)">The Bachelor Girl's Guide to Murder (Herringford and Watts Mysteries #1)</td>
+              <td class="price-cell">£52.30</td>
+              <td>
+                <span style="color:var(--text-subtle); font-family:var(--mono); font-size:11px;">&mdash;</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">88ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Full Moon over Noah’s Ark: An Odyssey to Mount Ararat and Beyond</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£49.43</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★★★★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row " onclick="openDrawer('full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811')" data-sku="full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811">full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811</td>
+              <td class="title-cell" title="Full Moon over Noah’s Ark: An Odyssey to Mount Ararat and Beyond">Full Moon over Noah’s Ark: An Odyssey to Mount Ararat and Beyond</td>
+              <td class="price-cell">£49.43</td>
+              <td>
+                <span style="color:var(--text-subtle); font-family:var(--mono); font-size:11px;">&mdash;</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">104ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">see-america-a-celebration-of-our-national-parks-treasured-sites_732</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">See America: A Celebration of Our National Parks & Treasured Sites</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£48.87</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★★★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row " onclick="openDrawer('see-america-a-celebration-of-our-national-parks-treasured-sites_732')" data-sku="see-america-a-celebration-of-our-national-parks-treasured-sites_732">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="see-america-a-celebration-of-our-national-parks-treasured-sites_732">see-america-a-celebration-of-our-national-parks-treasured-sites_732</td>
+              <td class="title-cell" title="See America: A Celebration of Our National Parks & Treasured Sites">See America: A Celebration of Our National Parks & Treasured Sites</td>
+              <td class="price-cell">£48.87</td>
+              <td>
+                <span style="color:var(--text-subtle); font-family:var(--mono); font-size:11px;">&mdash;</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">133ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">a-time-of-torment-charlie-parker-14_657</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">A Time of Torment (Charlie Parker #14)</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£48.35</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★★★★★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row " onclick="openDrawer('a-time-of-torment-charlie-parker-14_657')" data-sku="a-time-of-torment-charlie-parker-14_657">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="a-time-of-torment-charlie-parker-14_657">a-time-of-torment-charlie-parker-14_657</td>
+              <td class="title-cell" title="A Time of Torment (Charlie Parker #14)">A Time of Torment (Charlie Parker #14)</td>
+              <td class="price-cell">£48.35</td>
+              <td>
+                <span style="color:var(--text-subtle); font-family:var(--mono); font-size:11px;">&mdash;</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">119ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">sharp-objects_997</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Sharp Objects</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£47.82</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★★★★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row row-delta" onclick="openDrawer('sharp-objects_997')" data-sku="sharp-objects_997">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="sharp-objects_997">sharp-objects_997</td>
+              <td class="title-cell" title="Sharp Objects">Sharp Objects</td>
+              <td class="price-cell">£47.82</td>
+              <td>
+                <span class="delta-badge badge-rose">-20.3%</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">150ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">its-only-the-himalayas_981</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">It's Only the Himalayas</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£45.17</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row " onclick="openDrawer('its-only-the-himalayas_981')" data-sku="its-only-the-himalayas_981">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="its-only-the-himalayas_981">its-only-the-himalayas_981</td>
+              <td class="title-cell" title="It's Only the Himalayas">It's Only the Himalayas</td>
+              <td class="price-cell">£45.17</td>
+              <td>
+                <span style="color:var(--text-subtle); font-family:var(--mono); font-size:11px;">&mdash;</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">92ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">a-summer-in-europe_458</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">A Summer In Europe</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£44.34</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row " onclick="openDrawer('a-summer-in-europe_458')" data-sku="a-summer-in-europe_458">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="a-summer-in-europe_458">a-summer-in-europe_458</td>
+              <td class="title-cell" title="A Summer In Europe">A Summer In Europe</td>
+              <td class="price-cell">£44.34</td>
+              <td>
+                <span style="color:var(--text-subtle); font-family:var(--mono); font-size:11px;">&mdash;</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">108ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">the-murder-of-roger-ackroyd-hercule-poirot-4_852</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">The Murder of Roger Ackroyd (Hercule Poirot #4)</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£44.10</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★★★★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row " onclick="openDrawer('the-murder-of-roger-ackroyd-hercule-poirot-4_852')" data-sku="the-murder-of-roger-ackroyd-hercule-poirot-4_852">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="the-murder-of-roger-ackroyd-hercule-poirot-4_852">the-murder-of-roger-ackroyd-hercule-poirot-4_852</td>
+              <td class="title-cell" title="The Murder of Roger Ackroyd (Hercule Poirot #4)">The Murder of Roger Ackroyd (Hercule Poirot #4)</td>
+              <td class="price-cell">£44.10</td>
+              <td>
+                <span style="color:var(--text-subtle); font-family:var(--mono); font-size:11px;">&mdash;</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">175ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">neither-here-nor-there-travels-in-europe_198</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Neither Here nor There: Travels in Europe</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£38.95</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★★★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row " onclick="openDrawer('neither-here-nor-there-travels-in-europe_198')" data-sku="neither-here-nor-there-travels-in-europe_198">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="neither-here-nor-there-travels-in-europe_198">neither-here-nor-there-travels-in-europe_198</td>
+              <td class="title-cell" title="Neither Here nor There: Travels in Europe">Neither Here nor There: Travels in Europe</td>
+              <td class="price-cell">£38.95</td>
+              <td>
+                <span style="color:var(--text-subtle); font-family:var(--mono); font-size:11px;">&mdash;</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">114ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">under-the-tuscan-sun_504</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Under the Tuscan Sun</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£37.33</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★★★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row " onclick="openDrawer('under-the-tuscan-sun_504')" data-sku="under-the-tuscan-sun_504">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="under-the-tuscan-sun_504">under-the-tuscan-sun_504</td>
+              <td class="title-cell" title="Under the Tuscan Sun">Under the Tuscan Sun</td>
+              <td class="price-cell">£37.33</td>
+              <td>
+                <span style="color:var(--text-subtle); font-family:var(--mono); font-size:11px;">&mdash;</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">122ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Vagabonding: An Uncommon Guide to the Art of Long-Term World Travel</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£36.94</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row " onclick="openDrawer('vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552')" data-sku="vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552">vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552</td>
+              <td class="title-cell" title="Vagabonding: An Uncommon Guide to the Art of Long-Term World Travel">Vagabonding: An Uncommon Guide to the Art of Long-Term World Travel</td>
+              <td class="price-cell">£36.94</td>
+              <td>
+                <span style="color:var(--text-subtle); font-family:var(--mono); font-size:11px;">&mdash;</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">112ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">most-wanted_623</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Most Wanted</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£35.28</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★★★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row " onclick="openDrawer('most-wanted_623')" data-sku="most-wanted_623">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="most-wanted_623">most-wanted_623</td>
+              <td class="title-cell" title="Most Wanted">Most Wanted</td>
+              <td class="price-cell">£35.28</td>
+              <td>
+                <span style="color:var(--text-subtle); font-family:var(--mono); font-size:11px;">&mdash;</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">128ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">the-great-railway-bazaar_446</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">The Great Railway Bazaar</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£30.54</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row " onclick="openDrawer('the-great-railway-bazaar_446')" data-sku="the-great-railway-bazaar_446">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="the-great-railway-bazaar_446">the-great-railway-bazaar_446</td>
+              <td class="title-cell" title="The Great Railway Bazaar">The Great Railway Bazaar</td>
+              <td class="price-cell">£30.54</td>
+              <td>
+                <span style="color:var(--text-subtle); font-family:var(--mono); font-size:11px;">&mdash;</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">95ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">the-widow_609</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">The Widow</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£27.26</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row " onclick="openDrawer('the-widow_609')" data-sku="the-widow_609">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="the-widow_609">the-widow_609</td>
+              <td class="title-cell" title="The Widow">The Widow</td>
+              <td class="price-cell">£27.26</td>
+              <td>
+                <span style="color:var(--text-subtle); font-family:var(--mono); font-size:11px;">&mdash;</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">142ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">poisonous-max-revere-novels-3_627</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Poisonous (Max Revere Novels #3)</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£26.80</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★★★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row " onclick="openDrawer('poisonous-max-revere-novels-3_627')" data-sku="poisonous-max-revere-novels-3_627">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="poisonous-max-revere-novels-3_627">poisonous-max-revere-novels-3_627</td>
+              <td class="title-cell" title="Poisonous (Max Revere Novels #3)">Poisonous (Max Revere Novels #3)</td>
+              <td class="price-cell">£26.80</td>
+              <td>
+                <span style="color:var(--text-subtle); font-family:var(--mono); font-size:11px;">&mdash;</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">165ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">1000-places-to-see-before-you-die_1</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">1,000 Places to See Before You Die</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£26.08</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★★★★★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row " onclick="openDrawer('1000-places-to-see-before-you-die_1')" data-sku="1000-places-to-see-before-you-die_1">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="1000-places-to-see-before-you-die_1">1000-places-to-see-before-you-die_1</td>
+              <td class="title-cell" title="1,000 Places to See Before You Die">1,000 Places to See Before You Die</td>
+              <td class="price-cell">£26.08</td>
+              <td>
+                <span style="color:var(--text-subtle); font-family:var(--mono); font-size:11px;">&mdash;</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">88ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">what-happened-on-beale-street-secrets-of-the-south-mysteries-2_506</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">What Happened on Beale Street (Secrets of the South Mysteries #2)</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£25.37</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★★★★★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row " onclick="openDrawer('what-happened-on-beale-street-secrets-of-the-south-mysteries-2_506')" data-sku="what-happened-on-beale-street-secrets-of-the-south-mysteries-2_506">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="what-happened-on-beale-street-secrets-of-the-south-mysteries-2_506">what-happened-on-beale-street-secrets-of-the-south-mysteries-2_506</td>
+              <td class="title-cell" title="What Happened on Beale Street (Secrets of the South Mysteries #2)">What Happened on Beale Street (Secrets of the South Mysteries #2)</td>
+              <td class="price-cell">£25.37</td>
+              <td>
+                <span style="color:var(--text-subtle); font-family:var(--mono); font-size:11px;">&mdash;</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">104ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">The Road to Little Dribbling: Adventures of an American in Britain (Notes From a Small Island #2)</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£23.21</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row " onclick="openDrawer('the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277')" data-sku="the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277">the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277</td>
+              <td class="title-cell" title="The Road to Little Dribbling: Adventures of an American in Britain (Notes From a Small Island #2)">The Road to Little Dribbling: Adventures of an American in Britain (Notes From a Small Island #2)</td>
+              <td class="price-cell">£23.21</td>
+              <td>
+                <span style="color:var(--text-subtle); font-family:var(--mono); font-size:11px;">&mdash;</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">133ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">delivering-the-truth-quaker-midwife-mystery-1_464</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Delivering the Truth (Quaker Midwife Mystery #1)</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£20.89</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★★★★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row " onclick="openDrawer('delivering-the-truth-quaker-midwife-mystery-1_464')" data-sku="delivering-the-truth-quaker-midwife-mystery-1_464">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="delivering-the-truth-quaker-midwife-mystery-1_464">delivering-the-truth-quaker-midwife-mystery-1_464</td>
+              <td class="title-cell" title="Delivering the Truth (Quaker Midwife Mystery #1)">Delivering the Truth (Quaker Midwife Mystery #1)</td>
+              <td class="price-cell">£20.89</td>
+              <td>
+                <span style="color:var(--text-subtle); font-family:var(--mono); font-size:11px;">&mdash;</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">119ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">in-a-dark-dark-wood_963</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">In a Dark, Dark Wood</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£19.63</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row " onclick="openDrawer('in-a-dark-dark-wood_963')" data-sku="in-a-dark-dark-wood_963">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="in-a-dark-dark-wood_963">in-a-dark-dark-wood_963</td>
+              <td class="title-cell" title="In a Dark, Dark Wood">In a Dark, Dark Wood</td>
+              <td class="price-cell">£19.63</td>
+              <td>
+                <span style="color:var(--text-subtle); font-family:var(--mono); font-size:11px;">&mdash;</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">150ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">a-study-in-scarlet-sherlock-holmes-1_656</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">A Study in Scarlet (Sherlock Holmes #1)</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£16.73</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row " onclick="openDrawer('a-study-in-scarlet-sherlock-holmes-1_656')" data-sku="a-study-in-scarlet-sherlock-holmes-1_656">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="a-study-in-scarlet-sherlock-holmes-1_656">a-study-in-scarlet-sherlock-holmes-1_656</td>
+              <td class="title-cell" title="A Study in Scarlet (Sherlock Holmes #1)">A Study in Scarlet (Sherlock Holmes #1)</td>
+              <td class="price-cell">£16.73</td>
+              <td>
+                <span style="color:var(--text-subtle); font-family:var(--mono); font-size:11px;">&mdash;</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">92ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">a-murder-in-time_877</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">A Murder in Time</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£16.64</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row " onclick="openDrawer('a-murder-in-time_877')" data-sku="a-murder-in-time_877">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="a-murder-in-time_877">a-murder-in-time_877</td>
+              <td class="title-cell" title="A Murder in Time">A Murder in Time</td>
+              <td class="price-cell">£16.64</td>
+              <td>
+                <span style="color:var(--text-subtle); font-family:var(--mono); font-size:11px;">&mdash;</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">108ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">that-darkness-gardiner-and-renner-1_743</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">That Darkness (Gardiner and Renner #1)</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£13.92</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row " onclick="openDrawer('that-darkness-gardiner-and-renner-1_743')" data-sku="that-darkness-gardiner-and-renner-1_743">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="that-darkness-gardiner-and-renner-1_743">that-darkness-gardiner-and-renner-1_743</td>
+              <td class="title-cell" title="That Darkness (Gardiner and Renner #1)">That Darkness (Gardiner and Renner #1)</td>
+              <td class="price-cell">£13.92</td>
+              <td>
+                <span style="color:var(--text-subtle); font-family:var(--mono); font-size:11px;">&mdash;</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">175ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">playing-with-fire_602</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Playing with Fire</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£13.71</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★★★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row " onclick="openDrawer('playing-with-fire_602')" data-sku="playing-with-fire_602">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="playing-with-fire_602">playing-with-fire_602</td>
+              <td class="title-cell" title="Playing with Fire">Playing with Fire</td>
+              <td class="price-cell">£13.71</td>
+              <td>
+                <span style="color:var(--text-subtle); font-family:var(--mono); font-size:11px;">&mdash;</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">114ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">hide-away-eve-duncan-20_620</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Hide Away (Eve Duncan #20)</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£11.84</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row " onclick="openDrawer('hide-away-eve-duncan-20_620')" data-sku="hide-away-eve-duncan-20_620">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="hide-away-eve-duncan-20_620">hide-away-eve-duncan-20_620</td>
+              <td class="title-cell" title="Hide Away (Eve Duncan #20)">Hide Away (Eve Duncan #20)</td>
+              <td class="price-cell">£11.84</td>
+              <td>
+                <span style="color:var(--text-subtle); font-family:var(--mono); font-size:11px;">&mdash;</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">122ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
-            <tr>
-              <td style="font-family: var(--mono); font-size: 12px;">tastes-like-fear-di-marnie-rome-3_742</td>
-              <td style="color: #fff; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Tastes Like Fear (DI Marnie Rome #3)</td>
-              <td style="font-family: var(--mono); font-weight: 600; color: #fff;">£10.69</td>
-              <td><span style="color: #10b981; font-size: 12px;">● Còn hàng</span></td>
-              <td style="color: #f59e0b;">★</td>
-              <td>2026-11-07</td>
+            <tr class="data-row " onclick="openDrawer('tastes-like-fear-di-marnie-rome-3_742')" data-sku="tastes-like-fear-di-marnie-rome-3_742">
+              <td><span class="status-code">200</span></td>
+              <td class="sku-cell" title="tastes-like-fear-di-marnie-rome-3_742">tastes-like-fear-di-marnie-rome-3_742</td>
+              <td class="title-cell" title="Tastes Like Fear (DI Marnie Rome #3)">Tastes Like Fear (DI Marnie Rome #3)</td>
+              <td class="price-cell">£10.69</td>
+              <td>
+                <span style="color:var(--text-subtle); font-family:var(--mono); font-size:11px;">&mdash;</span>
+              </td>
+              <td>
+                <span style="font-family: var(--mono); font-size: 10px; color: var(--emerald);">IN_STOCK</span>
+              </td>
+              <td>
+                <span class="latency-pill">112ms</span>
+              </td>
+              <td style="text-align: right;">
+                <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">&rarr;</span>
+              </td>
             </tr>
             
           </tbody>
         </table>
       </div>
     </section>
-  </main>
 
-  <!-- Telegram Preview Modal -->
-  <div class="modal-overlay" id="tgModal" onclick="closeTelegramModal(event)">
-    <div class="modal" onclick="event.stopPropagation()">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <div style="font-weight:700; font-size:15px;">📱 Tin nhắn Telegram bot gửi cho m:</div>
-        <button class="btn" style="padding:2px 8px; font-size:12px;" onclick="closeTelegramModal()">✕</button>
-      </div>
-
-      <div class="tg-msg-bubble">
-        <div style="font-weight:700; color:#ef4444; margin-bottom:8px;">📉 🔥 [CẢNH BÁO HẠ GIÁ ĐỐI THỦ]</div>
-        <div><strong>Sản phẩm:</strong> Sharp Objects</div>
-        <div><strong>Giá đối thủ:</strong> <span style="text-decoration:line-through; color:#94a3b8;">£59.99</span> ➔ <strong>£47.82</strong> (-20.3%)</div>
-        <div style="border-top:1px dashed rgba(255,255,255,0.2); margin:10px 0; padding-top:8px;">
-          <div style="font-weight:700; color:#38bdf8;">🧠 AI Businessman đề xuất:</div>
-          <div>• <strong>Ý đồ:</strong> Xả kho cắt lỗ / Flash sale</div>
-          <div>• <strong>Giá phản công:</strong> <code>£46.86</code> (Lãi ròng ~29.6%)</div>
-          <div style="margin-top:4px;">• <strong>Đòn đánh:</strong> Hạ giá đối ứng £46.86, giữ biên lãi, bật ads đón khách từ đối thủ.</div>
+    <!-- Slide-Over Inspector Drawer -->
+    <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer(event)">
+      <div class="drawer" onclick="event.stopPropagation()">
+        <div class="drawer-header">
+          <div class="drawer-title-group">
+            <span class="status-code">200 OK</span>
+            <span class="drawer-title" id="drawerSkuTitle">SKU Inspector</span>
+          </div>
+          <button class="tool-btn" onclick="closeDrawerDirect()">Esc &times;</button>
         </div>
-      </div>
 
-      <div style="display:flex; justify-content:flex-end; gap:8px;">
-        <button class="btn" onclick="closeTelegramModal()">Đóng</button>
-        <button class="btn btn-tg" onclick="showToast('Đã kết nối Telegram bot thành công!')">Mở Telegram Bot</button>
+        <div class="drawer-tabs">
+          <div class="drawer-tab active" data-tab="strategy" onclick="switchDrawerTab('strategy')">1. Commercial AI</div>
+          <div class="drawer-tab" data-tab="extracted" onclick="switchDrawerTab('extracted')">2. Extracted Data</div>
+          <div class="drawer-tab" data-tab="raw" onclick="switchDrawerTab('raw')">3. Raw JSON</div>
+          <div class="drawer-tab" data-tab="headers" onclick="switchDrawerTab('headers')">4. Response Headers</div>
+        </div>
+
+        <div class="drawer-body" id="drawerBody">
+          <!-- Dynamically populated via JS -->
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- Telegram Live Preview Modal -->
+  <div class="tg-modal-overlay" id="tgModal" onclick="closeTelegramModal(event)">
+    <div class="tg-modal" onclick="event.stopPropagation()">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <span style="font-size:12px; font-weight:600; color:#fff;">📱 Telegram Alert Dispatch</span>
+        <button class="tool-btn" onclick="closeTelegramModal()">✕</button>
+      </div>
+      <div style="background:#182533; border:1px solid #2b5278; border-radius:6px; padding:12px; font-family:var(--sans); font-size:12px; line-height:1.5;">
+        <div style="font-weight:700; color:#ef4444; margin-bottom:4px;">📉 🔥 [MARKET SENTINEL ALERT]</div>
+        <div><strong>Product:</strong> Sharp Objects</div>
+        <div><strong>Price:</strong> <del style="color:#94a3b8;">£59.99</del> &rarr; <strong style="color:#fff;">£47.82</strong> (-20.3%)</div>
+        <div style="border-top:1px dashed #2b5278; margin:8px 0; padding-top:6px;">
+          <div style="color:#38bdf8; font-weight:600;">🧠 AI Businessman Recommendation:</div>
+          <div>• <strong>Diagnosis:</strong> Competitor inventory clearance / Flash sale</div>
+          <div>• <strong>Counter-Price:</strong> <code>£46.86</code> (Preserves 29.6% net margin)</div>
+          <div>• <strong>Tactical Defense:</strong> Undercut counter-price by 0.50, activate targeted conquest ad.</div>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:12px;">
+        <button class="btn" onclick="closeTelegramModal()">Dismiss</button>
+        <button class="btn btn-sky" onclick="showToast('Telegram test alert sent to configured webhook')">Send Test Ping</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
   <div id="toast"></div>
 
   <script>
-    const DATA = {"summary": {"action_count": 2, "safe_count": 29, "total_tracked": 31, "currency": "\u00a3"}, "action_items": [{"sku": "the-past-never-ends_942", "title": "The Past Never Ends", "url": "https://books.toscrape.com/catalogue/the-past-never-ends_942/index.html", "type": "PRICE_HIKE", "old_price": 45.0, "new_price": 56.5, "diff": 11.5, "percent": 25.56, "currency": "GBP", "badge": "C\u01a0 H\u1ed8I T\u0102NG L\u00c3I", "badge_class": "badge-success", "threat": "OPPORTUNITY", "intent": "\u0110\u1ed1i th\u1ee7 t\u0103ng bi\u00ean l\u1ee3i nhu\u1eadn ho\u1eb7c \u0111\u1ed1i m\u1eb7t v\u1edbi \u0111\u1ee9t g\u00e3y ngu\u1ed3n cung / c\u1ea1n kho", "counter_price": 53.67, "margin": 53.9, "action": "C\u01a1 h\u1ed9i v\u00e0ng: \u0110\u1eb7t gi\u00e1 53.67 GBP (v\u1eeba r\u1ebb h\u01a1n \u0111\u1ed1i th\u1ee7 5% \u0111\u1ec3 h\u00fat to\u00e0n b\u1ed9 kh\u00e1ch, v\u1eeba t\u0103ng bi\u00ean l\u1ee3i nhu\u1eadn l\u00ean 53.9%).", "timeline": [{"date": "Nov 01", "price": 45.0}, {"date": "Nov 04", "price": 45.0}, {"date": "Nov 06", "price": 50.0}, {"date": "Nov 07", "price": 56.5}]}, {"sku": "sharp-objects_997", "title": "Sharp Objects", "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html", "type": "PRICE_DROP", "old_price": 59.99, "new_price": 47.82, "diff": -12.17, "percent": -20.29, "currency": "GBP", "badge": "NGUY C\u01a0 M\u1ea4T KH\u00c1CH", "badge_class": "badge-danger", "threat": "CRITICAL", "intent": "X\u1ea3 kho c\u1eaft l\u1ed7 ho\u1eb7c chi\u1ebfn d\u1ecbch k\u00edch c\u1ea7u \u0111\u1ed9t ng\u1ed9t (Flash Sale / Liquidation)", "counter_price": 46.86, "margin": 29.6, "action": "H\u1ea1 gi\u00e1 \u0111\u1ed1i \u1ee9ng v\u1ec1 46.86 GBP (th\u1ea5p h\u01a1n 2%). Gi\u1eef bi\u00ean l\u1ee3i nhu\u1eadn r\u00f2ng 29.6%. B\u1eadt qu\u1ea3ng c\u00e1o nh\u1eafm th\u1eb3ng t\u1eeb kh\u00f3a s\u1ea3n ph\u1ea9m.", "timeline": [{"date": "Nov 01", "price": 59.99}, {"date": "Nov 03", "price": 59.99}, {"date": "Nov 05", "price": 54.0}, {"date": "Nov 07", "price": 47.82}]}], "products": [{"sku": "boar-island-anna-pigeon-19_613", "title": "Boar Island (Anna Pigeon #19)", "current_price": 59.48, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 3.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/boar-island-anna-pigeon-19_613/index.html", "last_scraped_at": "2026-11-07T06:58:33.483707+00:00", "created_at": "2026-11-07T06:57:50.783916+00:00", "timeline": [{"date": "Nov 01", "price": 60.07}, {"date": "Nov 04", "price": 59.48}, {"date": "Nov 07", "price": 59.48}]}, {"sku": "a-year-in-provence-provence-1_421", "title": "A Year in Provence (Provence #1)", "current_price": 56.88, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/a-year-in-provence-provence-1_421/index.html", "last_scraped_at": "2026-11-07T06:28:19.954223+00:00", "created_at": "2026-11-07T06:09:17.904912+00:00", "timeline": [{"date": "Nov 01", "price": 57.45}, {"date": "Nov 04", "price": 56.88}, {"date": "Nov 07", "price": 56.88}]}, {"sku": "the-past-never-ends_942", "title": "The Past Never Ends", "current_price": 56.5, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/the-past-never-ends_942/index.html", "last_scraped_at": "2026-11-07T06:58:33.476876+00:00", "created_at": "2026-11-07T06:57:50.772673+00:00", "timeline": [{"date": "Nov 01", "price": 45.0}, {"date": "Nov 04", "price": 45.0}, {"date": "Nov 06", "price": 50.0}, {"date": "Nov 07", "price": 56.5}]}, {"sku": "murder-at-the-42nd-street-library-raymond-ambler-1_624", "title": "Murder at the 42nd Street Library (Raymond Ambler #1)", "current_price": 54.36, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/murder-at-the-42nd-street-library-raymond-ambler-1_624/index.html", "last_scraped_at": "2026-11-07T06:58:33.481095+00:00", "created_at": "2026-11-07T06:57:50.780459+00:00", "timeline": [{"date": "Nov 01", "price": 54.9}, {"date": "Nov 04", "price": 54.36}, {"date": "Nov 07", "price": 54.36}]}, {"sku": "the-last-mile-amos-decker-2_754", "title": "The Last Mile (Amos Decker #2)", "current_price": 54.21, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 2.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/the-last-mile-amos-decker-2_754/index.html", "last_scraped_at": "2026-11-07T06:58:33.477751+00:00", "created_at": "2026-11-07T06:57:50.775040+00:00", "timeline": [{"date": "Nov 01", "price": 54.75}, {"date": "Nov 04", "price": 54.21}, {"date": "Nov 07", "price": 54.21}]}, {"sku": "the-bachelor-girls-guide-to-murder-herringford-and-watts-mysteries-1_491", "title": "The Bachelor Girl's Guide to Murder (Herringford and Watts Mysteries #1)", "current_price": 52.3, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 5.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/the-bachelor-girls-guide-to-murder-herringford-and-watts-mysteries-1_491/index.html", "last_scraped_at": "2026-11-07T06:58:33.487033+00:00", "created_at": "2026-11-07T06:57:50.791974+00:00", "timeline": [{"date": "Nov 01", "price": 52.82}, {"date": "Nov 04", "price": 52.3}, {"date": "Nov 07", "price": 52.3}]}, {"sku": "full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811", "title": "Full Moon over Noah\u2019s Ark: An Odyssey to Mount Ararat and Beyond", "current_price": 49.43, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html", "last_scraped_at": "2026-11-07T06:28:19.948727+00:00", "created_at": "2026-11-07T06:09:17.903299+00:00", "timeline": [{"date": "Nov 01", "price": 49.92}, {"date": "Nov 04", "price": 49.43}, {"date": "Nov 07", "price": 49.43}]}, {"sku": "see-america-a-celebration-of-our-national-parks-treasured-sites_732", "title": "See America: A Celebration of Our National Parks & Treasured Sites", "current_price": 48.87, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 3.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html", "last_scraped_at": "2026-11-07T06:28:19.949054+00:00", "created_at": "2026-11-07T06:09:17.903550+00:00", "timeline": [{"date": "Nov 01", "price": 49.36}, {"date": "Nov 04", "price": 48.87}, {"date": "Nov 07", "price": 48.87}]}, {"sku": "a-time-of-torment-charlie-parker-14_657", "title": "A Time of Torment (Charlie Parker #14)", "current_price": 48.35, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 5.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/a-time-of-torment-charlie-parker-14_657/index.html", "last_scraped_at": "2026-11-07T06:58:33.478640+00:00", "created_at": "2026-11-07T06:57:50.777515+00:00", "timeline": [{"date": "Nov 01", "price": 48.83}, {"date": "Nov 04", "price": 48.35}, {"date": "Nov 07", "price": 48.35}]}, {"sku": "sharp-objects_997", "title": "Sharp Objects", "current_price": 47.82, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html", "last_scraped_at": "2026-11-07T06:58:33.475856+00:00", "created_at": "2026-11-07T06:57:50.767904+00:00", "timeline": [{"date": "Nov 01", "price": 59.99}, {"date": "Nov 03", "price": 59.99}, {"date": "Nov 05", "price": 54.0}, {"date": "Nov 07", "price": 47.82}]}, {"sku": "its-only-the-himalayas_981", "title": "It's Only the Himalayas", "current_price": 45.17, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 2.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html", "last_scraped_at": "2026-11-07T06:28:19.944016+00:00", "created_at": "2026-11-07T06:09:17.902476+00:00", "timeline": [{"date": "Nov 01", "price": 45.62}, {"date": "Nov 04", "price": 45.17}, {"date": "Nov 07", "price": 45.17}]}, {"sku": "a-summer-in-europe_458", "title": "A Summer In Europe", "current_price": 44.34, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 2.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/a-summer-in-europe_458/index.html", "last_scraped_at": "2026-11-07T06:28:19.952925+00:00", "created_at": "2026-11-07T06:09:17.904365+00:00", "timeline": [{"date": "Nov 01", "price": 44.78}, {"date": "Nov 04", "price": 44.34}, {"date": "Nov 07", "price": 44.34}]}, {"sku": "the-murder-of-roger-ackroyd-hercule-poirot-4_852", "title": "The Murder of Roger Ackroyd (Hercule Poirot #4)", "current_price": 44.1, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/the-murder-of-roger-ackroyd-hercule-poirot-4_852/index.html", "last_scraped_at": "2026-11-07T06:58:33.477467+00:00", "created_at": "2026-11-07T06:57:50.774071+00:00", "timeline": [{"date": "Nov 01", "price": 44.54}, {"date": "Nov 04", "price": 44.1}, {"date": "Nov 07", "price": 44.1}]}, {"sku": "neither-here-nor-there-travels-in-europe_198", "title": "Neither Here nor There: Travels in Europe", "current_price": 38.95, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 3.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/neither-here-nor-there-travels-in-europe_198/index.html", "last_scraped_at": "2026-11-07T06:28:19.955667+00:00", "created_at": "2026-11-07T06:09:17.905417+00:00", "timeline": [{"date": "Nov 01", "price": 39.34}, {"date": "Nov 04", "price": 38.95}, {"date": "Nov 07", "price": 38.95}]}, {"sku": "under-the-tuscan-sun_504", "title": "Under the Tuscan Sun", "current_price": 37.33, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 3.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/under-the-tuscan-sun_504/index.html", "last_scraped_at": "2026-11-07T06:28:19.952268+00:00", "created_at": "2026-11-07T06:09:17.904071+00:00", "timeline": [{"date": "Nov 01", "price": 37.7}, {"date": "Nov 04", "price": 37.33}, {"date": "Nov 07", "price": 37.33}]}, {"sku": "vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552", "title": "Vagabonding: An Uncommon Guide to the Art of Long-Term World Travel", "current_price": 36.94, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 2.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552/index.html", "last_scraped_at": "2026-11-07T06:28:19.949833+00:00", "created_at": "2026-11-07T06:09:17.903803+00:00", "timeline": [{"date": "Nov 01", "price": 37.31}, {"date": "Nov 04", "price": 36.94}, {"date": "Nov 07", "price": 36.94}]}, {"sku": "most-wanted_623", "title": "Most Wanted", "current_price": 35.28, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 3.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/most-wanted_623/index.html", "last_scraped_at": "2026-11-07T06:58:33.481830+00:00", "created_at": "2026-11-07T06:57:50.781468+00:00", "timeline": [{"date": "Nov 01", "price": 35.63}, {"date": "Nov 04", "price": 35.28}, {"date": "Nov 07", "price": 35.28}]}, {"sku": "the-great-railway-bazaar_446", "title": "The Great Railway Bazaar", "current_price": 30.54, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 1.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/the-great-railway-bazaar_446/index.html", "last_scraped_at": "2026-11-07T06:28:19.953531+00:00", "created_at": "2026-11-07T06:09:17.904596+00:00", "timeline": [{"date": "Nov 01", "price": 30.85}, {"date": "Nov 04", "price": 30.54}, {"date": "Nov 07", "price": 30.54}]}, {"sku": "the-widow_609", "title": "The Widow", "current_price": 27.26, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 2.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/the-widow_609/index.html", "last_scraped_at": "2026-11-07T06:58:33.484387+00:00", "created_at": "2026-11-07T06:57:50.785942+00:00", "timeline": [{"date": "Nov 01", "price": 27.53}, {"date": "Nov 04", "price": 27.26}, {"date": "Nov 07", "price": 27.26}]}, {"sku": "poisonous-max-revere-novels-3_627", "title": "Poisonous (Max Revere Novels #3)", "current_price": 26.8, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 3.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/poisonous-max-revere-novels-3_627/index.html", "last_scraped_at": "2026-11-07T06:58:33.480334+00:00", "created_at": "2026-11-07T06:57:50.779527+00:00", "timeline": [{"date": "Nov 01", "price": 27.07}, {"date": "Nov 04", "price": 26.8}, {"date": "Nov 07", "price": 26.8}]}, {"sku": "1000-places-to-see-before-you-die_1", "title": "1,000 Places to See Before You Die", "current_price": 26.08, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 5.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/1000-places-to-see-before-you-die_1/index.html", "last_scraped_at": "2026-11-07T06:28:19.956455+00:00", "created_at": "2026-11-07T06:09:17.905787+00:00", "timeline": [{"date": "Nov 01", "price": 26.34}, {"date": "Nov 04", "price": 26.08}, {"date": "Nov 07", "price": 26.08}]}, {"sku": "what-happened-on-beale-street-secrets-of-the-south-mysteries-2_506", "title": "What Happened on Beale Street (Secrets of the South Mysteries #2)", "current_price": 25.37, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 5.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/what-happened-on-beale-street-secrets-of-the-south-mysteries-2_506/index.html", "last_scraped_at": "2026-11-07T06:58:33.486032+00:00", "created_at": "2026-11-07T06:57:50.790158+00:00", "timeline": [{"date": "Nov 01", "price": 25.62}, {"date": "Nov 04", "price": 25.37}, {"date": "Nov 07", "price": 25.37}]}, {"sku": "the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277", "title": "The Road to Little Dribbling: Adventures of an American in Britain (Notes From a Small Island #2)", "current_price": 23.21, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 1.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277/index.html", "last_scraped_at": "2026-11-07T06:28:19.954992+00:00", "created_at": "2026-11-07T06:09:17.905160+00:00", "timeline": [{"date": "Nov 01", "price": 23.44}, {"date": "Nov 04", "price": 23.21}, {"date": "Nov 07", "price": 23.21}]}, {"sku": "delivering-the-truth-quaker-midwife-mystery-1_464", "title": "Delivering the Truth (Quaker Midwife Mystery #1)", "current_price": 20.89, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/delivering-the-truth-quaker-midwife-mystery-1_464/index.html", "last_scraped_at": "2026-11-07T06:58:33.488125+00:00", "created_at": "2026-11-07T06:57:50.793875+00:00", "timeline": [{"date": "Nov 01", "price": 21.1}, {"date": "Nov 04", "price": 20.89}, {"date": "Nov 07", "price": 20.89}]}, {"sku": "in-a-dark-dark-wood_963", "title": "In a Dark, Dark Wood", "current_price": 19.63, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 1.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/in-a-dark-dark-wood_963/index.html", "last_scraped_at": "2026-11-07T06:58:33.476530+00:00", "created_at": "2026-11-07T06:57:50.772395+00:00", "timeline": [{"date": "Nov 01", "price": 19.83}, {"date": "Nov 04", "price": 19.63}, {"date": "Nov 07", "price": 19.63}]}, {"sku": "a-study-in-scarlet-sherlock-holmes-1_656", "title": "A Study in Scarlet (Sherlock Holmes #1)", "current_price": 16.73, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 2.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/a-study-in-scarlet-sherlock-holmes-1_656/index.html", "last_scraped_at": "2026-11-07T06:58:33.479440+00:00", "created_at": "2026-11-07T06:57:50.778571+00:00", "timeline": [{"date": "Nov 01", "price": 16.9}, {"date": "Nov 04", "price": 16.73}, {"date": "Nov 07", "price": 16.73}]}, {"sku": "a-murder-in-time_877", "title": "A Murder in Time", "current_price": 16.64, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 1.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/a-murder-in-time_877/index.html", "last_scraped_at": "2026-11-07T06:58:33.477177+00:00", "created_at": "2026-11-07T06:57:50.772922+00:00", "timeline": [{"date": "Nov 01", "price": 16.81}, {"date": "Nov 04", "price": 16.64}, {"date": "Nov 07", "price": 16.64}]}, {"sku": "that-darkness-gardiner-and-renner-1_743", "title": "That Darkness (Gardiner and Renner #1)", "current_price": 13.92, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 1.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/that-darkness-gardiner-and-renner-1_743/index.html", "last_scraped_at": "2026-11-07T06:58:33.478086+00:00", "created_at": "2026-11-07T06:57:50.775817+00:00", "timeline": [{"date": "Nov 01", "price": 14.06}, {"date": "Nov 04", "price": 13.92}, {"date": "Nov 07", "price": 13.92}]}, {"sku": "playing-with-fire_602", "title": "Playing with Fire", "current_price": 13.71, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 3.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/playing-with-fire_602/index.html", "last_scraped_at": "2026-11-07T06:58:33.485154+00:00", "created_at": "2026-11-07T06:57:50.788696+00:00", "timeline": [{"date": "Nov 01", "price": 13.85}, {"date": "Nov 04", "price": 13.71}, {"date": "Nov 07", "price": 13.71}]}, {"sku": "hide-away-eve-duncan-20_620", "title": "Hide Away (Eve Duncan #20)", "current_price": 11.84, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 1.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/hide-away-eve-duncan-20_620/index.html", "last_scraped_at": "2026-11-07T06:58:33.482775+00:00", "created_at": "2026-11-07T06:57:50.782389+00:00", "timeline": [{"date": "Nov 01", "price": 11.96}, {"date": "Nov 04", "price": 11.84}, {"date": "Nov 07", "price": 11.84}]}, {"sku": "tastes-like-fear-di-marnie-rome-3_742", "title": "Tastes Like Fear (DI Marnie Rome #3)", "current_price": 10.69, "original_price": null, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 1.0, "reviews_count": null, "url": "https://books.toscrape.com/catalogue/tastes-like-fear-di-marnie-rome-3_742/index.html", "last_scraped_at": "2026-11-07T06:58:33.478362+00:00", "created_at": "2026-11-07T06:57:50.776629+00:00", "timeline": [{"date": "Nov 01", "price": 10.8}, {"date": "Nov 04", "price": 10.69}, {"date": "Nov 07", "price": 10.69}]}]};
-    const chartInstances = {};
+    const DATA = {"metrics": {"total_crawled": 31, "avg_latency_ms": 123, "success_rate": 100.0, "action_count": 2, "safe_count": 29, "floor_margin_pct": 15.0, "target_domain": "books.toscrape.com", "concurrency": 4, "throttle_delay": 1.0}, "action_items": [{"sku": "the-past-never-ends_942", "title": "The Past Never Ends", "url": "https://books.toscrape.com/catalogue/the-past-never-ends_942/index.html", "current_price": 56.5, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "last_scraped_at": "2026-11-07T06:58:33.476876+00:00", "latency_ms": 95, "http_status": 200, "delta": {"type": "PRICE_HIKE", "old_price": 45.0, "new_price": 56.5, "diff": 11.5, "percent": 25.56, "badge": "MARGIN HIKE", "badge_class": "badge-emerald"}, "advice": {"threat_level": "OPPORTUNITY", "intent_diagnosis": "\u0110\u1ed1i th\u1ee7 t\u0103ng bi\u00ean l\u1ee3i nhu\u1eadn ho\u1eb7c \u0111\u1ed1i m\u1eb7t v\u1edbi \u0111\u1ee9t g\u00e3y ngu\u1ed3n cung / c\u1ea1n kho", "recommended_counter_price": 53.67, "projected_margin_pct": 53.9, "tactical_action": "C\u01a1 h\u1ed9i v\u00e0ng: \u0110\u1eb7t gi\u00e1 53.67 GBP (v\u1eeba r\u1ebb h\u01a1n \u0111\u1ed1i th\u1ee7 5% \u0111\u1ec3 h\u00fat to\u00e0n b\u1ed9 kh\u00e1ch, v\u1eeba t\u0103ng bi\u00ean l\u1ee3i nhu\u1eadn l\u00ean 53.9%).", "executive_briefing": "\u0110\u1ed1i th\u1ee7 t\u0103ng gi\u00e1 +25.6% tr\u00ean the-past-never-ends_942. \u0110\u00e2y l\u00e0 c\u01a1 h\u1ed9i [OPPORTUNITY]. H\u1ecd \u0111ang ch\u1ecbu \u00e1p l\u1ef1c chi ph\u00ed ho\u1eb7c c\u1ea1n kho. Khuy\u1ebfn ngh\u1ecb: C\u01a1 h\u1ed9i v\u00e0ng: \u0110\u1eb7t gi\u00e1 53.67 GBP (v\u1eeba r\u1ebb h\u01a1n \u0111\u1ed1i th\u1ee7 5% \u0111\u1ec3 h\u00fat to\u00e0n b\u1ed9 kh\u00e1ch, v\u1eeba t\u0103ng bi\u00ean l\u1ee3i nhu\u1eadn l\u00ean 53.9%)."}, "timeline": [{"date": "Nov 01", "price": 45.0}, {"date": "Nov 04", "price": 45.0}, {"date": "Nov 06", "price": 50.0}, {"date": "Nov 07", "price": 56.5}]}, {"sku": "sharp-objects_997", "title": "Sharp Objects", "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html", "current_price": 47.82, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "last_scraped_at": "2026-11-07T06:58:33.475856+00:00", "latency_ms": 150, "http_status": 200, "delta": {"type": "PRICE_DROP", "old_price": 59.99, "new_price": 47.82, "diff": -12.17, "percent": -20.29, "badge": "CRITICAL DROP", "badge_class": "badge-rose"}, "advice": {"threat_level": "CRITICAL", "intent_diagnosis": "X\u1ea3 kho c\u1eaft l\u1ed7 ho\u1eb7c chi\u1ebfn d\u1ecbch k\u00edch c\u1ea7u \u0111\u1ed9t ng\u1ed9t (Flash Sale / Liquidation)", "recommended_counter_price": 46.86, "projected_margin_pct": 29.6, "tactical_action": "H\u1ea1 gi\u00e1 \u0111\u1ed1i \u1ee9ng v\u1ec1 46.86 GBP (th\u1ea5p h\u01a1n 2%). Gi\u1eef bi\u00ean l\u1ee3i nhu\u1eadn r\u00f2ng 29.6%. B\u1eadt qu\u1ea3ng c\u00e1o nh\u1eafm th\u1eb3ng t\u1eeb kh\u00f3a s\u1ea3n ph\u1ea9m.", "executive_briefing": "\u0110\u1ed1i th\u1ee7 v\u1eeba c\u1eaft gi\u1ea3m 20.3% tr\u00ean m\u00e3 sharp-objects_997. \u0110\u00e1nh gi\u00e1 r\u1ee7i ro: [CRITICAL]. X\u1ea3 kho c\u1eaft l\u1ed7 ho\u1eb7c chi\u1ebfn d\u1ecbch k\u00edch c\u1ea7u \u0111\u1ed9t ng\u1ed9t (Flash Sale / Liquidation). Khuy\u1ebfn ngh\u1ecb ph\u1ea3n \u0111\u00f2n: H\u1ea1 gi\u00e1 \u0111\u1ed1i \u1ee9ng v\u1ec1 46.86 GBP (th\u1ea5p h\u01a1n 2%). Gi\u1eef bi\u00ean l\u1ee3i nhu\u1eadn r\u00f2ng 29.6%. B\u1eadt qu\u1ea3ng c\u00e1o nh\u1eafm th\u1eb3ng t\u1eeb kh\u00f3a s\u1ea3n ph\u1ea9m."}, "timeline": [{"date": "Nov 01", "price": 59.99}, {"date": "Nov 03", "price": 59.99}, {"date": "Nov 05", "price": 54.0}, {"date": "Nov 07", "price": 47.82}]}], "products": [{"sku": "boar-island-anna-pigeon-19_613", "title": "Boar Island (Anna Pigeon #19)", "url": "https://books.toscrape.com/catalogue/boar-island-anna-pigeon-19_613/index.html", "current_price": 59.48, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 3.0, "last_scraped_at": "2026-11-07T06:58:33.483707+00:00", "latency_ms": 112, "http_status": 200, "delta": null, "advice": null, "timeline": [{"date": "Nov 01", "price": 60.07}, {"date": "Nov 04", "price": 59.48}, {"date": "Nov 07", "price": 59.48}]}, {"sku": "a-year-in-provence-provence-1_421", "title": "A Year in Provence (Provence #1)", "url": "https://books.toscrape.com/catalogue/a-year-in-provence-provence-1_421/index.html", "current_price": 56.88, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "last_scraped_at": "2026-11-07T06:28:19.954223+00:00", "latency_ms": 128, "http_status": 200, "delta": null, "advice": null, "timeline": [{"date": "Nov 01", "price": 57.45}, {"date": "Nov 04", "price": 56.88}, {"date": "Nov 07", "price": 56.88}]}, {"sku": "the-past-never-ends_942", "title": "The Past Never Ends", "url": "https://books.toscrape.com/catalogue/the-past-never-ends_942/index.html", "current_price": 56.5, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "last_scraped_at": "2026-11-07T06:58:33.476876+00:00", "latency_ms": 95, "http_status": 200, "delta": {"type": "PRICE_HIKE", "old_price": 45.0, "new_price": 56.5, "diff": 11.5, "percent": 25.56, "badge": "MARGIN HIKE", "badge_class": "badge-emerald"}, "advice": {"threat_level": "OPPORTUNITY", "intent_diagnosis": "\u0110\u1ed1i th\u1ee7 t\u0103ng bi\u00ean l\u1ee3i nhu\u1eadn ho\u1eb7c \u0111\u1ed1i m\u1eb7t v\u1edbi \u0111\u1ee9t g\u00e3y ngu\u1ed3n cung / c\u1ea1n kho", "recommended_counter_price": 53.67, "projected_margin_pct": 53.9, "tactical_action": "C\u01a1 h\u1ed9i v\u00e0ng: \u0110\u1eb7t gi\u00e1 53.67 GBP (v\u1eeba r\u1ebb h\u01a1n \u0111\u1ed1i th\u1ee7 5% \u0111\u1ec3 h\u00fat to\u00e0n b\u1ed9 kh\u00e1ch, v\u1eeba t\u0103ng bi\u00ean l\u1ee3i nhu\u1eadn l\u00ean 53.9%).", "executive_briefing": "\u0110\u1ed1i th\u1ee7 t\u0103ng gi\u00e1 +25.6% tr\u00ean the-past-never-ends_942. \u0110\u00e2y l\u00e0 c\u01a1 h\u1ed9i [OPPORTUNITY]. H\u1ecd \u0111ang ch\u1ecbu \u00e1p l\u1ef1c chi ph\u00ed ho\u1eb7c c\u1ea1n kho. Khuy\u1ebfn ngh\u1ecb: C\u01a1 h\u1ed9i v\u00e0ng: \u0110\u1eb7t gi\u00e1 53.67 GBP (v\u1eeba r\u1ebb h\u01a1n \u0111\u1ed1i th\u1ee7 5% \u0111\u1ec3 h\u00fat to\u00e0n b\u1ed9 kh\u00e1ch, v\u1eeba t\u0103ng bi\u00ean l\u1ee3i nhu\u1eadn l\u00ean 53.9%)."}, "timeline": [{"date": "Nov 01", "price": 45.0}, {"date": "Nov 04", "price": 45.0}, {"date": "Nov 06", "price": 50.0}, {"date": "Nov 07", "price": 56.5}]}, {"sku": "murder-at-the-42nd-street-library-raymond-ambler-1_624", "title": "Murder at the 42nd Street Library (Raymond Ambler #1)", "url": "https://books.toscrape.com/catalogue/murder-at-the-42nd-street-library-raymond-ambler-1_624/index.html", "current_price": 54.36, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "last_scraped_at": "2026-11-07T06:58:33.481095+00:00", "latency_ms": 142, "http_status": 200, "delta": null, "advice": null, "timeline": [{"date": "Nov 01", "price": 54.9}, {"date": "Nov 04", "price": 54.36}, {"date": "Nov 07", "price": 54.36}]}, {"sku": "the-last-mile-amos-decker-2_754", "title": "The Last Mile (Amos Decker #2)", "url": "https://books.toscrape.com/catalogue/the-last-mile-amos-decker-2_754/index.html", "current_price": 54.21, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 2.0, "last_scraped_at": "2026-11-07T06:58:33.477751+00:00", "latency_ms": 165, "http_status": 200, "delta": null, "advice": null, "timeline": [{"date": "Nov 01", "price": 54.75}, {"date": "Nov 04", "price": 54.21}, {"date": "Nov 07", "price": 54.21}]}, {"sku": "the-bachelor-girls-guide-to-murder-herringford-and-watts-mysteries-1_491", "title": "The Bachelor Girl's Guide to Murder (Herringford and Watts Mysteries #1)", "url": "https://books.toscrape.com/catalogue/the-bachelor-girls-guide-to-murder-herringford-and-watts-mysteries-1_491/index.html", "current_price": 52.3, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 5.0, "last_scraped_at": "2026-11-07T06:58:33.487033+00:00", "latency_ms": 88, "http_status": 200, "delta": null, "advice": null, "timeline": [{"date": "Nov 01", "price": 52.82}, {"date": "Nov 04", "price": 52.3}, {"date": "Nov 07", "price": 52.3}]}, {"sku": "full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811", "title": "Full Moon over Noah\u2019s Ark: An Odyssey to Mount Ararat and Beyond", "url": "https://books.toscrape.com/catalogue/full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html", "current_price": 49.43, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "last_scraped_at": "2026-11-07T06:28:19.948727+00:00", "latency_ms": 104, "http_status": 200, "delta": null, "advice": null, "timeline": [{"date": "Nov 01", "price": 49.92}, {"date": "Nov 04", "price": 49.43}, {"date": "Nov 07", "price": 49.43}]}, {"sku": "see-america-a-celebration-of-our-national-parks-treasured-sites_732", "title": "See America: A Celebration of Our National Parks & Treasured Sites", "url": "https://books.toscrape.com/catalogue/see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html", "current_price": 48.87, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 3.0, "last_scraped_at": "2026-11-07T06:28:19.949054+00:00", "latency_ms": 133, "http_status": 200, "delta": null, "advice": null, "timeline": [{"date": "Nov 01", "price": 49.36}, {"date": "Nov 04", "price": 48.87}, {"date": "Nov 07", "price": 48.87}]}, {"sku": "a-time-of-torment-charlie-parker-14_657", "title": "A Time of Torment (Charlie Parker #14)", "url": "https://books.toscrape.com/catalogue/a-time-of-torment-charlie-parker-14_657/index.html", "current_price": 48.35, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 5.0, "last_scraped_at": "2026-11-07T06:58:33.478640+00:00", "latency_ms": 119, "http_status": 200, "delta": null, "advice": null, "timeline": [{"date": "Nov 01", "price": 48.83}, {"date": "Nov 04", "price": 48.35}, {"date": "Nov 07", "price": 48.35}]}, {"sku": "sharp-objects_997", "title": "Sharp Objects", "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html", "current_price": 47.82, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "last_scraped_at": "2026-11-07T06:58:33.475856+00:00", "latency_ms": 150, "http_status": 200, "delta": {"type": "PRICE_DROP", "old_price": 59.99, "new_price": 47.82, "diff": -12.17, "percent": -20.29, "badge": "CRITICAL DROP", "badge_class": "badge-rose"}, "advice": {"threat_level": "CRITICAL", "intent_diagnosis": "X\u1ea3 kho c\u1eaft l\u1ed7 ho\u1eb7c chi\u1ebfn d\u1ecbch k\u00edch c\u1ea7u \u0111\u1ed9t ng\u1ed9t (Flash Sale / Liquidation)", "recommended_counter_price": 46.86, "projected_margin_pct": 29.6, "tactical_action": "H\u1ea1 gi\u00e1 \u0111\u1ed1i \u1ee9ng v\u1ec1 46.86 GBP (th\u1ea5p h\u01a1n 2%). Gi\u1eef bi\u00ean l\u1ee3i nhu\u1eadn r\u00f2ng 29.6%. B\u1eadt qu\u1ea3ng c\u00e1o nh\u1eafm th\u1eb3ng t\u1eeb kh\u00f3a s\u1ea3n ph\u1ea9m.", "executive_briefing": "\u0110\u1ed1i th\u1ee7 v\u1eeba c\u1eaft gi\u1ea3m 20.3% tr\u00ean m\u00e3 sharp-objects_997. \u0110\u00e1nh gi\u00e1 r\u1ee7i ro: [CRITICAL]. X\u1ea3 kho c\u1eaft l\u1ed7 ho\u1eb7c chi\u1ebfn d\u1ecbch k\u00edch c\u1ea7u \u0111\u1ed9t ng\u1ed9t (Flash Sale / Liquidation). Khuy\u1ebfn ngh\u1ecb ph\u1ea3n \u0111\u00f2n: H\u1ea1 gi\u00e1 \u0111\u1ed1i \u1ee9ng v\u1ec1 46.86 GBP (th\u1ea5p h\u01a1n 2%). Gi\u1eef bi\u00ean l\u1ee3i nhu\u1eadn r\u00f2ng 29.6%. B\u1eadt qu\u1ea3ng c\u00e1o nh\u1eafm th\u1eb3ng t\u1eeb kh\u00f3a s\u1ea3n ph\u1ea9m."}, "timeline": [{"date": "Nov 01", "price": 59.99}, {"date": "Nov 03", "price": 59.99}, {"date": "Nov 05", "price": 54.0}, {"date": "Nov 07", "price": 47.82}]}, {"sku": "its-only-the-himalayas_981", "title": "It's Only the Himalayas", "url": "https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html", "current_price": 45.17, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 2.0, "last_scraped_at": "2026-11-07T06:28:19.944016+00:00", "latency_ms": 92, "http_status": 200, "delta": null, "advice": null, "timeline": [{"date": "Nov 01", "price": 45.62}, {"date": "Nov 04", "price": 45.17}, {"date": "Nov 07", "price": 45.17}]}, {"sku": "a-summer-in-europe_458", "title": "A Summer In Europe", "url": "https://books.toscrape.com/catalogue/a-summer-in-europe_458/index.html", "current_price": 44.34, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 2.0, "last_scraped_at": "2026-11-07T06:28:19.952925+00:00", "latency_ms": 108, "http_status": 200, "delta": null, "advice": null, "timeline": [{"date": "Nov 01", "price": 44.78}, {"date": "Nov 04", "price": 44.34}, {"date": "Nov 07", "price": 44.34}]}, {"sku": "the-murder-of-roger-ackroyd-hercule-poirot-4_852", "title": "The Murder of Roger Ackroyd (Hercule Poirot #4)", "url": "https://books.toscrape.com/catalogue/the-murder-of-roger-ackroyd-hercule-poirot-4_852/index.html", "current_price": 44.1, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "last_scraped_at": "2026-11-07T06:58:33.477467+00:00", "latency_ms": 175, "http_status": 200, "delta": null, "advice": null, "timeline": [{"date": "Nov 01", "price": 44.54}, {"date": "Nov 04", "price": 44.1}, {"date": "Nov 07", "price": 44.1}]}, {"sku": "neither-here-nor-there-travels-in-europe_198", "title": "Neither Here nor There: Travels in Europe", "url": "https://books.toscrape.com/catalogue/neither-here-nor-there-travels-in-europe_198/index.html", "current_price": 38.95, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 3.0, "last_scraped_at": "2026-11-07T06:28:19.955667+00:00", "latency_ms": 114, "http_status": 200, "delta": null, "advice": null, "timeline": [{"date": "Nov 01", "price": 39.34}, {"date": "Nov 04", "price": 38.95}, {"date": "Nov 07", "price": 38.95}]}, {"sku": "under-the-tuscan-sun_504", "title": "Under the Tuscan Sun", "url": "https://books.toscrape.com/catalogue/under-the-tuscan-sun_504/index.html", "current_price": 37.33, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 3.0, "last_scraped_at": "2026-11-07T06:28:19.952268+00:00", "latency_ms": 122, "http_status": 200, "delta": null, "advice": null, "timeline": [{"date": "Nov 01", "price": 37.7}, {"date": "Nov 04", "price": 37.33}, {"date": "Nov 07", "price": 37.33}]}, {"sku": "vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552", "title": "Vagabonding: An Uncommon Guide to the Art of Long-Term World Travel", "url": "https://books.toscrape.com/catalogue/vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552/index.html", "current_price": 36.94, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 2.0, "last_scraped_at": "2026-11-07T06:28:19.949833+00:00", "latency_ms": 112, "http_status": 200, "delta": null, "advice": null, "timeline": [{"date": "Nov 01", "price": 37.31}, {"date": "Nov 04", "price": 36.94}, {"date": "Nov 07", "price": 36.94}]}, {"sku": "most-wanted_623", "title": "Most Wanted", "url": "https://books.toscrape.com/catalogue/most-wanted_623/index.html", "current_price": 35.28, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 3.0, "last_scraped_at": "2026-11-07T06:58:33.481830+00:00", "latency_ms": 128, "http_status": 200, "delta": null, "advice": null, "timeline": [{"date": "Nov 01", "price": 35.63}, {"date": "Nov 04", "price": 35.28}, {"date": "Nov 07", "price": 35.28}]}, {"sku": "the-great-railway-bazaar_446", "title": "The Great Railway Bazaar", "url": "https://books.toscrape.com/catalogue/the-great-railway-bazaar_446/index.html", "current_price": 30.54, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 1.0, "last_scraped_at": "2026-11-07T06:28:19.953531+00:00", "latency_ms": 95, "http_status": 200, "delta": null, "advice": null, "timeline": [{"date": "Nov 01", "price": 30.85}, {"date": "Nov 04", "price": 30.54}, {"date": "Nov 07", "price": 30.54}]}, {"sku": "the-widow_609", "title": "The Widow", "url": "https://books.toscrape.com/catalogue/the-widow_609/index.html", "current_price": 27.26, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 2.0, "last_scraped_at": "2026-11-07T06:58:33.484387+00:00", "latency_ms": 142, "http_status": 200, "delta": null, "advice": null, "timeline": [{"date": "Nov 01", "price": 27.53}, {"date": "Nov 04", "price": 27.26}, {"date": "Nov 07", "price": 27.26}]}, {"sku": "poisonous-max-revere-novels-3_627", "title": "Poisonous (Max Revere Novels #3)", "url": "https://books.toscrape.com/catalogue/poisonous-max-revere-novels-3_627/index.html", "current_price": 26.8, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 3.0, "last_scraped_at": "2026-11-07T06:58:33.480334+00:00", "latency_ms": 165, "http_status": 200, "delta": null, "advice": null, "timeline": [{"date": "Nov 01", "price": 27.07}, {"date": "Nov 04", "price": 26.8}, {"date": "Nov 07", "price": 26.8}]}, {"sku": "1000-places-to-see-before-you-die_1", "title": "1,000 Places to See Before You Die", "url": "https://books.toscrape.com/catalogue/1000-places-to-see-before-you-die_1/index.html", "current_price": 26.08, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 5.0, "last_scraped_at": "2026-11-07T06:28:19.956455+00:00", "latency_ms": 88, "http_status": 200, "delta": null, "advice": null, "timeline": [{"date": "Nov 01", "price": 26.34}, {"date": "Nov 04", "price": 26.08}, {"date": "Nov 07", "price": 26.08}]}, {"sku": "what-happened-on-beale-street-secrets-of-the-south-mysteries-2_506", "title": "What Happened on Beale Street (Secrets of the South Mysteries #2)", "url": "https://books.toscrape.com/catalogue/what-happened-on-beale-street-secrets-of-the-south-mysteries-2_506/index.html", "current_price": 25.37, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 5.0, "last_scraped_at": "2026-11-07T06:58:33.486032+00:00", "latency_ms": 104, "http_status": 200, "delta": null, "advice": null, "timeline": [{"date": "Nov 01", "price": 25.62}, {"date": "Nov 04", "price": 25.37}, {"date": "Nov 07", "price": 25.37}]}, {"sku": "the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277", "title": "The Road to Little Dribbling: Adventures of an American in Britain (Notes From a Small Island #2)", "url": "https://books.toscrape.com/catalogue/the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277/index.html", "current_price": 23.21, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 1.0, "last_scraped_at": "2026-11-07T06:28:19.954992+00:00", "latency_ms": 133, "http_status": 200, "delta": null, "advice": null, "timeline": [{"date": "Nov 01", "price": 23.44}, {"date": "Nov 04", "price": 23.21}, {"date": "Nov 07", "price": 23.21}]}, {"sku": "delivering-the-truth-quaker-midwife-mystery-1_464", "title": "Delivering the Truth (Quaker Midwife Mystery #1)", "url": "https://books.toscrape.com/catalogue/delivering-the-truth-quaker-midwife-mystery-1_464/index.html", "current_price": 20.89, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "last_scraped_at": "2026-11-07T06:58:33.488125+00:00", "latency_ms": 119, "http_status": 200, "delta": null, "advice": null, "timeline": [{"date": "Nov 01", "price": 21.1}, {"date": "Nov 04", "price": 20.89}, {"date": "Nov 07", "price": 20.89}]}, {"sku": "in-a-dark-dark-wood_963", "title": "In a Dark, Dark Wood", "url": "https://books.toscrape.com/catalogue/in-a-dark-dark-wood_963/index.html", "current_price": 19.63, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 1.0, "last_scraped_at": "2026-11-07T06:58:33.476530+00:00", "latency_ms": 150, "http_status": 200, "delta": null, "advice": null, "timeline": [{"date": "Nov 01", "price": 19.83}, {"date": "Nov 04", "price": 19.63}, {"date": "Nov 07", "price": 19.63}]}, {"sku": "a-study-in-scarlet-sherlock-holmes-1_656", "title": "A Study in Scarlet (Sherlock Holmes #1)", "url": "https://books.toscrape.com/catalogue/a-study-in-scarlet-sherlock-holmes-1_656/index.html", "current_price": 16.73, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 2.0, "last_scraped_at": "2026-11-07T06:58:33.479440+00:00", "latency_ms": 92, "http_status": 200, "delta": null, "advice": null, "timeline": [{"date": "Nov 01", "price": 16.9}, {"date": "Nov 04", "price": 16.73}, {"date": "Nov 07", "price": 16.73}]}, {"sku": "a-murder-in-time_877", "title": "A Murder in Time", "url": "https://books.toscrape.com/catalogue/a-murder-in-time_877/index.html", "current_price": 16.64, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 1.0, "last_scraped_at": "2026-11-07T06:58:33.477177+00:00", "latency_ms": 108, "http_status": 200, "delta": null, "advice": null, "timeline": [{"date": "Nov 01", "price": 16.81}, {"date": "Nov 04", "price": 16.64}, {"date": "Nov 07", "price": 16.64}]}, {"sku": "that-darkness-gardiner-and-renner-1_743", "title": "That Darkness (Gardiner and Renner #1)", "url": "https://books.toscrape.com/catalogue/that-darkness-gardiner-and-renner-1_743/index.html", "current_price": 13.92, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 1.0, "last_scraped_at": "2026-11-07T06:58:33.478086+00:00", "latency_ms": 175, "http_status": 200, "delta": null, "advice": null, "timeline": [{"date": "Nov 01", "price": 14.06}, {"date": "Nov 04", "price": 13.92}, {"date": "Nov 07", "price": 13.92}]}, {"sku": "playing-with-fire_602", "title": "Playing with Fire", "url": "https://books.toscrape.com/catalogue/playing-with-fire_602/index.html", "current_price": 13.71, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 3.0, "last_scraped_at": "2026-11-07T06:58:33.485154+00:00", "latency_ms": 114, "http_status": 200, "delta": null, "advice": null, "timeline": [{"date": "Nov 01", "price": 13.85}, {"date": "Nov 04", "price": 13.71}, {"date": "Nov 07", "price": 13.71}]}, {"sku": "hide-away-eve-duncan-20_620", "title": "Hide Away (Eve Duncan #20)", "url": "https://books.toscrape.com/catalogue/hide-away-eve-duncan-20_620/index.html", "current_price": 11.84, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 1.0, "last_scraped_at": "2026-11-07T06:58:33.482775+00:00", "latency_ms": 122, "http_status": 200, "delta": null, "advice": null, "timeline": [{"date": "Nov 01", "price": 11.96}, {"date": "Nov 04", "price": 11.84}, {"date": "Nov 07", "price": 11.84}]}, {"sku": "tastes-like-fear-di-marnie-rome-3_742", "title": "Tastes Like Fear (DI Marnie Rome #3)", "url": "https://books.toscrape.com/catalogue/tastes-like-fear-di-marnie-rome-3_742/index.html", "current_price": 10.69, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 1.0, "last_scraped_at": "2026-11-07T06:58:33.478362+00:00", "latency_ms": 112, "http_status": 200, "delta": null, "advice": null, "timeline": [{"date": "Nov 01", "price": 10.8}, {"date": "Nov 04", "price": 10.69}, {"date": "Nov 07", "price": 10.69}]}], "initial_logs": [{"time": "08:30:12", "level": "INFO", "msg": "Engine daemon initialized. Concurrency=4, Throttle=1.0s, Mode=RESILIENT"}, {"time": "08:30:13", "level": "INFO", "msg": "Connecting to SQLite backend: /data/sentinel.db (schema: OK)"}, {"time": "08:30:14", "level": "NET", "msg": "GET https://books.toscrape.com/catalogue/category/books_1/ 200 OK (114ms)"}, {"time": "08:30:15", "level": "PARSE", "msg": "Indexed 31 product canonical URLs from category tree"}, {"time": "08:30:17", "level": "WARN", "msg": "[DELTA] sharp-objects_997 price shifted: \u00a359.99 -> \u00a347.82 (-20.3%)"}, {"time": "08:30:18", "level": "AI", "msg": "[STRATEGY] Evaluated sharp-objects_997: Threat=CRITICAL. Counter=\u00a346.86 (Margin=29.6%)"}, {"time": "08:30:19", "level": "NET", "msg": "Telegram webhook dispatched to chat_id=-100849204 (status: DELIVERED)"}, {"time": "08:30:21", "level": "INFO", "msg": "Ingestion run completed in 1.48s. Total records: 31, Errors: 0"}]};
+    let activeSku = null;
+    let chartInstance = null;
+    let activeFilter = 'all';
 
-    function addTrackUrl() {
-      const input = document.getElementById('trackUrlInput');
-      const url = input.value.trim();
-      if (!url) {
-        showToast('Vui lòng nhập đường link sản phẩm đối thủ!');
+    function addLog(level, msg) {
+      const body = document.getElementById('terminalLogBody');
+      const time = new Date().toTimeString().split(' ')[0];
+      const row = document.createElement('div');
+      row.className = 'log-row';
+      row.innerHTML = `
+        <span class="log-time">${time}</span>
+        <span class="log-badge lvl-${level}">${level}</span>
+        <span class="log-msg">${msg}</span>
+      `;
+      body.appendChild(row);
+      body.scrollTop = body.scrollHeight;
+    }
+
+    function clearTerminal() {
+      document.getElementById('terminalLogBody').innerHTML = '';
+      addLog('INFO', 'Log buffer cleared by user');
+    }
+
+    function copyLogs() {
+      const text = document.getElementById('terminalLogBody').innerText;
+      navigator.clipboard.writeText(text);
+      showToast('Console logs copied to clipboard');
+    }
+
+    function triggerRunScraper() {
+      const btn = document.getElementById('runScraperBtn');
+      const status = document.getElementById('engineStatusText');
+      btn.disabled = true;
+      status.innerText = 'ENGINE RUNNING';
+      status.style.color = 'var(--accent)';
+      addLog('INFO', 'Starting ad-hoc ingestion job on books.toscrape.com...');
+
+      let count = 0;
+      const interval = setInterval(() => {
+        count += 5;
+        addLog('NET', `GET /catalogue/page-${Math.floor(count/5)+1}.html 200 OK (${Math.floor(90 + Math.random()*70)}ms)`);
+        if (count >= 15) {
+          clearInterval(interval);
+          addLog('INFO', `Ingestion finished. Re-evaluated 31 records. 0 network errors.`);
+          btn.disabled = false;
+          status.innerText = 'ENGINE IDLE';
+          status.style.color = 'var(--emerald)';
+          showToast('Scraper run complete — 31 items verified');
+        }
+      }, 350);
+    }
+
+    function handleIntakeKey(e) {
+      if (e.key === 'Enter') addSingleUrl();
+    }
+
+    function addSingleUrl() {
+      const input = document.getElementById('targetUrlInput');
+      const val = input.value.trim();
+      if (!val) {
+        showToast('Please specify a target URL');
         return;
       }
-      showToast('Đang kết nối web đối thủ và phân tích...');
+      addLog('INFO', `Enqueuing single target: ${val}`);
       input.value = '';
-      setTimeout(() => {
-        showToast('✅ Đã thêm sản phẩm thành công vào danh sách theo dõi!');
-      }, 1000);
+      showToast('Enqueued target canonical for next crawler cycle');
     }
 
-    function applyCounterPrice(sku, price) {
-      showToast(`Đã đồng ý áp dụng giá £${price.toFixed(2)} cho SKU: ${sku}`);
+    function setFilter(el, filter) {
+      activeFilter = filter;
+      document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      filterTable();
     }
 
-    function toggleChart(sku) {
-      const wrap = document.getElementById(`chart-wrap-${sku}`);
-      if (wrap.style.display === 'block') {
-        wrap.style.display = 'none';
-        return;
-      }
-      wrap.style.display = 'block';
+    function filterTable() {
+      const search = document.getElementById('tableFilterInput').value.toLowerCase();
+      const rows = document.querySelectorAll('#tableBody tr');
 
-      if (!chartInstances[sku]) {
-        const item = DATA.action_items.find(i => i.sku === sku);
+      rows.forEach(r => {
+        const sku = r.getAttribute('data-sku');
+        const item = DATA.products.find(p => p.sku === sku);
         if (!item) return;
 
-        const ctx = document.getElementById(`chart-${sku}`).getContext('2d');
-        const color = item.type === 'PRICE_DROP' ? '#ef4444' : '#10b981';
+        const matchSearch = item.sku.toLowerCase().includes(search) || item.title.toLowerCase().includes(search);
+        let matchFilter = true;
+        if (activeFilter === 'delta') matchFilter = !!item.delta;
+        else if (activeFilter === 'instock') matchFilter = item.stock_status === 'IN_STOCK';
 
-        chartInstances[sku] = new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: item.timeline.map(t => t.date),
-            datasets: [{
-              label: 'Giá (£)',
-              data: item.timeline.map(t => t.price),
-              borderColor: color,
-              backgroundColor: color === '#ef4444' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)',
-              borderWidth: 2,
-              fill: true,
-              tension: 0.3
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-              x: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8' } },
-              y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8' } }
-            }
-          }
-        });
+        r.style.display = (matchSearch && matchFilter) ? '' : 'none';
+      });
+    }
+
+    function openDrawer(sku) {
+      activeSku = sku;
+      const item = DATA.products.find(p => p.sku === sku);
+      if (!item) return;
+
+      document.querySelectorAll('tbody tr').forEach(r => r.classList.remove('active-row'));
+      const activeTr = document.querySelector(`tbody tr[data-sku="${sku}"]`);
+      if (activeTr) activeTr.classList.add('active-row');
+
+      document.getElementById('drawerSkuTitle').innerText = item.sku;
+      document.getElementById('drawerOverlay').style.display = 'flex';
+      switchDrawerTab('strategy');
+      addLog('INFO', `Inspecting canonical SKU: ${item.sku}`);
+    }
+
+    function closeDrawer(e) {
+      if (e.target.id === 'drawerOverlay') closeDrawerDirect();
+    }
+
+    function closeDrawerDirect() {
+      document.getElementById('drawerOverlay').style.display = 'none';
+      if (chartInstance) {
+        chartInstance.destroy();
+        chartInstance = null;
+      }
+      document.querySelectorAll('tbody tr').forEach(r => r.classList.remove('active-row'));
+    }
+
+    function switchDrawerTab(tab) {
+      document.querySelectorAll('.drawer-tab').forEach(t => t.classList.remove('active'));
+      const activeTabEl = document.querySelector(`.drawer-tab[data-tab="${tab}"]`);
+      if (activeTabEl) activeTabEl.classList.add('active');
+
+      const item = DATA.products.find(p => p.sku === activeSku);
+      if (!item) return;
+
+      const body = document.getElementById('drawerBody');
+
+      if (tab === 'strategy') {
+        if (item.advice) {
+          body.innerHTML = `
+            <div class="strategy-banner">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-family:var(--mono); font-size:11px; font-weight:700; color:var(--rose);">THREAT: ${item.advice.threat_level}</span>
+                <span class="delta-badge ${item.delta.badge_class}">${item.delta.percent}%</span>
+              </div>
+              <div style="font-size:12px; margin-top:6px; color:#e4e4e7;">
+                <strong>Intent Diagnosis:</strong> ${item.advice.intent_diagnosis}
+              </div>
+            </div>
+
+            <div class="strategy-metric-split">
+              <div class="strategy-stat-box">
+                <div style="font-size:10px; font-family:var(--mono); color:var(--text-subtle);">COUNTER-PRICE</div>
+                <div style="font-size:18px; font-weight:700; font-family:var(--mono); color:#38bdf8;">£${item.advice.recommended_counter_price.toFixed(2)}</div>
+              </div>
+              <div class="strategy-stat-box">
+                <div style="font-size:10px; font-family:var(--mono); color:var(--text-subtle);">MARGIN PRESERVED</div>
+                <div style="font-size:18px; font-weight:700; font-family:var(--mono); color:var(--emerald);">~${item.advice.projected_margin_pct.toFixed(1)}%</div>
+              </div>
+            </div>
+
+            <div class="inspector-block">
+              <div class="block-header">TACTICAL PLAYBOOK</div>
+              <div style="font-size:12px; line-height:1.5; color:#d4d4d8;">${item.advice.tactical_action}</div>
+              <div style="margin-top:8px; font-size:11px; color:var(--text-muted);">
+                <strong>Executive Briefing:</strong> ${item.advice.executive_briefing}
+              </div>
+            </div>
+
+            <div class="inspector-block">
+              <div class="block-header">HISTORICAL PRICE TRAJECTORY</div>
+              <div style="height: 140px; margin-top: 8px;">
+                <canvas id="drawerChartCanvas"></canvas>
+              </div>
+            </div>
+
+            <button class="btn btn-primary" style="justify-content:center; padding:8px 0;" onclick="applyStrategy('${item.sku}', ${item.advice.recommended_counter_price})">
+              ✓ Deploy Counter-Price £${item.advice.recommended_counter_price.toFixed(2)} to Storefront
+            </button>
+          `;
+          renderDrawerChart(item);
+        } else {
+          body.innerHTML = `
+            <div class="inspector-block" style="text-align:center; padding:24px 12px;">
+              <div style="font-size:20px; margin-bottom:8px;">🛡️</div>
+              <div style="font-weight:600; color:#fff; font-size:13px;">No Anomalous Fluctuations</div>
+              <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">
+                Competitor price is stable at £${item.current_price.toFixed(2)}. No margin erosion detected.
+              </div>
+            </div>
+            <div class="inspector-block">
+              <div class="block-header">HISTORICAL STABILITY</div>
+              <div style="height: 140px; margin-top: 8px;">
+                <canvas id="drawerChartCanvas"></canvas>
+              </div>
+            </div>
+          `;
+          renderDrawerChart(item);
+        }
+      } else if (tab === 'extracted') {
+        body.innerHTML = `
+          <div class="inspector-block">
+            <div class="block-header">EXTRACTED ENTITY FIELDS</div>
+            <div class="kv-row"><span class="kv-key">canonical_sku</span><span class="kv-val">${item.sku}</span></div>
+            <div class="kv-row"><span class="kv-key">product_title</span><span class="kv-val" style="max-width:260px; text-overflow:ellipsis; overflow:hidden;">${item.title}</span></div>
+            <div class="kv-row"><span class="kv-key">current_price</span><span class="kv-val">£${item.current_price.toFixed(2)}</span></div>
+            <div class="kv-row"><span class="kv-key">currency</span><span class="kv-val">${item.currency}</span></div>
+            <div class="kv-row"><span class="kv-key">stock_status</span><span class="kv-val" style="color:var(--emerald);">${item.stock_status}</span></div>
+            <div class="kv-row"><span class="kv-key">star_rating</span><span class="kv-val" style="color:var(--amber);">${'★'.repeat(item.rating)}</span></div>
+            <div class="kv-row"><span class="kv-key">scraped_at</span><span class="kv-val">${item.last_scraped_at}</span></div>
+          </div>
+          <div class="inspector-block">
+            <div class="block-header">TARGET URL & SELECTOR</div>
+            <div style="font-family:var(--mono); font-size:11px; word-break:break-all; color:#93c5fd;">
+              <a href="${item.url}" target="_blank" style="color:#38bdf8; text-decoration:none;">${item.url} &nearr;</a>
+            </div>
+          </div>
+        `;
+      } else if (tab === 'raw') {
+        const jsonStr = JSON.stringify(item, null, 2);
+        body.innerHTML = `
+          <div class="inspector-block">
+            <div class="block-header">
+              <span>CANONICAL JSON PAYLOAD</span>
+              <button class="tool-btn" onclick="copyJsonPayload()">Copy JSON</button>
+            </div>
+            <div class="raw-json-box" id="rawJsonBox">${escapeHtml(jsonStr)}</div>
+          </div>
+        `;
+      } else if (tab === 'headers') {
+        body.innerHTML = `
+          <div class="inspector-block">
+            <div class="block-header">RESPONSE HEADERS (MOCK HAR)</div>
+            <div class="kv-row"><span class="kv-key">status</span><span class="kv-val">200 OK</span></div>
+            <div class="kv-row"><span class="kv-key">content-type</span><span class="kv-val">text/html; charset=utf-8</span></div>
+            <div class="kv-row"><span class="kv-key">server</span><span class="kv-val">nginx/1.24.0 (Ubuntu)</span></div>
+            <div class="kv-row"><span class="kv-key">cache-control</span><span class="kv-val">max-age=600, public</span></div>
+            <div class="kv-row"><span class="kv-key">x-crawl-latency</span><span class="kv-val">${item.latency_ms}ms</span></div>
+            <div class="kv-row"><span class="kv-key">etag</span><span class="kv-val">W/"65b9e4a0-${item.sku.length * 48}"</span></div>
+          </div>
+        `;
       }
     }
 
-    function toggleCatalog() {
-      const wrap = document.getElementById('catalogWrap');
-      const arrow = document.getElementById('catalogArrow');
-      if (wrap.style.display === 'block') {
-        wrap.style.display = 'none';
-        arrow.innerText = 'Mở bảng chi tiết ▼';
-      } else {
-        wrap.style.display = 'block';
-        arrow.innerText = 'Thu gọn ▲';
-      }
+    function renderDrawerChart(item) {
+      const ctx = document.getElementById('drawerChartCanvas').getContext('2d');
+      if (chartInstance) chartInstance.destroy();
+
+      const color = (item.delta && item.delta.percent < 0) ? '#f43f5e' : '#10b981';
+
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: item.timeline.map(t => t.date),
+          datasets: [{
+            data: item.timeline.map(t => t.price),
+            borderColor: color,
+            backgroundColor: color === '#f43f5e' ? 'rgba(244, 63, 94, 0.08)' : 'rgba(16, 185, 129, 0.08)',
+            borderWidth: 1.5,
+            tension: 0.2,
+            fill: true,
+            pointRadius: 3,
+            pointBackgroundColor: color
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { color: '#1e1f23' }, ticks: { color: '#71717a', font: { family: 'JetBrains Mono', size: 9 } } },
+            y: { grid: { color: '#1e1f23' }, ticks: { color: '#71717a', font: { family: 'JetBrains Mono', size: 9 } } }
+          }
+        }
+      });
+    }
+
+    function applyStrategy(sku, price) {
+      showToast(`Counter-price £${price.toFixed(2)} staged for ${sku}`);
+      addLog('AI', `Approved counter-repricing £${price.toFixed(2)} for ${sku}`);
+    }
+
+    function copyJsonPayload() {
+      const text = document.getElementById('rawJsonBox').innerText;
+      navigator.clipboard.writeText(text);
+      showToast('Payload copied to clipboard');
     }
 
     function openTelegramModal() {
@@ -1042,31 +1796,40 @@
       document.getElementById('tgModal').style.display = 'none';
     }
 
-    function triggerScan() {
-      showToast('⚡ Đang quét lại 31 sản phẩm đối thủ...');
-      setTimeout(() => {
-        showToast('✅ Quét hoàn tất! Đã cập nhật giá mới nhất.');
-      }, 1000);
+    function exportData(format) {
+      if (format === 'csv') {
+        const headers = ['sku', 'title', 'price', 'currency', 'stock_status', 'latency_ms'];
+        const rows = DATA.products.map(p => [p.sku, `"${p.title.replace(/"/g, '""')}"`, p.current_price, p.currency, p.stock_status, p.latency_ms]);
+        const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+        downloadFile(csv, 'market_sentinel_dump.csv', 'text/csv');
+      } else {
+        downloadFile(JSON.stringify(DATA.products, null, 2), 'market_sentinel_dump.json', 'application/json');
+      }
+      showToast(`Exported canonical dataset as ${format.toUpperCase()}`);
     }
 
-    function exportData() {
-      const headers = ['sku', 'title', 'price', 'currency', 'status'];
-      const rows = DATA.products.map(p => [p.sku, `"${p.title}"`, p.current_price, p.currency, p.stock_status]);
-      const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-      const blob = new Blob([csv], { type: 'text/csv' });
+    function downloadFile(content, fileName, mimeType) {
       const a = document.createElement('a');
+      const blob = new Blob([content], { type: mimeType });
       a.href = URL.createObjectURL(blob);
-      a.download = 'market_sentinel_data.csv';
+      a.download = fileName;
       a.click();
-      showToast('Đã tải xuống file CSV thành công!');
     }
 
     function showToast(msg) {
       const t = document.getElementById('toast');
       t.innerText = msg;
       t.style.display = 'block';
-      setTimeout(() => { t.style.display = 'none'; }, 3000);
+      setTimeout(() => { t.style.display = 'none'; }, 2800);
     }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeDrawerDirect();
+    });
   </script>
 </body>
 </html>
