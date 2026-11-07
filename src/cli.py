@@ -1,7 +1,7 @@
 """Command Line Interface for Market Sentinel.
 
 Entrypoint for crawling catalogs, monitoring price deltas, exporting datasets,
-and inspecting historical price trajectories.
+running AI Businessman commercial advisory, and dispatching alerts.
 """
 
 from __future__ import annotations
@@ -10,9 +10,13 @@ import argparse
 import logging
 import os
 import sys
-from datetime import datetime
 
+# Ensure project root is in sys.path
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from src.advisor.businessman import BusinessmanAdvisor
 from src.collector.client import ResilientCollector
+from src.domain.models import DeltaEvent, PriceDelta
 from src.domain.parser import EcommerceCatalogParser
 from src.domain.service import SentinelService
 from src.notifier.exporter import DataExporter
@@ -46,19 +50,34 @@ def build_parser() -> argparse.ArgumentParser:
     scrape_cmd.add_argument("--url", required=True, help="Target URL to crawl")
     scrape_cmd.add_argument("--dry-run", action="store_true", help="Do not send live Telegram notifications")
     scrape_cmd.add_argument("--alert", action="store_true", help="Dispatch Telegram notifications for price deltas")
+    scrape_cmd.add_argument("--min-drop", type=float, default=0.0, help="Noise filter: minimum percentage drop (e.g. 5.0)")
+    scrape_cmd.add_argument("--no-ai", action="store_true", help="Disable AI Businessman briefing")
     scrape_cmd.add_argument("--timeout", type=float, default=15.0, help="HTTP request timeout in seconds")
 
-    # 2. Export command
+    # 2. Advise command (AI Businessman)
+    advise_cmd = subparsers.add_parser("advise", help="Run AI Businessman strategic assessment on a product delta")
+    advise_cmd.add_argument("--sku", default="sharp-objects_997", help="Product SKU identifier")
+    advise_cmd.add_argument("--title", default="Sharp Objects", help="Product title")
+    advise_cmd.add_argument("--old-price", type=float, default=59.99, help="Original price")
+    advise_cmd.add_argument("--new-price", type=float, default=47.82, help="Competitor new price")
+    advise_cmd.add_argument("--cost-price", type=float, default=None, help="Your cost price (COGS)")
+    advise_cmd.add_argument("--currency", default="GBP", help="Currency code")
+
+    # 3. Test-alert command
+    alert_cmd = subparsers.add_parser("test-alert", help="Dispatch a test Telegram alert with AI briefing")
+    alert_cmd.add_argument("--dry-run", action="store_true", default=True, help="Dry-run output to terminal")
+
+    # 4. Export command
     export_cmd = subparsers.add_parser("export", help="Export tracked catalog to CSV or JSON")
     export_cmd.add_argument("--output", required=True, help="Destination output file path")
     export_cmd.add_argument("--format", choices=["csv", "json"], default="csv", help="Export format")
 
-    # 3. History command
+    # 5. History command
     hist_cmd = subparsers.add_parser("history", help="View price history for a given SKU")
     hist_cmd.add_argument("--sku", required=True, help="Product SKU identifier")
     hist_cmd.add_argument("--limit", type=int, default=20, help="Number of snapshot records to display")
 
-    # 4. Status command
+    # 6. Status command
     subparsers.add_parser("status", help="Display overview statistics of database and monitoring state")
 
     return parser
@@ -102,12 +121,77 @@ def handle_scrape(args: argparse.Namespace, repo: SQLiteProductRepository) -> in
         if args.alert:
             bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
             chat_id = os.getenv("TELEGRAM_CHAT_ID")
-            notifier = TelegramNotifier(bot_token=bot_token, chat_id=chat_id, dry_run=args.dry_run)
+            notifier = TelegramNotifier(
+                bot_token=bot_token,
+                chat_id=chat_id,
+                dry_run=args.dry_run,
+                min_drop_percent=args.min_drop,
+                enable_ai_advisor=not args.no_ai,
+            )
             sent = notifier.notify_deltas(summary.deltas_detected)
             mode_str = " (DRY-RUN)" if notifier.dry_run else ""
             print(f"\n📢 Telegram Notifications Dispatched: {sent}{mode_str}")
 
     print("\n✅ Crawl snapshot committed to database.\n")
+    return 0
+
+
+def handle_advise(args: argparse.Namespace) -> int:
+    diff = round(args.new_price - args.old_price, 2)
+    pct = round((diff / args.old_price) * 100, 2) if args.old_price else 0.0
+
+    if diff < 0:
+        event = DeltaEvent.PRICE_DROP
+    elif diff > 0:
+        event = DeltaEvent.PRICE_HIKE
+    else:
+        event = DeltaEvent.NO_CHANGE
+
+    delta = PriceDelta(
+        sku=args.sku,
+        product_title=args.title,
+        old_price=args.old_price,
+        new_price=args.new_price,
+        difference=diff,
+        percentage_change=pct,
+        event=event,
+        currency=args.currency,
+        url=f"https://books.toscrape.com/{args.sku}",
+    )
+
+    advisor = BusinessmanAdvisor()
+    advice = advisor.advise(delta, cost_price=args.cost_price)
+
+    print("\n" + "=" * 65)
+    print("🧠 AI BUSINESSMAN STRATEGIC BRIEFING")
+    print("=" * 65)
+    print(f"• Target Product:       {advice.product_title} ({advice.sku})")
+    print(f"• Movement:             {args.old_price:,.2f} -> {args.new_price:,.2f} {args.currency} ({pct:+.2f}%)")
+    print(f"• Threat Assessment:    [{advice.threat_level}]")
+    print(f"• Intent Diagnosis:     {advice.intent_diagnosis}")
+    print(f"• Target Counter-Price: {advice.recommended_counter_price:,.2f} {args.currency}")
+    print(f"• Projected Margin:     {advice.projected_margin_pct:.1f}%")
+    print("-" * 65)
+    print(f"🎯 Recommended Action:\n  {advice.tactical_action}")
+    print("=" * 65 + "\n")
+    return 0
+
+
+def handle_test_alert(args: argparse.Namespace) -> int:
+    delta = PriceDelta(
+        sku="sharp-objects_997",
+        product_title="Sharp Objects",
+        old_price=59.99,
+        new_price=47.82,
+        difference=-12.17,
+        percentage_change=-20.29,
+        event=DeltaEvent.PRICE_DROP,
+        currency="GBP",
+        url="https://books.toscrape.com/catalogue/sharp-objects_997/index.html",
+    )
+    notifier = TelegramNotifier(dry_run=args.dry_run, enable_ai_advisor=True)
+    sent = notifier.notify_deltas([delta])
+    print(f"✅ Dispatched {sent} test alert(s).")
     return 0
 
 
@@ -169,6 +253,10 @@ def main() -> int:
     try:
         if args.command == "scrape":
             return handle_scrape(args, repo)
+        elif args.command == "advise":
+            return handle_advise(args)
+        elif args.command == "test-alert":
+            return handle_test_alert(args)
         elif args.command == "export":
             return handle_export(args, repo)
         elif args.command == "history":

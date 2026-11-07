@@ -7,7 +7,7 @@ from src.notifier.telegram import TelegramNotifier
 
 
 def test_telegram_notifier_dry_run():
-    notifier = TelegramNotifier(dry_run=True)
+    notifier = TelegramNotifier(dry_run=True, enable_ai_advisor=True)
     delta = PriceDelta(
         sku="book-100",
         product_title="Fluent Python",
@@ -22,11 +22,46 @@ def test_telegram_notifier_dry_run():
 
     msg = notifier.format_delta_message(delta)
     assert "Fluent Python" in msg
-    assert "GIẢM GIÁ" in msg
+    assert "HẠ GIÁ" in msg
     assert "-25.01%" in msg
 
     sent = notifier.notify_deltas([delta])
     assert sent == 1
+
+
+def test_telegram_noise_threshold_filter():
+    # Only notify if drop is at least 10%
+    notifier = TelegramNotifier(dry_run=True, min_drop_percent=10.0)
+
+    # 1. Drop by only 3% (Noise -> Should be ignored)
+    minor_delta = PriceDelta(
+        sku="book-101",
+        product_title="Noise Book",
+        old_price=100.0,
+        new_price=97.0,
+        difference=-3.0,
+        percentage_change=-3.0,
+        event=DeltaEvent.PRICE_DROP,
+        currency="USD",
+        url="https://example.com/noise",
+    )
+    assert not notifier.should_notify(minor_delta)
+    assert notifier.notify_deltas([minor_delta]) == 0
+
+    # 2. Drop by 15% (Significant -> Should notify)
+    major_delta = PriceDelta(
+        sku="book-102",
+        product_title="Major Sale Book",
+        old_price=100.0,
+        new_price=85.0,
+        difference=-15.0,
+        percentage_change=-15.0,
+        event=DeltaEvent.PRICE_DROP,
+        currency="USD",
+        url="https://example.com/major",
+    )
+    assert notifier.should_notify(major_delta)
+    assert notifier.notify_deltas([major_delta]) == 1
 
 
 def test_data_exporter_csv_and_json():

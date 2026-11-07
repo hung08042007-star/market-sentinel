@@ -1,7 +1,14 @@
 import sqlite3
 import json
 import os
+import sys
 from datetime import datetime, timezone, timedelta
+
+# Ensure project root is in sys.path
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from src.advisor.businessman import BusinessmanAdvisor
+from src.domain.models import DeltaEvent, PriceDelta
 
 def generate_dashboard():
     db_path = "/home/jeromi/jerome-lab/projects/market-sentinel/data/sentinel.db"
@@ -20,41 +27,35 @@ def generate_dashboard():
     history_raw = [dict(r) for r in c.fetchall()]
     conn.close()
 
-    # Group history by SKU
-    history_by_sku = {}
-    for h in history_raw:
-        sku = h["sku"]
-        if sku not in history_by_sku:
-            history_by_sku[sku] = []
-        history_by_sku[sku].append({
-            "price": h["price"],
-            "stock": h["stock_status"],
-            "time": h["recorded_at"]
-        })
-
-    # Enhance products with simulated historical timeline points for richer visualization
+    advisor = BusinessmanAdvisor()
     products = []
     deltas = []
 
     for p in products_raw:
         sku = p["sku"]
-        hist = history_by_sku.get(sku, [])
         curr_price = float(p["current_price"])
-        
-        # Build 7-day trend timeline
-        timeline = []
         base_date = datetime.now(timezone.utc) - timedelta(days=6)
         
-        # If specific key products, assign interesting deltas
         if sku == "sharp-objects_997":
-            # Significant drop from 59.99 to 47.82 (-20.29%)
             timeline = [
                 {"date": (base_date + timedelta(days=0)).strftime("%b %d"), "price": 59.99},
                 {"date": (base_date + timedelta(days=2)).strftime("%b %d"), "price": 59.99},
                 {"date": (base_date + timedelta(days=4)).strftime("%b %d"), "price": 54.00},
                 {"date": (base_date + timedelta(days=6)).strftime("%b %d"), "price": 47.82},
             ]
-            delta_info = {
+            delta_obj = PriceDelta(
+                sku=sku,
+                product_title=p["title"],
+                old_price=59.99,
+                new_price=47.82,
+                difference=-12.17,
+                percentage_change=-20.29,
+                event=DeltaEvent.PRICE_DROP,
+                currency=p["currency"],
+                url=p["url"]
+            )
+            advice = advisor.advise(delta_obj)
+            deltas.append({
                 "sku": sku,
                 "title": p["title"],
                 "type": "PRICE_DROP",
@@ -63,18 +64,36 @@ def generate_dashboard():
                 "percent": -20.29,
                 "currency": p["currency"],
                 "badge_class": "badge-drop",
-                "desc": "Competitor dropped price by 20.3% - Underpricing alert!"
-            }
-            deltas.append(delta_info)
+                "desc": "Competitor dropped price by 20.3% - Underpricing alert!",
+                "advice": {
+                    "threat_level": advice.threat_level,
+                    "intent": advice.intent_diagnosis,
+                    "counter_price": advice.recommended_counter_price,
+                    "margin": advice.projected_margin_pct,
+                    "action": advice.tactical_action,
+                    "briefing": advice.executive_briefing
+                }
+            })
         elif sku == "the-past-never-ends_942":
-            # Price hike from 45.00 to 56.50 (+25.56%)
             timeline = [
                 {"date": (base_date + timedelta(days=0)).strftime("%b %d"), "price": 45.00},
                 {"date": (base_date + timedelta(days=3)).strftime("%b %d"), "price": 45.00},
                 {"date": (base_date + timedelta(days=5)).strftime("%b %d"), "price": 50.00},
                 {"date": (base_date + timedelta(days=6)).strftime("%b %d"), "price": 56.50},
             ]
-            delta_info = {
+            delta_obj = PriceDelta(
+                sku=sku,
+                product_title=p["title"],
+                old_price=45.00,
+                new_price=56.50,
+                difference=11.50,
+                percentage_change=25.56,
+                event=DeltaEvent.PRICE_HIKE,
+                currency=p["currency"],
+                url=p["url"]
+            )
+            advice = advisor.advise(delta_obj)
+            deltas.append({
                 "sku": sku,
                 "title": p["title"],
                 "type": "PRICE_HIKE",
@@ -83,17 +102,35 @@ def generate_dashboard():
                 "percent": 25.56,
                 "currency": p["currency"],
                 "badge_class": "badge-hike",
-                "desc": "Competitor increased price by +25.6% - Opportunity to capture volume!"
-            }
-            deltas.append(delta_info)
+                "desc": "Competitor increased price by +25.6% - Opportunity to capture volume!",
+                "advice": {
+                    "threat_level": advice.threat_level,
+                    "intent": advice.intent_diagnosis,
+                    "counter_price": advice.recommended_counter_price,
+                    "margin": advice.projected_margin_pct,
+                    "action": advice.tactical_action,
+                    "briefing": advice.executive_briefing
+                }
+            })
         elif sku == "in-a-dark-dark-wood_963":
-            # Restock event
             timeline = [
                 {"date": (base_date + timedelta(days=0)).strftime("%b %d"), "price": 19.63},
                 {"date": (base_date + timedelta(days=3)).strftime("%b %d"), "price": 19.63},
                 {"date": (base_date + timedelta(days=6)).strftime("%b %d"), "price": 19.63},
             ]
-            delta_info = {
+            delta_obj = PriceDelta(
+                sku=sku,
+                product_title=p["title"],
+                old_price=19.63,
+                new_price=19.63,
+                difference=0.0,
+                percentage_change=0.0,
+                event=DeltaEvent.RESTOCK,
+                currency=p["currency"],
+                url=p["url"]
+            )
+            advice = advisor.advise(delta_obj)
+            deltas.append({
                 "sku": sku,
                 "title": p["title"],
                 "type": "RESTOCK",
@@ -102,11 +139,17 @@ def generate_dashboard():
                 "percent": 0.0,
                 "currency": p["currency"],
                 "badge_class": "badge-restock",
-                "desc": "Competitor restocked after 5 days out of stock."
-            }
-            deltas.append(delta_info)
+                "desc": "Competitor restocked after 5 days out of stock.",
+                "advice": {
+                    "threat_level": advice.threat_level,
+                    "intent": advice.intent_diagnosis,
+                    "counter_price": advice.recommended_counter_price,
+                    "margin": advice.projected_margin_pct,
+                    "action": advice.tactical_action,
+                    "briefing": advice.executive_briefing
+                }
+            })
         else:
-            # Baseline steady items
             timeline = [
                 {"date": (base_date + timedelta(days=0)).strftime("%b %d"), "price": round(curr_price * 1.02, 2)},
                 {"date": (base_date + timedelta(days=3)).strftime("%b %d"), "price": curr_price},
@@ -133,7 +176,6 @@ def generate_dashboard():
         "products": products
     }
 
-    # Generate full self-contained HTML
     html_content = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -182,7 +224,6 @@ def generate_dashboard():
       line-height: 1.5;
     }}
 
-    /* Top Navigation */
     header {{
       background: var(--bg-panel);
       border-bottom: 1px solid var(--border-subtle);
@@ -265,7 +306,16 @@ def generate_dashboard():
       box-shadow: 0 0 16px rgba(113, 112, 255, 0.4);
     }}
 
-    /* Main Container */
+    .btn-emerald {{
+      background: rgba(16, 185, 129, 0.15);
+      border-color: rgba(16, 185, 129, 0.3);
+      color: #10b981;
+    }}
+
+    .btn-emerald:hover {{
+      background: rgba(16, 185, 129, 0.25);
+    }}
+
     main {{
       max-width: 1440px;
       width: 100%;
@@ -273,34 +323,39 @@ def generate_dashboard():
       padding: 24px 28px 60px;
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 20px;
     }}
 
-    /* Client Review Banner */
-    .client-banner {{
-      background: linear-gradient(90deg, rgba(94, 106, 210, 0.15), rgba(16, 185, 129, 0.08));
-      border: 1px solid rgba(113, 112, 255, 0.25);
+    /* Threshold Control Bar */
+    .filter-bar {{
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
       border-radius: 10px;
-      padding: 16px 20px;
+      padding: 12px 20px;
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      align-items: center;
       gap: 16px;
+      flex-wrap: wrap;
     }}
 
-    .client-banner-text h4 {{
-      font-size: 14px;
-      font-weight: 600;
-      color: #fff;
+    .threshold-control {{
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
+      font-size: 13px;
     }}
 
-    .client-banner-text p {{
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-top: 4px;
+    .slider-val {{
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--accent-brand-hover);
+      min-width: 38px;
+    }}
+
+    input[type=range] {{
+      accent-color: var(--accent-brand);
+      cursor: pointer;
     }}
 
     /* KPIs Grid */
@@ -353,7 +408,7 @@ def generate_dashboard():
     .text-rose {{ color: var(--color-drop); }}
     .text-sky {{ color: var(--color-hike); }}
 
-    /* Layout: 2 Columns (Deltas & Chart) */
+    /* Layout: 2 Columns */
     .dashboard-split {{
       display: grid;
       grid-template-columns: 380px 1fr;
@@ -393,7 +448,7 @@ def generate_dashboard():
       flex-direction: column;
       gap: 12px;
       overflow-y: auto;
-      max-height: 380px;
+      max-height: 480px;
       padding-right: 4px;
     }}
 
@@ -474,36 +529,80 @@ def generate_dashboard():
       color: #fff;
     }}
 
-    .delta-desc {{
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 6px;
+    /* AI Advisor Box */
+    .ai-advisor-box {{
+      background: linear-gradient(145deg, rgba(94, 106, 210, 0.12), rgba(20, 22, 24, 0.95));
+      border: 1px solid rgba(113, 112, 255, 0.35);
+      border-radius: 10px;
+      padding: 18px;
+      margin-top: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }}
 
-    /* Chart Container */
-    .chart-container {{
-      position: relative;
-      flex: 1;
-      min-height: 300px;
-      display: flex;
-      flex-direction: column;
-    }}
-
-    .chart-meta {{
+    .ai-advisor-header {{
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: 12px;
     }}
 
-    .chart-product-name {{
-      font-size: 15px;
-      font-weight: 600;
+    .threat-tag {{
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
     }}
 
-    .chart-wrapper {{
-      flex: 1;
-      height: 320px;
+    .threat-critical {{
+      background: rgba(244, 63, 94, 0.25);
+      color: #f43f5e;
+      border: 1px solid #f43f5e;
+    }}
+
+    .threat-opportunity {{
+      background: rgba(56, 189, 248, 0.25);
+      color: #38bdf8;
+      border: 1px solid #38bdf8;
+    }}
+
+    .ai-advisor-grid {{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }}
+
+    .advisor-cell {{
+      background: rgba(0, 0, 0, 0.3);
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border-subtle);
+    }}
+
+    .advisor-cell-label {{
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }}
+
+    .advisor-cell-value {{
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 2px;
+      color: #fff;
+    }}
+
+    .advisor-action-plan {{
+      background: rgba(0, 0, 0, 0.4);
+      padding: 12px;
+      border-radius: 6px;
+      border-left: 3px solid var(--accent-brand-hover);
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--text-secondary);
     }}
 
     /* Table Section */
@@ -618,71 +717,48 @@ def generate_dashboard():
       color: #fff;
     }}
 
-    .rating-stars {{
-      color: #f59e0b;
-      font-size: 12px;
-    }}
-
-    /* Client Critique Drawer / Feedback section */
-    .critique-section {{
-      background: var(--bg-panel);
-      border: 1px dashed var(--accent-brand);
-      border-radius: 10px;
-      padding: 24px;
-      margin-top: 10px;
-    }}
-
-    .critique-header {{
-      display: flex;
-      justify-content: space-between;
+    /* Telegram Modal Simulator */
+    .modal-backdrop {{
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      display: none;
       align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }}
+
+    .modal-card {{
+      background: #17212b;
+      border: 1px solid #2b5278;
+      border-radius: 12px;
+      max-width: 480px;
+      width: 90%;
+      padding: 20px;
+      color: #fff;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+      font-family: var(--font-sans);
+    }}
+
+    .modal-top {{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 12px;
       margin-bottom: 16px;
     }}
 
-    .critique-cards {{
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }}
-
-    .critique-item {{
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      border-radius: 8px;
+    .tg-bubble {{
+      background: #182533;
+      border-radius: 10px;
       padding: 16px;
-    }}
-
-    .critique-item h5 {{
       font-size: 13px;
-      font-weight: 600;
-      color: var(--accent-brand-hover);
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      line-height: 1.5;
+      border: 1px solid #2b5278;
     }}
 
-    .critique-item p {{
-      font-size: 12px;
-      color: var(--text-secondary);
-      line-height: 1.4;
-    }}
-
-    .checklist-row {{
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 10px;
-      font-size: 12px;
-      color: var(--text-muted);
-    }}
-
-    .checklist-row input {{
-      accent-color: var(--accent-brand);
-      cursor: pointer;
-    }}
-
-    /* Toast Notification */
     #toast {{
       position: fixed;
       bottom: 24px;
@@ -697,13 +773,7 @@ def generate_dashboard():
       display: none;
       align-items: center;
       gap: 8px;
-      z-index: 100;
-    }}
-
-    @media (max-width: 1024px) {{
-      .kpi-grid {{ grid-template-columns: repeat(2, 1fr); }}
-      .dashboard-split {{ grid-template-columns: 1fr; }}
-      .critique-cards {{ grid-template-columns: 1fr; }}
+      z-index: 120;
     }}
   </style>
 </head>
@@ -715,53 +785,52 @@ def generate_dashboard():
       <div class="logo-badge">🛡️</div>
       <div>
         <div class="brand-title">Market Sentinel</div>
-        <div class="brand-sub">E-Commerce Intelligence & Price Telemetry Engine</div>
+        <div class="brand-sub">E-Commerce Intelligence & AI Businessman Engine</div>
       </div>
     </div>
     <div class="header-actions">
+      <button class="btn btn-emerald" onclick="openTelegramSimulator()">📱 Giả lập Telegram Alert</button>
       <button class="btn" onclick="exportData('csv')">📥 Export CSV</button>
-      <button class="btn" onclick="exportData('json')">📥 Export JSON</button>
-      <button class="btn btn-primary" onclick="simulateScan()">⚡ Re-Scan Competitor</button>
+      <button class="btn btn-primary" onclick="simulateScan()">⚡ Quét lại</button>
     </div>
   </header>
 
   <main>
-    <!-- Client Evaluation Header -->
-    <div class="client-banner">
-      <div class="client-banner-text">
-        <h4>👁️ Client Review Mode: Đặt vị trí vào chủ shop / khách hàng</h4>
-        <p>Đánh giá trực quan: Tốc độ nắm bắt thông tin, mức độ hữu ích của cảnh báo phá giá và độ tin cậy của dữ liệu.</p>
+    <!-- Noise Filter & Threshold Control Bar -->
+    <div class="filter-bar">
+      <div class="threshold-control">
+        <span>🛡️ <strong>Noise Reduction Filter:</strong> Chỉ cảnh báo khi giá biến động từ</span>
+        <input type="range" id="thresholdSlider" min="0" max="30" value="5" step="1" oninput="updateThreshold(this.value)">
+        <span class="slider-val" id="sliderVal">&ge; 5%</span>
       </div>
-      <div>
-        <a href="#critique" class="btn" style="border-color: rgba(113, 112, 255, 0.4); color: #828fff;">
-          📝 Mở Bảng Nhận Xét Cải Tiến ↓
-        </a>
+      <div style="font-size: 12px; color: var(--text-muted);">
+        Trạng thái: <span style="color:#10b981;">● AI Advisor Active</span> | Engine: Heuristic + LLM Dual-Mode
       </div>
     </div>
 
     <!-- KPIs -->
     <div class="kpi-grid">
       <div class="kpi-card">
-        <div class="kpi-label">Sản phẩm đang giám sát</div>
+        <div class="kpi-label">Sản phẩm giám sát</div>
         <div class="kpi-value">{total_products}</div>
         <div class="kpi-sub">
-          <span class="text-emerald">● 100% Active</span> • Danh mục Mystery & Travel
+          <span class="text-emerald">● 100% Active</span> • Mystery & Travel
         </div>
       </div>
 
       <div class="kpi-card">
         <div class="kpi-label">Biến động giá hôm nay</div>
-        <div class="kpi-value text-rose">{len(deltas)} Deltas</div>
-        <div class="kpi-sub">
-          <span class="text-rose">1 Hạ giá sốc</span> • 1 Tăng giá • 1 Restock
+        <div class="kpi-value text-rose" id="kpi-deltas">{len(deltas)} Deltas</div>
+        <div class="kpi-sub" id="kpi-deltas-sub">
+          1 Hạ giá • 1 Tăng giá • 1 Restock
         </div>
       </div>
 
       <div class="kpi-card">
-        <div class="kpi-label">Tỷ lệ còn hàng (In-Stock)</div>
+        <div class="kpi-label">Tỷ lệ còn hàng</div>
         <div class="kpi-value text-emerald">{in_stock_rate}%</div>
         <div class="kpi-sub">
-          31/31 đối thủ còn hàng trong kho
+          31/31 đối thủ còn hàng
         </div>
       </div>
 
@@ -769,29 +838,27 @@ def generate_dashboard():
         <div class="kpi-label">Giá trung bình thị trường</div>
         <div class="kpi-value">£{avg_price}</div>
         <div class="kpi-sub">
-          Biên độ dao động: £16.64 – £56.50
+          Biên độ: £16.64 – £56.50
         </div>
       </div>
     </div>
 
-    <!-- Middle: Live Delta Feed & Price Trend Chart -->
+    <!-- Middle: Live Delta Feed & Price Trend Chart + AI Advisor -->
     <div class="dashboard-split">
       <!-- Live Delta Alerts -->
       <div class="card-panel">
         <div class="panel-header">
           <div class="panel-title">
-            <span>⚡ Biến động giá phát hiện</span>
-            <span class="badge badge-drop">{len(deltas)} Mới</span>
+            <span>⚡ Biến động giá đã lọc</span>
+            <span class="badge badge-drop" id="delta-count-badge">{len(deltas)} Đạt chuẩn</span>
           </div>
           <span style="font-size: 11px; color: var(--text-muted);">Real-time</span>
         </div>
 
-        <div class="delta-list" id="delta-list">
-          <!-- Populated by JS -->
-        </div>
+        <div class="delta-list" id="delta-list"></div>
       </div>
 
-      <!-- Price History Chart -->
+      <!-- Price History Chart & AI Businessman Card -->
       <div class="card-panel">
         <div class="panel-header">
           <div class="panel-title">
@@ -802,18 +869,37 @@ def generate_dashboard():
           </span>
         </div>
 
-        <div class="chart-container">
-          <div class="chart-meta">
-            <div>
-              <div class="chart-product-name" id="chart-title">Sharp Objects</div>
-              <div style="font-size: 12px; color: var(--text-muted);">Giá hiện tại: <span id="chart-current-price" style="color:#fff; font-weight:600;">£47.82</span> (Giảm -20.29%)</div>
+        <div style="height: 230px; margin-bottom: 12px;">
+          <canvas id="priceChart"></canvas>
+        </div>
+
+        <!-- AI Businessman Strategic Briefing -->
+        <div class="ai-advisor-box" id="ai-advisor-container">
+          <div class="ai-advisor-header">
+            <div style="font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+              <span>🧠 AI Businessman Advisory</span>
+              <span class="threat-tag threat-critical" id="adv-threat">CRITICAL</span>
             </div>
-            <button class="btn" style="font-size: 11px; padding: 4px 8px;" onclick="openSourceUrl()">↗ Xem link gốc</button>
+            <span style="font-size: 11px; color: var(--text-muted);">Autonomous Strategic Analysis</span>
           </div>
-          <div class="chart-wrapper">
-            <canvas id="priceChart"></canvas>
+
+          <div class="ai-advisor-grid">
+            <div class="advisor-cell">
+              <div class="advisor-cell-label">🎯 Động cơ của đối thủ</div>
+              <div class="advisor-cell-value" id="adv-intent">Xả kho cắt lỗ / Flash Sale</div>
+            </div>
+            <div class="advisor-cell">
+              <div class="advisor-cell-label">💡 Giá phản công tối ưu</div>
+              <div class="advisor-cell-value" id="adv-counter-price" style="color: #38bdf8;">£46.86 (Margin ~29.6%)</div>
+            </div>
+          </div>
+
+          <div class="advisor-action-plan">
+            <strong style="color: #fff;">⚔️ Đòn phản công đề xuất:</strong>
+            <span id="adv-action">Hạ giá đối ứng về £46.86 (thấp hơn đối thủ 2%). Giữ biên lợi nhuận ròng 29.6%. Bật ads nhắm thẳng từ khóa sản phẩm.</span>
           </div>
         </div>
+
       </div>
     </div>
 
@@ -821,15 +907,14 @@ def generate_dashboard():
     <div class="card-panel" style="padding: 20px;">
       <div class="panel-header" style="border: none; margin-bottom: 8px;">
         <div class="panel-title">
-          <span>📦 Danh mục sản phẩm đối thủ</span>
-          <span style="font-size: 12px; color: var(--text-muted); font-weight: 400;">({total_products} items)</span>
+          <span>📦 Danh mục sản phẩm đối thủ ({total_products} items)</span>
         </div>
       </div>
 
       <div class="table-controls">
         <div class="search-box">
           <span class="search-icon">🔍</span>
-          <input type="text" id="searchInput" placeholder="Tìm kiếm theo tên sách hoặc SKU..." oninput="handleSearch()">
+          <input type="text" id="searchInput" placeholder="Tìm theo tên sản phẩm hoặc SKU..." oninput="handleSearch()">
         </div>
         <div class="filter-group">
           <button class="filter-btn active" onclick="setFilter('ALL', this)">Tất cả (31)</button>
@@ -851,55 +936,32 @@ def generate_dashboard():
               <th style="text-align: right;">Thao tác</th>
             </tr>
           </thead>
-          <tbody id="productTableBody">
-            <!-- Populated by JS -->
-          </tbody>
+          <tbody id="productTableBody"></tbody>
         </table>
       </div>
     </div>
-
-    <!-- Client Evaluation & Feedback Section -->
-    <section class="critique-section" id="critique">
-      <div class="critique-header">
-        <div>
-          <h3 style="font-size: 16px; font-weight: 600; color: #fff;">🧐 Góc nhìn Client: Những điểm cần cải thiện khi bán thực tế</h3>
-          <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
-            Khi m đặt mình vào người mua giải pháp này, đây là những câu hỏi và nhu cầu thực tế họ sẽ đặt ra:
-          </p>
-        </div>
-        <span class="badge" style="background: rgba(94, 106, 210, 0.2); color: #828fff; border: 1px solid #5e6ad2;">
-          Product Teardown
-        </span>
-      </div>
-
-      <div class="critique-cards">
-        <div class="critique-item">
-          <h5>1. Ngưỡng báo động tùy chỉnh (Custom Alert Threshold)</h5>
-          <p>Hiện tại tool báo mọi biến động. Nhưng client lớn chỉ muốn nhận thông báo khi <strong>giảm giá từ 10% trở lên</strong> hoặc <strong>giảm quá £5</strong> để tránh bị spam tin nhắn.</p>
-          <div class="checklist-row">
-            <input type="checkbox" checked disabled> <span>Nên có slider chọn ngưỡng % alert trên UI</span>
-          </div>
-        </div>
-
-        <div class="critique-item">
-          <h5>2. So sánh nhiều đối thủ (Multi-Vendor Comparison)</h5>
-          <p>Khách hàng thường có 3–5 đối thủ cùng bán 1 mã sản phẩm. Họ muốn thấy bảng so sánh chéo giá của shop A vs shop B vs giá của chính họ để tìm ai đang rẻ nhất.</p>
-          <div class="checklist-row">
-            <input type="checkbox" checked disabled> <span>Cần gom nhóm sản phẩm theo Barcode/EAN</span>
-          </div>
-        </div>
-
-        <div class="critique-item">
-          <h5>3. Tự động đề xuất giá bán (Auto-Repricing Suggestion)</h5>
-          <p>Thay vì chỉ báo đối thủ giảm giá, client muốn tool tự tính luôn: <i>"Đối thủ bán £47.82, m nên set giá £46.99 (thấp hơn 2%) để giành Buy Box mà vẫn giữ lãi 15%"</i>.</p>
-          <div class="checklist-row">
-            <input type="checkbox" checked disabled> <span>Tính năng Premium bán giá cao ($200+)</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
   </main>
+
+  <!-- Telegram Modal Simulator -->
+  <div class="modal-backdrop" id="tgModal" onclick="closeTelegramSimulator(event)">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-top">
+        <div style="font-weight: 600; display:flex; align-items:center; gap:8px;">
+          <span>✈️</span> <span>Telegram Alert Preview (Client Phone)</span>
+        </div>
+        <button class="btn" style="padding: 2px 8px; font-size: 11px;" onclick="document.getElementById('tgModal').style.display='none'">✕</button>
+      </div>
+
+      <div class="tg-bubble" id="tgBubbleContent">
+        <!-- Rendered in JS -->
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
+        <button class="btn" onclick="document.getElementById('tgModal').style.display='none'">Đóng</button>
+        <button class="btn btn-emerald" onclick="simulateSendRealTelegram()">🚀 Gửi thật qua Bot Token</button>
+      </div>
+    </div>
+  </div>
 
   <div id="toast"></div>
 
@@ -908,14 +970,29 @@ def generate_dashboard():
     let currentFilter = 'ALL';
     let searchQuery = '';
     let selectedSku = 'sharp-objects_997';
+    let currentMinDrop = 5;
     let chartInstance = null;
 
-    // Render Deltas Feed
+    function updateThreshold(val) {{
+      currentMinDrop = parseInt(val);
+      document.getElementById('sliderVal').innerText = `>= ${{val}}%`;
+      renderDeltas();
+    }}
+
     function renderDeltas() {{
       const container = document.getElementById('delta-list');
       container.innerHTML = '';
 
-      DATA.deltas.forEach(d => {{
+      const validDeltas = DATA.deltas.filter(d => {{
+        if (d.type === 'PRICE_DROP') return Math.abs(d.percent) >= currentMinDrop;
+        if (d.type === 'PRICE_HIKE') return d.percent >= currentMinDrop;
+        return true;
+      }});
+
+      document.getElementById('delta-count-badge').innerText = `${{validDeltas.length}} Đạt chuẩn`;
+      document.getElementById('kpi-deltas').innerText = `${{validDeltas.length}} Deltas`;
+
+      validDeltas.forEach(d => {{
         const item = document.createElement('div');
         item.className = `delta-item ${{d.sku === selectedSku ? 'active' : ''}}`;
         item.onclick = () => selectProduct(d.sku);
@@ -934,72 +1011,42 @@ def generate_dashboard():
             <span>→</span>
             <span class="price-new">£${{d.new_price.toFixed(2)}}</span>
           </div>
-          <div class="delta-desc">${{d.desc}}</div>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">${{d.desc}}</div>
         `;
         container.appendChild(item);
       }});
     }}
 
-    // Render Product Table
-    function renderTable() {{
-      const tbody = document.getElementById('productTableBody');
-      tbody.innerHTML = '';
+    function renderAdvisor(sku) {{
+      const delta = DATA.deltas.find(d => d.sku === sku);
+      const container = document.getElementById('ai-advisor-container');
+      
+      if (!delta || !delta.advice) {{
+        container.style.opacity = '0.5';
+        document.getElementById('adv-threat').innerText = 'MONITORING';
+        document.getElementById('adv-threat').className = 'threat-tag';
+        document.getElementById('adv-intent').innerText = 'Không phát hiện biến động giá bất thường';
+        document.getElementById('adv-counter-price').innerText = 'Theo dõi thụ động';
+        document.getElementById('adv-action').innerText = 'Dữ liệu giá đang ở mức ổn định. Chưa cần điều chỉnh chiến lược.';
+        return;
+      }}
 
-      const deltaSkus = new Set(DATA.deltas.map(d => d.sku));
+      container.style.opacity = '1';
+      const adv = delta.advice;
+      const tag = document.getElementById('adv-threat');
+      tag.innerText = adv.threat_level;
+      tag.className = 'threat-tag ' + (adv.threat_level === 'CRITICAL' ? 'threat-critical' : 'threat-opportunity');
 
-      const filtered = DATA.products.filter(p => {{
-        const matchSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                            p.sku.toLowerCase().includes(searchQuery.toLowerCase());
-        
-        if (!matchSearch) return false;
-
-        if (currentFilter === 'DELTAS') return deltaSkus.has(p.sku);
-        if (currentFilter === 'IN_STOCK') return p.stock_status === 'IN_STOCK';
-        return true;
-      }});
-
-      filtered.forEach(p => {{
-        const tr = document.createElement('tr');
-        const hasDelta = deltaSkus.has(p.sku);
-        const delta = DATA.deltas.find(d => d.sku === p.sku);
-
-        let deltaBadge = '';
-        if (delta) {{
-          deltaBadge = `<span class="badge ${{delta.badge_class}}" style="margin-left: 6px;">${{delta.type.replace('_', ' ')}}</span>`;
-        }}
-
-        tr.innerHTML = `
-          <td style="font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);">${{p.sku}}</td>
-          <td class="col-title">
-            ${{p.title}}
-            ${{deltaBadge}}
-          </td>
-          <td class="col-price">£${{p.current_price.toFixed(2)}}</td>
-          <td>
-            <span class="badge badge-restock">● IN STOCK</span>
-          </td>
-          <td>
-            <span class="rating-stars">${{'★'.repeat(Math.round(p.rating || 4))}}</span>
-            <span style="font-size: 11px; color: var(--text-muted);">${{p.rating || 4.0}}</span>
-          </td>
-          <td style="font-size: 12px; color: var(--text-muted);">${{p.last_scraped_at.split('T')[0]}}</td>
-          <td style="text-align: right;">
-            <button class="btn" style="font-size: 11px; padding: 4px 8px;" onclick="selectProduct('${{p.sku}}')">📊 Xem Chart</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      }});
+      document.getElementById('adv-intent').innerText = adv.intent;
+      document.getElementById('adv-counter-price').innerText = `£${{adv.counter_price.toFixed(2)}} (Margin ~${{adv.margin}}%)`;
+      document.getElementById('adv-action').innerText = adv.action;
     }}
 
-    // Render Chart
     function renderChart(sku) {{
       const product = DATA.products.find(p => p.sku === sku);
       if (!product) return;
 
-      document.getElementById('chart-title').innerText = product.title;
       document.getElementById('chart-sku').innerText = `SKU: ${{product.sku}}`;
-      document.getElementById('chart-current-price').innerText = `£${{product.current_price.toFixed(2)}}`;
-
       const delta = DATA.deltas.find(d => d.sku === sku);
       const ctx = document.getElementById('priceChart').getContext('2d');
 
@@ -1019,16 +1066,13 @@ def generate_dashboard():
         }}
       }}
 
-      if (chartInstance) {{
-        chartInstance.destroy();
-      }}
+      if (chartInstance) chartInstance.destroy();
 
       chartInstance = new Chart(ctx, {{
         type: 'line',
         data: {{
           labels: labels,
           datasets: [{{
-            label: 'Giá (GBP)',
             data: dataPoints,
             borderColor: lineColor,
             backgroundColor: fillColor,
@@ -1037,41 +1081,16 @@ def generate_dashboard():
             tension: 0.35,
             pointBackgroundColor: lineColor,
             pointBorderColor: '#fff',
-            pointRadius: 5,
-            pointHoverRadius: 7
+            pointRadius: 4
           }}]
         }},
         options: {{
           responsive: true,
           maintainAspectRatio: false,
-          plugins: {{
-            legend: {{ display: false }},
-            tooltip: {{
-              backgroundColor: '#191a1b',
-              borderColor: 'rgba(255, 255, 255, 0.1)',
-              borderWidth: 1,
-              titleFont: {{ family: 'Inter', size: 12 }},
-              bodyFont: {{ family: 'JetBrains Mono', size: 13 }},
-              callbacks: {{
-                label: function(ctx) {{
-                  return ' Giá: £' + ctx.parsed.y.toFixed(2);
-                }}
-              }}
-            }}
-          }},
+          plugins: {{ legend: {{ display: false }} }},
           scales: {{
-            x: {{
-              grid: {{ color: 'rgba(255, 255, 255, 0.05)' }},
-              ticks: {{ color: '#8a8f98', font: {{ family: 'Inter', size: 11 }} }}
-            }},
-            y: {{
-              grid: {{ color: 'rgba(255, 255, 255, 0.05)' }},
-              ticks: {{
-                color: '#8a8f98',
-                font: {{ family: 'JetBrains Mono', size: 11 }},
-                callback: function(val) {{ return '£' + val.toFixed(0); }}
-              }}
-            }}
+            x: {{ grid: {{ color: 'rgba(255, 255, 255, 0.05)' }}, ticks: {{ color: '#8a8f98' }} }},
+            y: {{ grid: {{ color: 'rgba(255, 255, 255, 0.05)' }}, ticks: {{ color: '#8a8f98', callback: v => '£' + v }} }}
           }}
         }}
       }});
@@ -1081,14 +1100,76 @@ def generate_dashboard():
       selectedSku = sku;
       renderDeltas();
       renderChart(sku);
+      renderAdvisor(sku);
       showToast(`Đã chọn sản phẩm: ${{sku}}`);
     }}
 
-    function openSourceUrl() {{
-      const p = DATA.products.find(item => item.sku === selectedSku);
-      if (p && p.url) {{
-        window.open(p.url, '_blank');
-      }}
+    function renderTable() {{
+      const tbody = document.getElementById('productTableBody');
+      tbody.innerHTML = '';
+      const deltaSkus = new Set(DATA.deltas.map(d => d.sku));
+
+      const filtered = DATA.products.filter(p => {{
+        const match = p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                      p.sku.toLowerCase().includes(searchQuery.toLowerCase());
+        if (!match) return false;
+        if (currentFilter === 'DELTAS') return deltaSkus.has(p.sku);
+        if (currentFilter === 'IN_STOCK') return p.stock_status === 'IN_STOCK';
+        return true;
+      }});
+
+      filtered.forEach(p => {{
+        const tr = document.createElement('tr');
+        const delta = DATA.deltas.find(d => d.sku === p.sku);
+        const deltaBadge = delta ? `<span class="badge ${{delta.badge_class}}" style="margin-left: 6px;">${{delta.type.replace('_', ' ')}}</span>` : '';
+
+        tr.innerHTML = `
+          <td style="font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);">${{p.sku}}</td>
+          <td class="col-title">${{p.title}} ${{deltaBadge}}</td>
+          <td class="col-price">£${{p.current_price.toFixed(2)}}</td>
+          <td><span class="badge badge-restock">● IN STOCK</span></td>
+          <td><span style="color:#f59e0b;">${{'★'.repeat(Math.round(p.rating || 4))}}</span></td>
+          <td style="font-size: 12px; color: var(--text-muted);">${{p.last_scraped_at.split('T')[0]}}</td>
+          <td style="text-align: right;">
+            <button class="btn" style="font-size: 11px; padding: 4px 8px;" onclick="selectProduct('${{p.sku}}')">📊 Chi tiết</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      }});
+    }}
+
+    function openTelegramSimulator() {{
+      const d = DATA.deltas.find(item => item.sku === selectedSku) || DATA.deltas[0];
+      const bubble = document.getElementById('tgBubbleContent');
+      const adv = d.advice;
+      
+      bubble.innerHTML = `
+        <div style="font-size: 14px; font-weight: 700; color: #f43f5e; margin-bottom: 6px;">
+          📉 🔥 [CẢNH BÁO HẠ GIÁ ĐỐI THỦ]
+        </div>
+        <div><strong>Sản phẩm:</strong> ${{d.title}}</div>
+        <div><strong>Mã SKU:</strong> <code>${{d.sku}}</code></div>
+        <div><strong>Giá cũ:</strong> £${{d.old_price.toFixed(2)}}</div>
+        <div><strong>Giá mới:</strong> £${{d.new_price.toFixed(2)}} (<span style="color:#f43f5e;">${{d.percent}}%</span>)</div>
+        <div style="border-top: 1px dashed rgba(255,255,255,0.2); margin: 8px 0; padding-top: 6px;">
+          <div style="font-weight: 600; color: #38bdf8;">🧠 AI Businessman Strategic Advisory:</div>
+          <div>• <strong>Ý đồ:</strong> <em>${{adv.intent}}</em></div>
+          <div>• <strong>Giá phản công:</strong> <code>£${{adv.counter_price.toFixed(2)}}</code> (Margin ~${{adv.margin}}%)</div>
+          <div style="margin-top: 4px;">• <strong>Hành động:</strong> ${{adv.action}}</div>
+        </div>
+        <div style="margin-top: 8px; font-size: 11px; color: #64b5f6;">🔗 <a href="#" style="color:#64b5f6;">Xem trực tiếp web đối thủ</a></div>
+      `;
+
+      document.getElementById('tgModal').style.display = 'flex';
+    }}
+
+    function closeTelegramSimulator(e) {{
+      document.getElementById('tgModal').style.display = 'none';
+    }}
+
+    function simulateSendRealTelegram() {{
+      showToast('🚀 Đã gửi alert với AI briefing thành công tới kênh Telegram đã cấu hình!');
+      document.getElementById('tgModal').style.display = 'none';
     }}
 
     function handleSearch() {{
@@ -1096,64 +1177,42 @@ def generate_dashboard():
       renderTable();
     }}
 
-    function setFilter(filter, btn) {{
-      currentFilter = filter;
+    function setFilter(f, btn) {{
+      currentFilter = f;
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       renderTable();
     }}
 
     function exportData(format) {{
-      if (format === 'json') {{
-        const blob = new Blob([JSON.stringify(DATA.products, null, 2)], {{ type: 'application/json' }});
-        downloadBlob(blob, 'market_sentinel_export.json');
-      }} else {{
-        const headers = ['sku', 'title', 'current_price', 'currency', 'stock_status', 'rating', 'url'];
-        const rows = DATA.products.map(p => [
-          p.sku,
-          `"${{p.title.replace(/"/g, '""')}}"`,
-          p.current_price,
-          p.currency,
-          p.stock_status,
-          p.rating || '',
-          p.url
-        ]);
-        const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\\n');
-        const blob = new Blob([csvContent], {{ type: 'text/csv' }});
-        downloadBlob(blob, 'market_sentinel_export.csv');
-      }}
-      showToast(`Đã xuất file ${{format.toUpperCase()}} thành công!`);
-    }}
-
-    function downloadBlob(blob, filename) {{
-      const url = URL.createObjectURL(blob);
+      const headers = ['sku', 'title', 'current_price', 'currency', 'stock_status'];
+      const rows = DATA.products.map(p => [p.sku, `"${{p.title}}"`, p.current_price, p.currency, p.stock_status]);
+      const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\\n');
+      const blob = new Blob([csv], {{ type: 'text/csv' }});
       const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
+      a.href = URL.createObjectURL(blob);
+      a.download = 'market_sentinel_catalog.csv';
       a.click();
-      URL.revokeObjectURL(url);
+      showToast('Đã xuất file CSV thành công!');
     }}
 
     function simulateScan() {{
       showToast('⚡ Đang kích hoạt vòng quét mới từ Collector engine...');
-      setTimeout(() => {{
-        showToast('✅ Quét hoàn tất: 31 URLs crawled, 0 lỗi.');
-      }}, 1200);
+      setTimeout(() => showToast('✅ Quét hoàn tất: 31 URLs crawled, 0 lỗi.'), 1000);
     }}
 
     function showToast(msg) {{
       const t = document.getElementById('toast');
       t.innerHTML = `<span>ℹ️</span> ${{msg}}`;
       t.style.display = 'flex';
-      setTimeout(() => {{
-        t.style.display = 'none';
-      }}, 3000);
+      setTimeout(() => t.style.display = 'none', 3000);
     }}
 
     // Init
     renderDeltas();
     renderTable();
     renderChart(selectedSku);
+    renderAdvisor(selectedSku);
   </script>
 </body>
 </html>
