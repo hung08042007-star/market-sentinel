@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Market Sentinel — Trợ lý Tình báo Giá cho Shop</title>
+  <title>Market Sentinel — Trợ lý Tình báo Giá Shop Thời Trang</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
-      --bg: #0c0d12;
-      --card-bg: #14161f;
+      --bg: #090a0f;
+      --card-bg: #12141c;
       --card-border: rgba(255, 255, 255, 0.08);
       --card-hover: rgba(255, 255, 255, 0.12);
       --primary: #4f46e5;
       --primary-hover: #4338ca;
-      --accent: #0ea5e9;
+      --accent: #38bdf8;
       --danger: #ef4444;
       --danger-bg: rgba(239, 68, 68, 0.12);
       --success: #10b981;
@@ -39,9 +39,9 @@
 
     /* Header */
     header {
-      background: #10121a;
+      background: #0f1118;
       border-bottom: 1px solid var(--card-border);
-      padding: 14px 28px;
+      padding: 12px 28px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -66,7 +66,7 @@
       box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
     }
     .brand-text h1 {
-      font-size: 16px;
+      font-size: 15.5px;
       font-weight: 700;
       letter-spacing: -0.3px;
     }
@@ -89,7 +89,6 @@
       border: 1px solid rgba(16, 185, 129, 0.25);
       padding: 4px 10px;
       border-radius: 999px;
-      margin-right: 6px;
     }
     .status-dot {
       width: 6px;
@@ -139,23 +138,75 @@
     .btn-tg:hover {
       background: #1b87ba;
     }
+    .btn-outline {
+      background: transparent;
+      border-color: rgba(255, 255, 255, 0.15);
+      color: var(--text-muted);
+    }
+    .btn-outline:hover {
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.3);
+    }
 
     /* Main Container */
     main {
-      max-width: 1160px;
+      max-width: 1140px;
       margin: 0 auto;
-      padding: 28px 20px;
+      padding: 24px 20px;
       display: flex;
       flex-direction: column;
-      gap: 28px;
+      gap: 26px;
     }
 
-    /* 1-Click Track URL Intake */
+    /* Interactive Guided Workflow Banner */
+    .flow-guide-bar {
+      background: linear-gradient(90deg, rgba(79, 70, 229, 0.15) 0%, rgba(14, 165, 233, 0.15) 100%);
+      border: 1px solid rgba(79, 70, 229, 0.3);
+      border-radius: 10px;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .flow-steps {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12.5px;
+    }
+    .flow-step-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+    }
+    .flow-step-item.active {
+      color: #fff;
+      font-weight: 600;
+    }
+    .step-num {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-family: var(--mono);
+    }
+    .flow-step-item.active .step-num {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    /* 1-Click Track URL Hero */
     .track-hero {
-      background: linear-gradient(135deg, #141724 0%, #10121a 100%);
+      background: linear-gradient(135deg, #131622 0%, #0e1018 100%);
       border: 1px solid rgba(79, 70, 229, 0.25);
       border-radius: 12px;
-      padding: 22px 24px;
+      padding: 20px 22px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
     }
     .track-hero-title {
@@ -169,7 +220,7 @@
     .track-hero-subtitle {
       font-size: 13px;
       color: var(--text-muted);
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
     .track-bar-form {
       display: flex;
@@ -181,7 +232,7 @@
       border: 1px solid var(--card-border);
       border-radius: 8px;
       padding: 10px 14px;
-      font-size: 13.5px;
+      font-size: 13px;
       color: #fff;
       outline: none;
       transition: border-color 0.2s;
@@ -190,10 +241,27 @@
       border-color: var(--primary);
       box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.25);
     }
-    .track-tips {
+    .sample-pill-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    .sample-pill {
       font-size: 11.5px;
-      color: var(--text-subtle);
-      margin-top: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      padding: 3px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.15s;
+    }
+    .sample-pill:hover {
+      background: rgba(79, 70, 229, 0.2);
+      border-color: var(--primary);
+      color: #fff;
     }
 
     /* 4 Commercial Metric Cards */
@@ -221,7 +289,7 @@
       font-size: 22px;
     }
     .metric-val {
-      font-size: 22px;
+      font-size: 21px;
       font-weight: 700;
       letter-spacing: -0.5px;
       font-family: var(--mono);
@@ -236,10 +304,10 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
     .section-title {
-      font-size: 16px;
+      font-size: 15.5px;
       font-weight: 700;
       letter-spacing: -0.3px;
       display: flex;
@@ -247,18 +315,19 @@
       gap: 8px;
     }
 
-    /* AI Decision Cards */
+    /* Action Cards */
     .action-cards-grid {
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 16px;
     }
     .action-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 12px;
-      padding: 22px;
+      padding: 20px;
       position: relative;
+      transition: border-color 0.2s;
     }
     .action-card.card-danger {
       border-left: 4px solid var(--danger);
@@ -272,15 +341,14 @@
       justify-content: space-between;
       align-items: flex-start;
       gap: 16px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
     .action-badge {
-      font-size: 10.5px;
+      font-size: 11px;
       font-weight: 700;
       padding: 3px 8px;
       border-radius: 6px;
       letter-spacing: 0.4px;
-      text-transform: uppercase;
       font-family: var(--mono);
       display: inline-block;
       margin-bottom: 6px;
@@ -296,21 +364,24 @@
       border: 1px solid rgba(16, 185, 129, 0.3);
     }
     .product-title-large {
-      font-size: 16px;
+      font-size: 15.5px;
       font-weight: 600;
       color: #fff;
     }
     .product-sublink {
       font-size: 12px;
       color: var(--text-muted);
-      margin-top: 2px;
+      margin-top: 3px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
     }
-    .product-sublink a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-    .product-sublink a:hover {
-      text-decoration: underline;
+    .platform-tag {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      color: #cbd5e1;
     }
 
     .price-movement-box {
@@ -405,7 +476,7 @@
       border-top: 1px solid var(--card-border);
     }
     .chart-drawer {
-      height: 160px;
+      height: 180px;
       margin-top: 14px;
       display: none;
     }
@@ -419,7 +490,7 @@
     }
     .catalog-toolbar {
       padding: 12px 18px;
-      background: #11131a;
+      background: #0f1118;
       border-bottom: 1px solid var(--card-border);
       display: flex;
       justify-content: space-between;
@@ -434,7 +505,7 @@
       font-size: 12.5px;
       color: #fff;
       outline: none;
-      width: 240px;
+      width: 260px;
     }
     .catalog-search:focus {
       border-color: var(--primary);
@@ -465,7 +536,7 @@
       font-size: 13px;
     }
     thead th {
-      background: #101219;
+      background: #0d0f15;
       text-align: left;
       padding: 10px 16px;
       font-size: 11px;
@@ -476,7 +547,7 @@
       border-bottom: 1px solid var(--card-border);
     }
     tbody td {
-      padding: 10px 16px;
+      padding: 11px 16px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.03);
       color: var(--text-muted);
       vertical-align: middle;
@@ -492,14 +563,19 @@
       bottom: 24px;
       right: 24px;
       background: #1e1b4b;
-      border: 1px solid #4f46e5;
+      border: 1px solid #6366f1;
       color: #fff;
-      padding: 10px 18px;
-      border-radius: 8px;
+      padding: 12px 20px;
+      border-radius: 9px;
       font-size: 13px;
       display: none;
       box-shadow: 0 10px 30px rgba(0,0,0,0.6);
       z-index: 100;
+      animation: slideUp 0.25s ease-out;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
     }
 
     /* Telegram Modal */
@@ -514,7 +590,7 @@
       justify-content: center;
     }
     .modal-card {
-      width: 440px;
+      width: 460px;
       background: #17212b;
       border: 1px solid #2b5278;
       border-radius: 12px;
@@ -540,14 +616,14 @@
       <div class="brand-icon">🛡️</div>
       <div class="brand-text">
         <h1>Market Sentinel</h1>
-        <p>Trợ lý Tình báo Giá & Tối ưu Lợi nhuận</p>
+        <p>Trợ lý Tình báo Giá Shop Thời Trang & E-Commerce</p>
       </div>
     </div>
 
     <div class="header-actions">
       <div class="live-status-pill">
         <span class="status-dot"></span>
-        <span>Tự động quét giá 24/7</span>
+        <span>Đang canh giá 24/7 (Shopee / TikTok Shop / Lazada)</span>
       </div>
       <button class="btn btn-tg" onclick="openTelegramModal()">
         📱 Nhận tin Telegram
@@ -562,33 +638,72 @@
   </header>
 
   <main>
+    <!-- Interactive Guided Workflow Banner for Customers -->
+    <div class="flow-guide-bar">
+      <div class="flow-steps">
+        <div class="flow-step-item active">
+          <span class="step-num">1</span>
+          <span>Dán link đối thủ</span>
+        </div>
+        <span style="color: var(--text-subtle);">&rarr;</span>
+        <div class="flow-step-item active">
+          <span class="step-num">2</span>
+          <span>AI phát hiện phá giá</span>
+        </div>
+        <span style="color: var(--text-subtle);">&rarr;</span>
+        <div class="flow-step-item active">
+          <span class="step-num">3</span>
+          <span>Bấm 1 nút phản công giá</span>
+        </div>
+        <span style="color: var(--text-subtle);">&rarr;</span>
+        <div class="flow-step-item">
+          <span class="step-num">4</span>
+          <span>Báo về Telegram mỗi sáng</span>
+        </div>
+      </div>
+      <div style="font-size: 12px; color: var(--accent);">
+        ✨ <em>Khách có thể bấm thử các nút bên dưới để test luồng!</em>
+      </div>
+    </div>
+
     <!-- 1-Click Track Bar: Simple & Straightforward -->
     <section class="track-hero">
       <div class="track-hero-title">
-        <span>🎯 Theo dõi nhanh sản phẩm đối thủ</span>
+        <span>🎯 Thêm link sản phẩm đối thủ để AI canh chừng</span>
       </div>
       <div class="track-hero-subtitle">
-        Dán đường link sản phẩm từ Shopee, Lazada, Tiki hoặc website đối thủ để hệ thống tự động bóc tách và canh chừng giá mỗi ngày.
+        Dán link áo quần từ Shopee, TikTok Shop, Lazada hoặc Website local brand. Hệ thống sẽ tự động bóc tách giá bán, tình trạng kho và báo ngay khi đối thủ giảm giá.
       </div>
       <div class="track-bar-form">
         <input type="text" id="trackUrlInput" class="track-input" 
-               placeholder="Dán link sản phẩm đối thủ vào đây... (Ví dụ: https://books.toscrape.com/catalogue/sharp-objects_997/index.html)">
+               placeholder="Dán link sản phẩm Shopee / TikTok Shop... (hoặc bấm link mẫu bên dưới)">
         <button class="btn btn-primary" style="padding: 0 20px;" onclick="addTrackUrl()">
           + Bắt đầu theo dõi
         </button>
       </div>
-      <div class="track-tips">
-        💡 Mẹo: Khi đối thủ đổi giá, AI sẽ lập tức tính toán giá phản công và gửi cảnh báo thẳng về Telegram của m.
+      
+      <!-- Quick Sample Buttons for Instant Testing -->
+      <div class="sample-pill-group">
+        <span style="font-size: 12px; color: var(--text-subtle);">Bấm thử link mẫu:</span>
+        <span class="sample-pill" onclick="fillSampleUrl('shopee')">
+          ⚡ [Shopee] Áo Thun Heavyweight Oversize 260gsm (Shop X)
+        </span>
+        <span class="sample-pill" onclick="fillSampleUrl('tiktok')">
+          ⚡ [TikTok Shop] Quần Jean Baggy Denim 13oz
+        </span>
+        <span class="sample-pill" onclick="fillSampleUrl('polo')">
+          ⚡ [Shopee Mall] Áo Polo Thể Thao Dry-fit
+        </span>
       </div>
     </section>
 
     <!-- 4 Key Commercial Metric Cards -->
     <section class="metric-grid">
       <div class="metric-card">
-        <div class="metric-icon" style="background: rgba(99, 102, 241, 0.12); color: #818cf8;">📦</div>
+        <div class="metric-icon" style="background: rgba(99, 102, 241, 0.12); color: #818cf8;">👕</div>
         <div>
-          <div class="metric-val">31</div>
-          <div class="metric-label">Sản phẩm đang giám sát</div>
+          <div class="metric-val">8</div>
+          <div class="metric-label">Mẫu áo/quần đang theo dõi</div>
         </div>
       </div>
 
@@ -596,7 +711,7 @@
         <div class="metric-icon" style="background: var(--danger-bg); color: var(--danger);">🚨</div>
         <div>
           <div class="metric-val" style="color: var(--danger);">1 đối thủ</div>
-          <div class="metric-label">Hạ giá (Nguy cơ mất khách)</div>
+          <div class="metric-label">Phá giá (Nguy cơ mất khách)</div>
         </div>
       </div>
 
@@ -604,11 +719,11 @@
         <div class="metric-icon" style="background: var(--success-bg); color: var(--success);">📈</div>
         <div>
           <div class="metric-val" style="color: var(--success);">1 đối thủ</div>
-          <div class="metric-label">Tăng giá (Cơ hội ăn lãi)</div>
+          <div class="metric-label">Tăng giá (Cơ hội tăng biên lãi)</div>
         </div>
       </div>
 
-      <div class="metric-card">
+      <div class="metric-card" style="border-color: rgba(14, 165, 233, 0.3);">
         <div class="metric-icon" style="background: rgba(14, 165, 233, 0.12); color: var(--accent);">🛡️</div>
         <div>
           <div class="metric-val" style="color: var(--accent);">&ge; 15.0%</div>
@@ -621,94 +736,34 @@
     <section>
       <div class="section-header">
         <div class="section-title">
-          <span>⚡ Việc cần ra quyết định hôm nay (2)</span>
+          <span>⚡ Cảnh báo sáng nay cần m quyết định (2)</span>
         </div>
         <div style="font-size: 12.5px; color: var(--text-muted);">
-          Đã lọc nhiễu các biến động nhỏ dưới 5%
+          Đã lọc bỏ các biến động giá nhỏ không đáng kể
         </div>
       </div>
 
       <div class="action-cards-grid">
         
-        <div class="action-card card-success">
+        <div class="action-card card-danger" id="card-TEE-OVS-260-BLK">
           <div class="action-card-top">
             <div>
-              <span class="action-badge badge-success">CƠ HỘI TĂNG LÃI</span>
-              <div class="product-title-large">The Past Never Ends</div>
+              <span class="action-badge badge-danger">🚨 ĐỐI THỦ PHÁ GIÁ</span>
+              <div class="product-title-large">Áo Thun Heavyweight Oversize 260gsm (Local Brand Unisex - Đen)</div>
               <div class="product-sublink">
-                <span>SKU: the-past-never-ends_942</span> &bull; 
-                <a href="https://books.toscrape.com/catalogue/the-past-never-ends_942/index.html" target="_blank">Xem gian hàng đối thủ ↗</a>
+                <span class="platform-tag">Shopee</span>
+                <span>Mã SKU: <strong>TEE-OVS-260-BLK</strong></span> &bull; 
+                <span>Giá shop mình: <strong style="color:#fff;">250.000₫</strong> (Vốn: 110.000₫)</span> &bull;
+                <a href="https://shopee.vn/ao-thun-heavyweight-oversize-260gsm-unisex-local-brand-i.849201.294104" target="_blank" style="color:var(--accent); text-decoration:none;">Xem link shop đối thủ ↗</a>
               </div>
             </div>
 
             <div class="price-movement-box">
-              <span class="price-old">£45.00</span>
+              <span class="price-old">249.000₫</span>
               <span style="color: var(--text-subtle);">&rarr;</span>
-              <span class="price-new">£56.50</span>
-              <span style="color: var(--success); font-weight:700;">
-                (+25.6%)
-              </span>
-            </div>
-          </div>
-
-          <!-- AI Strategic Guidance Box -->
-          <div class="ai-advisor-panel">
-            <div class="ai-intel-side">
-              <div class="ai-intel-header">
-                <span>🧠 AI Commercial Strategist chẩn đoán:</span>
-              </div>
-              <div>&bull; <strong>Ý đồ đối thủ:</strong> Đối thủ tăng biên lợi nhuận hoặc đối mặt với đứt gãy nguồn cung / cạn kho</div>
-              <div>&bull; <strong>Hành động đề xuất:</strong> Cơ hội vàng: Đặt giá 53.67 GBP (vừa rẻ hơn đối thủ 5% để hút toàn bộ khách, vừa tăng biên lợi nhuận lên 53.9%).</div>
-              <div style="color: var(--text-muted); font-size: 12px; margin-top: 2px;">
-                &bull; <strong>Gợi ý phi giá:</strong> Đối thủ tăng giá +25.6% trên the-past-never-ends_942. Đây là cơ hội [OPPORTUNITY]. Họ đang chịu áp lực chi phí hoặc cạn kho. Khuyến nghị: Cơ hội vàng: Đặt giá 53.67 GBP (vừa rẻ hơn đối thủ 5% để hút toàn bộ khách, vừa tăng biên lợi nhuận lên 53.9%).
-              </div>
-            </div>
-
-            <div class="ai-decision-side">
-              <div class="counter-label">Giá phản công tối ưu</div>
-              <div class="counter-number">£53.67</div>
-              <div class="margin-tag">Biên lãi giữ được: ~53.9%</div>
-            </div>
-          </div>
-
-          <!-- Bottom Actions -->
-          <div class="action-card-footer">
-            <button class="btn" onclick="toggleChart('the-past-never-ends_942')">
-              📈 Xem lịch sử giá 7 ngày
-            </button>
-            <div style="display:flex; gap:8px;">
-              <button class="btn" onclick="showToast('Đã bỏ qua biến động giá của the-past-never-ends_942')">
-                Bỏ qua
-              </button>
-              <button class="btn btn-primary" onclick="applyCounterPrice('the-past-never-ends_942', 53.67)">
-                ✅ Áp dụng giá £53.67 ngay
-              </button>
-            </div>
-          </div>
-
-          <!-- Drawer Chart -->
-          <div class="chart-drawer" id="chart-wrap-the-past-never-ends_942">
-            <canvas id="chart-the-past-never-ends_942"></canvas>
-          </div>
-        </div>
-        
-        <div class="action-card card-danger">
-          <div class="action-card-top">
-            <div>
-              <span class="action-badge badge-danger">NGUY CƠ MẤT KHÁCH</span>
-              <div class="product-title-large">Sharp Objects</div>
-              <div class="product-sublink">
-                <span>SKU: sharp-objects_997</span> &bull; 
-                <a href="https://books.toscrape.com/catalogue/sharp-objects_997/index.html" target="_blank">Xem gian hàng đối thủ ↗</a>
-              </div>
-            </div>
-
-            <div class="price-movement-box">
-              <span class="price-old">£59.99</span>
-              <span style="color: var(--text-subtle);">&rarr;</span>
-              <span class="price-new">£47.82</span>
+              <span class="price-new">189.000₫</span>
               <span style="color: var(--danger); font-weight:700;">
-                (-20.3%)
+                (-24.1%)
               </span>
             </div>
           </div>
@@ -717,43 +772,106 @@
           <div class="ai-advisor-panel">
             <div class="ai-intel-side">
               <div class="ai-intel-header">
-                <span>🧠 AI Commercial Strategist chẩn đoán:</span>
+                <span>🧠 AI Tình Báo Giá Phân Tích:</span>
               </div>
-              <div>&bull; <strong>Ý đồ đối thủ:</strong> Xả kho cắt lỗ hoặc chiến dịch kích cầu đột ngột (Flash Sale / Liquidation)</div>
-              <div>&bull; <strong>Hành động đề xuất:</strong> Hạ giá đối ứng về 46.86 GBP (thấp hơn 2%). Giữ biên lợi nhuận ròng 29.6%. Bật quảng cáo nhắm thẳng từ khóa sản phẩm.</div>
+              <div>&bull; <strong>Ý đồ đối thủ:</strong> Đối thủ Shop X (120k followers) đang chạy Flash Sale xả kho tồn mùa trước để xoay vòng vốn và giật top ngành hàng Áo thun nam.</div>
+              <div>&bull; <strong>Kế sách phản đòn:</strong> Hạ giá đối ứng về 185.000₫ (thấp hơn đối thủ 4.000₫) để đoạt lại huy hiệu 'Rẻ Vô Địch' của sàn Shopee. Biên lãi vẫn an toàn ở mức 40.5% nhờ giá vốn xưởng 110.000₫.</div>
               <div style="color: var(--text-muted); font-size: 12px; margin-top: 2px;">
-                &bull; <strong>Gợi ý phi giá:</strong> Đối thủ vừa cắt giảm 20.3% trên mã sharp-objects_997. Đánh giá rủi ro: [CRITICAL]. Xả kho cắt lỗ hoặc chiến dịch kích cầu đột ngột (Flash Sale / Liquidation). Khuyến nghị phản đòn: Hạ giá đối ứng về 46.86 GBP (thấp hơn 2%). Giữ biên lợi nhuận ròng 29.6%. Bật quảng cáo nhắm thẳng từ khóa sản phẩm.
+                &bull; <strong>Đòn đánh phi giá (Quà/Combo):</strong> Kèm quà tặng 1 đôi tất dệt kim trị giá 5.000₫ cho đơn từ 2 áo để giữ giá trị giỏ hàng (AOV) không bị sụt giảm theo giá.
               </div>
             </div>
 
             <div class="ai-decision-side">
               <div class="counter-label">Giá phản công tối ưu</div>
-              <div class="counter-number">£46.86</div>
-              <div class="margin-tag">Biên lãi giữ được: ~29.6%</div>
+              <div class="counter-number">185.000₫</div>
+              <div class="margin-tag">Biên lãi giữ được: ~40.5%</div>
             </div>
           </div>
 
           <!-- Bottom Actions -->
           <div class="action-card-footer">
-            <button class="btn" onclick="toggleChart('sharp-objects_997')">
-              📈 Xem lịch sử giá 7 ngày
+            <button class="btn btn-outline" onclick="toggleChart('TEE-OVS-260-BLK')">
+              📈 So kèo lịch sử giá 7 ngày
             </button>
-            <div style="display:flex; gap:8px;">
-              <button class="btn" onclick="showToast('Đã bỏ qua biến động giá của sharp-objects_997')">
+            <div style="display:flex; gap:8px;" id="action-btns-TEE-OVS-260-BLK">
+              <button class="btn" onclick="ignoreDelta('TEE-OVS-260-BLK')">
                 Bỏ qua
               </button>
-              <button class="btn btn-primary" onclick="applyCounterPrice('sharp-objects_997', 46.86)">
-                ✅ Áp dụng giá £46.86 ngay
+              <button class="btn btn-primary" onclick="applyCounterPrice('TEE-OVS-260-BLK', 185000)">
+                ✅ Áp dụng giá 185.000₫ ngay
               </button>
             </div>
           </div>
 
           <!-- Drawer Chart -->
-          <div class="chart-drawer" id="chart-wrap-sharp-objects_997">
-            <canvas id="chart-sharp-objects_997"></canvas>
+          <div class="chart-drawer" id="chart-wrap-TEE-OVS-260-BLK">
+            <canvas id="chart-TEE-OVS-260-BLK"></canvas>
           </div>
         </div>
-        
+
+        <div class="action-card card-success" id="card-JEAN-WID-BLU-02">
+          <div class="action-card-top">
+            <div>
+              <span class="action-badge badge-success">📈 CƠ HỘI TĂNG LÃI</span>
+              <div class="product-title-large">Quần Jean Baggy Ống Suông Rộng Unisex (Denim 13oz Cao Cấp)</div>
+              <div class="product-sublink">
+                <span class="platform-tag">TikTok Shop</span>
+                <span>Mã SKU: <strong>JEAN-WID-BLU-02</strong></span> &bull; 
+                <span>Giá shop mình: <strong style="color:#fff;">390.000₫</strong> (Vốn: 210.000₫)</span> &bull;
+                <a href="https://tiktok.com/@streetwear_studio/video/quan-jean-baggy-ong-suong-denim" target="_blank" style="color:var(--accent); text-decoration:none;">Xem link shop đối thủ ↗</a>
+              </div>
+            </div>
+
+            <div class="price-movement-box">
+              <span class="price-old">390.000₫</span>
+              <span style="color: var(--text-subtle);">&rarr;</span>
+              <span class="price-new">460.000₫</span>
+              <span style="color: var(--success); font-weight:700;">
+                (+17.9%)
+              </span>
+            </div>
+          </div>
+
+          <!-- AI Strategic Guidance Box -->
+          <div class="ai-advisor-panel">
+            <div class="ai-intel-side">
+              <div class="ai-intel-header">
+                <span>🧠 AI Tình Báo Giá Phân Tích:</span>
+              </div>
+              <div>&bull; <strong>Ý đồ đối thủ:</strong> Đối thủ đang tắc biên nguồn vải Jean hoặc cháy hàng các size hot (L, XL), phải nâng giá để hạn chế số đơn bị trễ giao hàng.</div>
+              <div>&bull; <strong>Kế sách phản đòn:</strong> Tăng nhẹ giá lên 420.000₫ (vẫn rẻ hơn đối thủ 40.000₫) để thu thêm 30.000₫ tiền lãi ròng trên mỗi chiếc bán ra mà khách vẫn chọn mua bên mình.</div>
+              <div style="color: var(--text-muted); font-size: 12px; margin-top: 2px;">
+                &bull; <strong>Đòn đánh phi giá (Quà/Combo):</strong> Bật hashtag 'Hàng sẵn kho - Giao hỏa tốc 2h' trên Livestream TikTok để vợt sạch lượng khách đang thất vọng vì giá cao bên đối thủ.
+              </div>
+            </div>
+
+            <div class="ai-decision-side">
+              <div class="counter-label">Giá phản công tối ưu</div>
+              <div class="counter-number">420.000₫</div>
+              <div class="margin-tag">Biên lãi giữ được: ~50.0%</div>
+            </div>
+          </div>
+
+          <!-- Bottom Actions -->
+          <div class="action-card-footer">
+            <button class="btn btn-outline" onclick="toggleChart('JEAN-WID-BLU-02')">
+              📈 So kèo lịch sử giá 7 ngày
+            </button>
+            <div style="display:flex; gap:8px;" id="action-btns-JEAN-WID-BLU-02">
+              <button class="btn" onclick="ignoreDelta('JEAN-WID-BLU-02')">
+                Bỏ qua
+              </button>
+              <button class="btn btn-primary" onclick="applyCounterPrice('JEAN-WID-BLU-02', 420000)">
+                ✅ Áp dụng giá 420.000₫ ngay
+              </button>
+            </div>
+          </div>
+
+          <!-- Drawer Chart -->
+          <div class="chart-drawer" id="chart-wrap-JEAN-WID-BLU-02">
+            <canvas id="chart-JEAN-WID-BLU-02"></canvas>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -761,18 +879,18 @@
     <section>
       <div class="section-header">
         <div class="section-title">
-          <span>📦 Danh sách kho hàng đang theo dõi (31)</span>
+          <span>📦 Toàn bộ danh mục áo quần đang theo dõi (8)</span>
         </div>
       </div>
 
       <div class="catalog-card">
         <div class="catalog-toolbar">
           <input type="text" id="catalogSearchInput" class="catalog-search" 
-                 placeholder="Tìm theo tên sản phẩm, SKU..." oninput="filterCatalog()">
+                 placeholder="Tìm theo tên áo quần, mã SKU, sàn..." oninput="filterCatalog()">
           <div class="tab-filters">
-            <span class="tab-btn active" data-filter="all" onclick="setCatalogFilter(this, 'all')">Tất cả (31)</span>
+            <span class="tab-btn active" data-filter="all" onclick="setCatalogFilter(this, 'all')">Tất cả (8)</span>
             <span class="tab-btn" data-filter="action" onclick="setCatalogFilter(this, 'action')">Có biến động (2)</span>
-            <span class="tab-btn" data-filter="safe" onclick="setCatalogFilter(this, 'safe')">Giá an toàn (29)</span>
+            <span class="tab-btn" data-filter="safe" onclick="setCatalogFilter(this, 'safe')">Giá an toàn (6)</span>
           </div>
         </div>
 
@@ -780,575 +898,209 @@
           <table>
             <thead>
               <tr>
-                <th style="width: 130px;">Mã SKU</th>
+                <th style="width: 140px;">Mã SKU</th>
                 <th>Tên sản phẩm</th>
-                <th style="width: 100px;">Giá đối thủ</th>
-                <th style="width: 140px;">So sánh thị trường</th>
-                <th style="width: 100px;">Tồn kho</th>
-                <th style="width: 100px;">Cập nhật</th>
-                <th style="width: 80px; text-align: right;">Thao tác</th>
+                <th style="width: 100px;">Nền tảng</th>
+                <th style="width: 120px;">Giá shop mình</th>
+                <th style="width: 120px;">Giá đối thủ</th>
+                <th style="width: 150px;">Đánh giá thị trường</th>
+                <th style="width: 90px;">Tồn kho</th>
+                <th style="width: 80px; text-align: right;">Xem</th>
               </tr>
             </thead>
             <tbody id="catalogTableBody">
               
-              <tr data-sku="boar-island-anna-pigeon-19_613" data-action="false">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">boar-island-anna-pigeon-19_613</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  Boar Island (Anna Pigeon #19)
+              <tr data-sku="TEE-OVS-260-BLK" data-action="true">
+                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">TEE-OVS-260-BLK</td>
+                <td style="color: #fff; font-weight: 500;">
+                  <div style="max-width: 290px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Áo Thun Heavyweight Oversize 260gsm (Local Brand Unisex - Đen)</div>
+                  <div style="font-size: 11px; color: var(--text-subtle);">Đã bán: 14.2k &bull; Đánh giá: 4.9★</div>
                 </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£59.48</td>
-                <td>
-                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá ổn định</span>
+                <td><span class="platform-tag">Shopee</span></td>
+                <td style="font-family: var(--mono); font-weight: 600; color: #fff;" id="shop-price-TEE-OVS-260-BLK">
+                  250.000₫
                 </td>
-                <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
+                <td style="font-family: var(--mono); font-weight: 700; color: var(--danger);">
+                  189.000₫
                 </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
-                <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/boar-island-anna-pigeon-19_613/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
-                </td>
-              </tr>
-              
-              <tr data-sku="a-year-in-provence-provence-1_421" data-action="false">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">a-year-in-provence-provence-1_421</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  A Year in Provence (Provence #1)
-                </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£56.88</td>
-                <td>
-                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá ổn định</span>
-                </td>
-                <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
-                </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
-                <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/a-year-in-provence-provence-1_421/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
-                </td>
-              </tr>
-              
-              <tr data-sku="the-past-never-ends_942" data-action="true">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">the-past-never-ends_942</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  The Past Never Ends
-                </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£56.50</td>
-                <td>
-                  <span style="color:var(--success); font-size:12px; font-weight:600;">🟢 Cơ hội tăng lãi</span>
-                </td>
-                <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
-                </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
-                <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/the-past-never-ends_942/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
-                </td>
-              </tr>
-              
-              <tr data-sku="murder-at-the-42nd-street-library-raymond-ambler-1_624" data-action="false">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">murder-at-the-42nd-street-library-raymond-ambler-1_624</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  Murder at the 42nd Street Library (Raymond Ambler #1)
-                </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£54.36</td>
-                <td>
-                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá ổn định</span>
-                </td>
-                <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
-                </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
-                <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/murder-at-the-42nd-street-library-raymond-ambler-1_624/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
-                </td>
-              </tr>
-              
-              <tr data-sku="the-last-mile-amos-decker-2_754" data-action="false">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">the-last-mile-amos-decker-2_754</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  The Last Mile (Amos Decker #2)
-                </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£54.21</td>
-                <td>
-                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá ổn định</span>
-                </td>
-                <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
-                </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
-                <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/the-last-mile-amos-decker-2_754/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
-                </td>
-              </tr>
-              
-              <tr data-sku="the-bachelor-girls-guide-to-murder-herringford-and-watts-mysteries-1_491" data-action="false">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">the-bachelor-girls-guide-to-murder-herringford-and-watts-mysteries-1_491</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  The Bachelor Girl's Guide to Murder (Herringford and Watts Mysteries #1)
-                </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£52.30</td>
-                <td>
-                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá ổn định</span>
-                </td>
-                <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
-                </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
-                <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/the-bachelor-girls-guide-to-murder-herringford-and-watts-mysteries-1_491/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
-                </td>
-              </tr>
-              
-              <tr data-sku="full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811" data-action="false">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  Full Moon over Noah’s Ark: An Odyssey to Mount Ararat and Beyond
-                </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£49.43</td>
-                <td>
-                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá ổn định</span>
-                </td>
-                <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
-                </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
-                <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
-                </td>
-              </tr>
-              
-              <tr data-sku="see-america-a-celebration-of-our-national-parks-treasured-sites_732" data-action="false">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">see-america-a-celebration-of-our-national-parks-treasured-sites_732</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  See America: A Celebration of Our National Parks & Treasured Sites
-                </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£48.87</td>
-                <td>
-                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá ổn định</span>
-                </td>
-                <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
-                </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
-                <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
-                </td>
-              </tr>
-              
-              <tr data-sku="a-time-of-torment-charlie-parker-14_657" data-action="false">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">a-time-of-torment-charlie-parker-14_657</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  A Time of Torment (Charlie Parker #14)
-                </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£48.35</td>
-                <td>
-                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá ổn định</span>
-                </td>
-                <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
-                </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
-                <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/a-time-of-torment-charlie-parker-14_657/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
-                </td>
-              </tr>
-              
-              <tr data-sku="sharp-objects_997" data-action="true">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">sharp-objects_997</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  Sharp Objects
-                </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£47.82</td>
                 <td>
                   <span style="color:var(--danger); font-size:12px; font-weight:600;">🔴 Đang bị phá giá</span>
                 </td>
                 <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
+                  <span style="color: var(--success); font-size: 12px;">● Sẵn kho</span>
                 </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
                 <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/sharp-objects_997/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
+                  <a href="https://shopee.vn/ao-thun-heavyweight-oversize-260gsm-unisex-local-brand-i.849201.294104" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Mở ↗</a>
                 </td>
               </tr>
-              
-              <tr data-sku="its-only-the-himalayas_981" data-action="false">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">its-only-the-himalayas_981</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  It's Only the Himalayas
+
+              <tr data-sku="JEAN-WID-BLU-02" data-action="true">
+                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">JEAN-WID-BLU-02</td>
+                <td style="color: #fff; font-weight: 500;">
+                  <div style="max-width: 290px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Quần Jean Baggy Ống Suông Rộng Unisex (Denim 13oz Cao Cấp)</div>
+                  <div style="font-size: 11px; color: var(--text-subtle);">Đã bán: 8.5k &bull; Đánh giá: 4.8★</div>
                 </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£45.17</td>
+                <td><span class="platform-tag">TikTok Shop</span></td>
+                <td style="font-family: var(--mono); font-weight: 600; color: #fff;" id="shop-price-JEAN-WID-BLU-02">
+                  390.000₫
+                </td>
+                <td style="font-family: var(--mono); font-weight: 700; color: var(--success);">
+                  460.000₫
+                </td>
                 <td>
-                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá ổn định</span>
+                  <span style="color:var(--success); font-size:12px; font-weight:600;">🟢 Cơ hội hốt khách</span>
                 </td>
                 <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
+                  <span style="color: var(--success); font-size: 12px;">● Sẵn kho</span>
                 </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
                 <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
+                  <a href="https://tiktok.com/@streetwear_studio/video/quan-jean-baggy-ong-suong-denim" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Mở ↗</a>
                 </td>
               </tr>
-              
-              <tr data-sku="a-summer-in-europe_458" data-action="false">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">a-summer-in-europe_458</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  A Summer In Europe
+
+              <tr data-sku="JKT-BMB-WTR-03" data-action="false">
+                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">JKT-BMB-WTR-03</td>
+                <td style="color: #fff; font-weight: 500;">
+                  <div style="max-width: 290px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Áo Khoác Gió Bomber 2 Lớp Chống Nước (Trượt Nước Gân Quả Trám)</div>
+                  <div style="font-size: 11px; color: var(--text-subtle);">Đã bán: 5.3k &bull; Đánh giá: 4.9★</div>
                 </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£44.34</td>
+                <td><span class="platform-tag">Shopee</span></td>
+                <td style="font-family: var(--mono); font-weight: 600; color: #fff;" id="shop-price-JKT-BMB-WTR-03">
+                  350.000₫
+                </td>
+                <td style="font-family: var(--mono); font-weight: 700; color: #cbd5e1;">
+                  350.000₫
+                </td>
                 <td>
-                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá ổn định</span>
+                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá cân bằng</span>
                 </td>
                 <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
+                  <span style="color: var(--success); font-size: 12px;">● Sẵn kho</span>
                 </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
                 <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/a-summer-in-europe_458/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
+                  <a href="https://shopee.vn/ao-khoac-gio-bomber-chong-nuoc-localbrand-i.51203.91823" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Mở ↗</a>
                 </td>
               </tr>
-              
-              <tr data-sku="the-murder-of-roger-ackroyd-hercule-poirot-4_852" data-action="false">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">the-murder-of-roger-ackroyd-hercule-poirot-4_852</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  The Murder of Roger Ackroyd (Hercule Poirot #4)
+
+              <tr data-sku="POL-PIQ-NAV-04" data-action="false">
+                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">POL-PIQ-NAV-04</td>
+                <td style="color: #fff; font-weight: 500;">
+                  <div style="max-width: 290px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Áo Polo Pique Cotton Phối Cổ Bo Dệt (Form Regular Nam Tính)</div>
+                  <div style="font-size: 11px; color: var(--text-subtle);">Đã bán: 3.1k &bull; Đánh giá: 4.7★</div>
                 </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£44.10</td>
+                <td><span class="platform-tag">Lazada</span></td>
+                <td style="font-family: var(--mono); font-weight: 600; color: #fff;" id="shop-price-POL-PIQ-NAV-04">
+                  280.000₫
+                </td>
+                <td style="font-family: var(--mono); font-weight: 700; color: #cbd5e1;">
+                  285.000₫
+                </td>
                 <td>
-                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá ổn định</span>
+                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá cân bằng</span>
                 </td>
                 <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
+                  <span style="color: var(--success); font-size: 12px;">● Sẵn kho</span>
                 </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
                 <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/the-murder-of-roger-ackroyd-hercule-poirot-4_852/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
+                  <a href="https://lazada.vn/products/ao-polo-pique-cotton-nam-co-bo-i829104.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Mở ↗</a>
                 </td>
               </tr>
-              
-              <tr data-sku="neither-here-nor-there-travels-in-europe_198" data-action="false">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">neither-here-nor-there-travels-in-europe_198</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  Neither Here nor There: Travels in Europe
+
+              <tr data-sku="SHT-LIN-KHA-05" data-action="false">
+                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">SHT-LIN-KHA-05</td>
+                <td style="color: #fff; font-weight: 500;">
+                  <div style="max-width: 290px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Quần Short Đũi Túi Hộp Co Giãn 4 Chiều (Mặc Nhà & Dạo Phố)</div>
+                  <div style="font-size: 11px; color: var(--text-subtle);">Đã bán: 9.8k &bull; Đánh giá: 4.6★</div>
                 </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£38.95</td>
+                <td><span class="platform-tag">Shopee</span></td>
+                <td style="font-family: var(--mono); font-weight: 600; color: #fff;" id="shop-price-SHT-LIN-KHA-05">
+                  165.000₫
+                </td>
+                <td style="font-family: var(--mono); font-weight: 700; color: #cbd5e1;">
+                  165.000₫
+                </td>
                 <td>
-                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá ổn định</span>
+                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá cân bằng</span>
                 </td>
                 <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
+                  <span style="color: var(--success); font-size: 12px;">● Sẵn kho</span>
                 </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
                 <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/neither-here-nor-there-travels-in-europe_198/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
+                  <a href="https://shopee.vn/quan-short-dui-nam-tui-hop-i.389104.18491" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Mở ↗</a>
                 </td>
               </tr>
-              
-              <tr data-sku="under-the-tuscan-sun_504" data-action="false">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">under-the-tuscan-sun_504</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  Under the Tuscan Sun
+
+              <tr data-sku="HD-FLC-GRY-06" data-action="false">
+                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">HD-FLC-GRY-06</td>
+                <td style="color: #fff; font-weight: 500;">
+                  <div style="max-width: 290px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Áo Hoodie Nỉ Bông Dày 380gsm Form Boxy (Streetwear Mùa Thu Đông)</div>
+                  <div style="font-size: 11px; color: var(--text-subtle);">Đã bán: 6.2k &bull; Đánh giá: 4.9★</div>
                 </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£37.33</td>
+                <td><span class="platform-tag">TikTok Shop</span></td>
+                <td style="font-family: var(--mono); font-weight: 600; color: #fff;" id="shop-price-HD-FLC-GRY-06">
+                  420.000₫
+                </td>
+                <td style="font-family: var(--mono); font-weight: 700; color: #cbd5e1;">
+                  420.000₫
+                </td>
                 <td>
-                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá ổn định</span>
+                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá cân bằng</span>
                 </td>
                 <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
+                  <span style="color: var(--success); font-size: 12px;">● Sẵn kho</span>
                 </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
                 <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/under-the-tuscan-sun_504/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
+                  <a href="https://tiktok.com/@localbrand_official/video/ao-hoodie-ni-bong-380gsm" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Mở ↗</a>
                 </td>
               </tr>
-              
-              <tr data-sku="vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552" data-action="false">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  Vagabonding: An Uncommon Guide to the Art of Long-Term World Travel
+
+              <tr data-sku="PNT-CAR-BLK-07" data-action="false">
+                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">PNT-CAR-BLK-07</td>
+                <td style="color: #fff; font-weight: 500;">
+                  <div style="max-width: 290px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Quần Dài Túi Hộp Parachute Kaki Co Giãn (Dây Rút Gấu Ống Rộng)</div>
+                  <div style="font-size: 11px; color: var(--text-subtle);">Đã bán: 4.1k &bull; Đánh giá: 4.8★</div>
                 </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£36.94</td>
+                <td><span class="platform-tag">Shopee</span></td>
+                <td style="font-family: var(--mono); font-weight: 600; color: #fff;" id="shop-price-PNT-CAR-BLK-07">
+                  320.000₫
+                </td>
+                <td style="font-family: var(--mono); font-weight: 700; color: #cbd5e1;">
+                  320.000₫
+                </td>
                 <td>
-                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá ổn định</span>
+                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá cân bằng</span>
                 </td>
                 <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
+                  <span style="color: var(--success); font-size: 12px;">● Sẵn kho</span>
                 </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
                 <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
+                  <a href="https://shopee.vn/quan-kaki-tui-hop-parachute-i.190284.48192" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Mở ↗</a>
                 </td>
               </tr>
-              
-              <tr data-sku="most-wanted_623" data-action="false">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">most-wanted_623</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  Most Wanted
+
+              <tr data-sku="SHT-CBN-RET-08" data-action="false">
+                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">SHT-CBN-RET-08</td>
+                <td style="color: #fff; font-weight: 500;">
+                  <div style="max-width: 290px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Áo Sơ Mi Cuban Collar Tay Ngắn Họa Tiết Retro (Chất Lụa Hàn Mát)</div>
+                  <div style="font-size: 11px; color: var(--text-subtle);">Đã bán: 2.9k &bull; Đánh giá: 4.7★</div>
                 </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£35.28</td>
+                <td><span class="platform-tag">Shopee</span></td>
+                <td style="font-family: var(--mono); font-weight: 600; color: #fff;" id="shop-price-SHT-CBN-RET-08">
+                  275.000₫
+                </td>
+                <td style="font-family: var(--mono); font-weight: 700; color: #cbd5e1;">
+                  275.000₫
+                </td>
                 <td>
-                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá ổn định</span>
+                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá cân bằng</span>
                 </td>
                 <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
+                  <span style="color: var(--success); font-size: 12px;">● Sẵn kho</span>
                 </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
                 <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/most-wanted_623/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
+                  <a href="https://shopee.vn/ao-so-mi-cuban-collar-retro-lua-han-i.94012.38194" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Mở ↗</a>
                 </td>
               </tr>
-              
-              <tr data-sku="the-great-railway-bazaar_446" data-action="false">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">the-great-railway-bazaar_446</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  The Great Railway Bazaar
-                </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£30.54</td>
-                <td>
-                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá ổn định</span>
-                </td>
-                <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
-                </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
-                <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/the-great-railway-bazaar_446/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
-                </td>
-              </tr>
-              
-              <tr data-sku="the-widow_609" data-action="false">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">the-widow_609</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  The Widow
-                </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£27.26</td>
-                <td>
-                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá ổn định</span>
-                </td>
-                <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
-                </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
-                <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/the-widow_609/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
-                </td>
-              </tr>
-              
-              <tr data-sku="poisonous-max-revere-novels-3_627" data-action="false">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">poisonous-max-revere-novels-3_627</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  Poisonous (Max Revere Novels #3)
-                </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£26.80</td>
-                <td>
-                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá ổn định</span>
-                </td>
-                <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
-                </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
-                <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/poisonous-max-revere-novels-3_627/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
-                </td>
-              </tr>
-              
-              <tr data-sku="1000-places-to-see-before-you-die_1" data-action="false">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">1000-places-to-see-before-you-die_1</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  1,000 Places to See Before You Die
-                </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£26.08</td>
-                <td>
-                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá ổn định</span>
-                </td>
-                <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
-                </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
-                <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/1000-places-to-see-before-you-die_1/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
-                </td>
-              </tr>
-              
-              <tr data-sku="what-happened-on-beale-street-secrets-of-the-south-mysteries-2_506" data-action="false">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">what-happened-on-beale-street-secrets-of-the-south-mysteries-2_506</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  What Happened on Beale Street (Secrets of the South Mysteries #2)
-                </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£25.37</td>
-                <td>
-                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá ổn định</span>
-                </td>
-                <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
-                </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
-                <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/what-happened-on-beale-street-secrets-of-the-south-mysteries-2_506/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
-                </td>
-              </tr>
-              
-              <tr data-sku="the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277" data-action="false">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  The Road to Little Dribbling: Adventures of an American in Britain (Notes From a Small Island #2)
-                </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£23.21</td>
-                <td>
-                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá ổn định</span>
-                </td>
-                <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
-                </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
-                <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
-                </td>
-              </tr>
-              
-              <tr data-sku="delivering-the-truth-quaker-midwife-mystery-1_464" data-action="false">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">delivering-the-truth-quaker-midwife-mystery-1_464</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  Delivering the Truth (Quaker Midwife Mystery #1)
-                </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£20.89</td>
-                <td>
-                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá ổn định</span>
-                </td>
-                <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
-                </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
-                <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/delivering-the-truth-quaker-midwife-mystery-1_464/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
-                </td>
-              </tr>
-              
-              <tr data-sku="in-a-dark-dark-wood_963" data-action="false">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">in-a-dark-dark-wood_963</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  In a Dark, Dark Wood
-                </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£19.63</td>
-                <td>
-                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá ổn định</span>
-                </td>
-                <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
-                </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
-                <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/in-a-dark-dark-wood_963/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
-                </td>
-              </tr>
-              
-              <tr data-sku="a-study-in-scarlet-sherlock-holmes-1_656" data-action="false">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">a-study-in-scarlet-sherlock-holmes-1_656</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  A Study in Scarlet (Sherlock Holmes #1)
-                </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£16.73</td>
-                <td>
-                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá ổn định</span>
-                </td>
-                <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
-                </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
-                <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/a-study-in-scarlet-sherlock-holmes-1_656/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
-                </td>
-              </tr>
-              
-              <tr data-sku="a-murder-in-time_877" data-action="false">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">a-murder-in-time_877</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  A Murder in Time
-                </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£16.64</td>
-                <td>
-                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá ổn định</span>
-                </td>
-                <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
-                </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
-                <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/a-murder-in-time_877/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
-                </td>
-              </tr>
-              
-              <tr data-sku="that-darkness-gardiner-and-renner-1_743" data-action="false">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">that-darkness-gardiner-and-renner-1_743</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  That Darkness (Gardiner and Renner #1)
-                </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£13.92</td>
-                <td>
-                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá ổn định</span>
-                </td>
-                <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
-                </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
-                <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/that-darkness-gardiner-and-renner-1_743/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
-                </td>
-              </tr>
-              
-              <tr data-sku="playing-with-fire_602" data-action="false">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">playing-with-fire_602</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  Playing with Fire
-                </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£13.71</td>
-                <td>
-                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá ổn định</span>
-                </td>
-                <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
-                </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
-                <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/playing-with-fire_602/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
-                </td>
-              </tr>
-              
-              <tr data-sku="hide-away-eve-duncan-20_620" data-action="false">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">hide-away-eve-duncan-20_620</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  Hide Away (Eve Duncan #20)
-                </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£11.84</td>
-                <td>
-                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá ổn định</span>
-                </td>
-                <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
-                </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
-                <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/hide-away-eve-duncan-20_620/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
-                </td>
-              </tr>
-              
-              <tr data-sku="tastes-like-fear-di-marnie-rome-3_742" data-action="false">
-                <td style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">tastes-like-fear-di-marnie-rome-3_742</td>
-                <td style="color: #fff; font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  Tastes Like Fear (DI Marnie Rome #3)
-                </td>
-                <td style="font-family: var(--mono); font-weight: 700; color: #fff;">£10.69</td>
-                <td>
-                  <span style="color:var(--text-subtle); font-size:12px;">⚪ Giá ổn định</span>
-                </td>
-                <td>
-                  <span style="color: var(--success); font-size: 12px;">● Còn hàng</span>
-                </td>
-                <td style="font-size: 12px; color: var(--text-subtle);">2026-11-07</td>
-                <td style="text-align: right;">
-                  <a href="https://books.toscrape.com/catalogue/tastes-like-fear-di-marnie-rome-3_742/index.html" target="_blank" class="btn" style="padding: 2px 8px; font-size: 11px;">Xem ↗</a>
-                </td>
-              </tr>
-              
             </tbody>
           </table>
         </div>
@@ -1360,25 +1112,26 @@
   <div class="modal-overlay" id="tgModal" onclick="closeTelegramModal(event)">
     <div class="modal-card" onclick="event.stopPropagation()">
       <div style="display:flex; justify-content:space-between; align-items:center;">
-        <span style="font-size:14px; font-weight:700; color:#fff;">📱 Mẫu báo cáo gửi về Telegram của m:</span>
+        <span style="font-size:14px; font-weight:700; color:#fff;">📱 Báo cáo gửi về Telegram của m (Lúc 08:00 sáng):</span>
         <button class="btn" style="padding:2px 8px; font-size:11px;" onclick="closeTelegramModal()">✕</button>
       </div>
 
       <div class="tg-bubble">
-        <div style="font-weight:700; color:#ef4444; margin-bottom:6px;">📉 🔥 [CẢNH BÁO ĐỐI THỦ PHÁ GIÁ]</div>
-        <div><strong>Sản phẩm:</strong> Sharp Objects</div>
-        <div><strong>Giá đối thủ:</strong> <del style="color:#94a3b8;">£59.99</del> &rarr; <strong style="color:#fff;">£47.82</strong> (-20.3%)</div>
+        <div style="font-weight:700; color:#ef4444; margin-bottom:6px;">📉 🔥 [CẢNH BÁO ĐỐI THỦ PHÁ GIÁ - SHOPEE]</div>
+        <div><strong>Mặt hàng:</strong> Áo Thun Heavyweight Oversize 260gsm</div>
+        <div><strong>Shop đối thủ:</strong> Shop X (120k followers)</div>
+        <div><strong>Biến động:</strong> <del style="color:#94a3b8;">249.000₫</del> &rarr; <strong style="color:#fff;">189.000₫</strong> (-24.1%)</div>
         <div style="border-top:1px dashed #2b5278; margin:10px 0; padding-top:8px;">
-          <div style="color:#38bdf8; font-weight:700;">🧠 AI Cố Vấn Khuyến Nghị:</div>
-          <div>&bull; <strong>Ý đồ:</strong> Đối thủ xả kho cắt lỗ / Flash sale</div>
-          <div>&bull; <strong>Giá phản công:</strong> <code>£46.86</code> (Vẫn bảo toàn 29.6% lãi ròng)</div>
-          <div style="margin-top:4px;">&bull; <strong>Hành động:</strong> Bật ads đón khách tìm kiếm, giảm giá đối ứng để chốt đơn ngay.</div>
+          <div style="color:#38bdf8; font-weight:700;">🧠 AI Cố Vấn Tình Báo Đề Xuất:</div>
+          <div>&bull; <strong>Ý đồ:</strong> Xả kho tồn trước mùa hoặc chạy Flash Sale giật top.</div>
+          <div>&bull; <strong>Giá phản công:</strong> <code>185.000₫</code> (Rẻ hơn đối thủ 4k để lấy top 1 hiển thị, vẫn giữ <strong>40.5% lãi ròng</strong>).</div>
+          <div style="margin-top:4px;">&bull; <strong>Phi giá:</strong> Tặng kèm 1 đôi tất dệt kim 5k cho đơn từ 2 áo để giữ giá trị đơn hàng cao.</div>
         </div>
       </div>
 
       <div style="display:flex; justify-content:flex-end; gap:8px;">
         <button class="btn" onclick="closeTelegramModal()">Đóng</button>
-        <button class="btn btn-tg" onclick="showToast('Đã gửi tin nhắn test về Telegram!')">Gửi tin nhắn thử</button>
+        <button class="btn btn-tg" onclick="testSendTelegram()">Gửi tin nhắn test về máy</button>
       </div>
     </div>
   </div>
@@ -1386,26 +1139,55 @@
   <div id="toast"></div>
 
   <script>
-    const DATA = {"summary": {"total_tracked": 31, "drop_count": 1, "hike_count": 1, "safe_count": 29, "min_margin": 15.0, "currency": "\u00a3"}, "action_items": [{"sku": "the-past-never-ends_942", "title": "The Past Never Ends", "url": "https://books.toscrape.com/catalogue/the-past-never-ends_942/index.html", "current_price": 56.5, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "last_scraped_at": "2026-11-07T06:58:33.476876+00:00", "delta": {"type": "PRICE_HIKE", "old_price": 45.0, "new_price": 56.5, "diff": 11.5, "percent": 25.56, "badge": "C\u01a0 H\u1ed8I T\u0102NG L\u00c3I", "badge_class": "badge-success"}, "advice": {"threat_level": "OPPORTUNITY", "intent_diagnosis": "\u0110\u1ed1i th\u1ee7 t\u0103ng bi\u00ean l\u1ee3i nhu\u1eadn ho\u1eb7c \u0111\u1ed1i m\u1eb7t v\u1edbi \u0111\u1ee9t g\u00e3y ngu\u1ed3n cung / c\u1ea1n kho", "recommended_counter_price": 53.67, "projected_margin_pct": 53.9, "tactical_action": "C\u01a1 h\u1ed9i v\u00e0ng: \u0110\u1eb7t gi\u00e1 53.67 GBP (v\u1eeba r\u1ebb h\u01a1n \u0111\u1ed1i th\u1ee7 5% \u0111\u1ec3 h\u00fat to\u00e0n b\u1ed9 kh\u00e1ch, v\u1eeba t\u0103ng bi\u00ean l\u1ee3i nhu\u1eadn l\u00ean 53.9%).", "executive_briefing": "\u0110\u1ed1i th\u1ee7 t\u0103ng gi\u00e1 +25.6% tr\u00ean the-past-never-ends_942. \u0110\u00e2y l\u00e0 c\u01a1 h\u1ed9i [OPPORTUNITY]. H\u1ecd \u0111ang ch\u1ecbu \u00e1p l\u1ef1c chi ph\u00ed ho\u1eb7c c\u1ea1n kho. Khuy\u1ebfn ngh\u1ecb: C\u01a1 h\u1ed9i v\u00e0ng: \u0110\u1eb7t gi\u00e1 53.67 GBP (v\u1eeba r\u1ebb h\u01a1n \u0111\u1ed1i th\u1ee7 5% \u0111\u1ec3 h\u00fat to\u00e0n b\u1ed9 kh\u00e1ch, v\u1eeba t\u0103ng bi\u00ean l\u1ee3i nhu\u1eadn l\u00ean 53.9%)."}, "timeline": [{"date": "01/11", "price": 45.0}, {"date": "04/11", "price": 45.0}, {"date": "06/11", "price": 50.0}, {"date": "07/11", "price": 56.5}]}, {"sku": "sharp-objects_997", "title": "Sharp Objects", "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html", "current_price": 47.82, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "last_scraped_at": "2026-11-07T06:58:33.475856+00:00", "delta": {"type": "PRICE_DROP", "old_price": 59.99, "new_price": 47.82, "diff": -12.17, "percent": -20.29, "badge": "NGUY C\u01a0 M\u1ea4T KH\u00c1CH", "badge_class": "badge-danger"}, "advice": {"threat_level": "CRITICAL", "intent_diagnosis": "X\u1ea3 kho c\u1eaft l\u1ed7 ho\u1eb7c chi\u1ebfn d\u1ecbch k\u00edch c\u1ea7u \u0111\u1ed9t ng\u1ed9t (Flash Sale / Liquidation)", "recommended_counter_price": 46.86, "projected_margin_pct": 29.6, "tactical_action": "H\u1ea1 gi\u00e1 \u0111\u1ed1i \u1ee9ng v\u1ec1 46.86 GBP (th\u1ea5p h\u01a1n 2%). Gi\u1eef bi\u00ean l\u1ee3i nhu\u1eadn r\u00f2ng 29.6%. B\u1eadt qu\u1ea3ng c\u00e1o nh\u1eafm th\u1eb3ng t\u1eeb kh\u00f3a s\u1ea3n ph\u1ea9m.", "executive_briefing": "\u0110\u1ed1i th\u1ee7 v\u1eeba c\u1eaft gi\u1ea3m 20.3% tr\u00ean m\u00e3 sharp-objects_997. \u0110\u00e1nh gi\u00e1 r\u1ee7i ro: [CRITICAL]. X\u1ea3 kho c\u1eaft l\u1ed7 ho\u1eb7c chi\u1ebfn d\u1ecbch k\u00edch c\u1ea7u \u0111\u1ed9t ng\u1ed9t (Flash Sale / Liquidation). Khuy\u1ebfn ngh\u1ecb ph\u1ea3n \u0111\u00f2n: H\u1ea1 gi\u00e1 \u0111\u1ed1i \u1ee9ng v\u1ec1 46.86 GBP (th\u1ea5p h\u01a1n 2%). Gi\u1eef bi\u00ean l\u1ee3i nhu\u1eadn r\u00f2ng 29.6%. B\u1eadt qu\u1ea3ng c\u00e1o nh\u1eafm th\u1eb3ng t\u1eeb kh\u00f3a s\u1ea3n ph\u1ea9m."}, "timeline": [{"date": "01/11", "price": 59.99}, {"date": "03/11", "price": 59.99}, {"date": "05/11", "price": 54.0}, {"date": "07/11", "price": 47.82}]}], "products": [{"sku": "boar-island-anna-pigeon-19_613", "title": "Boar Island (Anna Pigeon #19)", "url": "https://books.toscrape.com/catalogue/boar-island-anna-pigeon-19_613/index.html", "current_price": 59.48, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 3.0, "last_scraped_at": "2026-11-07T06:58:33.483707+00:00", "delta": null, "advice": null, "timeline": [{"date": "01/11", "price": 60.07}, {"date": "04/11", "price": 59.48}, {"date": "07/11", "price": 59.48}]}, {"sku": "a-year-in-provence-provence-1_421", "title": "A Year in Provence (Provence #1)", "url": "https://books.toscrape.com/catalogue/a-year-in-provence-provence-1_421/index.html", "current_price": 56.88, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "last_scraped_at": "2026-11-07T06:28:19.954223+00:00", "delta": null, "advice": null, "timeline": [{"date": "01/11", "price": 57.45}, {"date": "04/11", "price": 56.88}, {"date": "07/11", "price": 56.88}]}, {"sku": "the-past-never-ends_942", "title": "The Past Never Ends", "url": "https://books.toscrape.com/catalogue/the-past-never-ends_942/index.html", "current_price": 56.5, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "last_scraped_at": "2026-11-07T06:58:33.476876+00:00", "delta": {"type": "PRICE_HIKE", "old_price": 45.0, "new_price": 56.5, "diff": 11.5, "percent": 25.56, "badge": "C\u01a0 H\u1ed8I T\u0102NG L\u00c3I", "badge_class": "badge-success"}, "advice": {"threat_level": "OPPORTUNITY", "intent_diagnosis": "\u0110\u1ed1i th\u1ee7 t\u0103ng bi\u00ean l\u1ee3i nhu\u1eadn ho\u1eb7c \u0111\u1ed1i m\u1eb7t v\u1edbi \u0111\u1ee9t g\u00e3y ngu\u1ed3n cung / c\u1ea1n kho", "recommended_counter_price": 53.67, "projected_margin_pct": 53.9, "tactical_action": "C\u01a1 h\u1ed9i v\u00e0ng: \u0110\u1eb7t gi\u00e1 53.67 GBP (v\u1eeba r\u1ebb h\u01a1n \u0111\u1ed1i th\u1ee7 5% \u0111\u1ec3 h\u00fat to\u00e0n b\u1ed9 kh\u00e1ch, v\u1eeba t\u0103ng bi\u00ean l\u1ee3i nhu\u1eadn l\u00ean 53.9%).", "executive_briefing": "\u0110\u1ed1i th\u1ee7 t\u0103ng gi\u00e1 +25.6% tr\u00ean the-past-never-ends_942. \u0110\u00e2y l\u00e0 c\u01a1 h\u1ed9i [OPPORTUNITY]. H\u1ecd \u0111ang ch\u1ecbu \u00e1p l\u1ef1c chi ph\u00ed ho\u1eb7c c\u1ea1n kho. Khuy\u1ebfn ngh\u1ecb: C\u01a1 h\u1ed9i v\u00e0ng: \u0110\u1eb7t gi\u00e1 53.67 GBP (v\u1eeba r\u1ebb h\u01a1n \u0111\u1ed1i th\u1ee7 5% \u0111\u1ec3 h\u00fat to\u00e0n b\u1ed9 kh\u00e1ch, v\u1eeba t\u0103ng bi\u00ean l\u1ee3i nhu\u1eadn l\u00ean 53.9%)."}, "timeline": [{"date": "01/11", "price": 45.0}, {"date": "04/11", "price": 45.0}, {"date": "06/11", "price": 50.0}, {"date": "07/11", "price": 56.5}]}, {"sku": "murder-at-the-42nd-street-library-raymond-ambler-1_624", "title": "Murder at the 42nd Street Library (Raymond Ambler #1)", "url": "https://books.toscrape.com/catalogue/murder-at-the-42nd-street-library-raymond-ambler-1_624/index.html", "current_price": 54.36, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "last_scraped_at": "2026-11-07T06:58:33.481095+00:00", "delta": null, "advice": null, "timeline": [{"date": "01/11", "price": 54.9}, {"date": "04/11", "price": 54.36}, {"date": "07/11", "price": 54.36}]}, {"sku": "the-last-mile-amos-decker-2_754", "title": "The Last Mile (Amos Decker #2)", "url": "https://books.toscrape.com/catalogue/the-last-mile-amos-decker-2_754/index.html", "current_price": 54.21, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 2.0, "last_scraped_at": "2026-11-07T06:58:33.477751+00:00", "delta": null, "advice": null, "timeline": [{"date": "01/11", "price": 54.75}, {"date": "04/11", "price": 54.21}, {"date": "07/11", "price": 54.21}]}, {"sku": "the-bachelor-girls-guide-to-murder-herringford-and-watts-mysteries-1_491", "title": "The Bachelor Girl's Guide to Murder (Herringford and Watts Mysteries #1)", "url": "https://books.toscrape.com/catalogue/the-bachelor-girls-guide-to-murder-herringford-and-watts-mysteries-1_491/index.html", "current_price": 52.3, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 5.0, "last_scraped_at": "2026-11-07T06:58:33.487033+00:00", "delta": null, "advice": null, "timeline": [{"date": "01/11", "price": 52.82}, {"date": "04/11", "price": 52.3}, {"date": "07/11", "price": 52.3}]}, {"sku": "full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811", "title": "Full Moon over Noah\u2019s Ark: An Odyssey to Mount Ararat and Beyond", "url": "https://books.toscrape.com/catalogue/full-moon-over-noahs-ark-an-odyssey-to-mount-ararat-and-beyond_811/index.html", "current_price": 49.43, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "last_scraped_at": "2026-11-07T06:28:19.948727+00:00", "delta": null, "advice": null, "timeline": [{"date": "01/11", "price": 49.92}, {"date": "04/11", "price": 49.43}, {"date": "07/11", "price": 49.43}]}, {"sku": "see-america-a-celebration-of-our-national-parks-treasured-sites_732", "title": "See America: A Celebration of Our National Parks & Treasured Sites", "url": "https://books.toscrape.com/catalogue/see-america-a-celebration-of-our-national-parks-treasured-sites_732/index.html", "current_price": 48.87, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 3.0, "last_scraped_at": "2026-11-07T06:28:19.949054+00:00", "delta": null, "advice": null, "timeline": [{"date": "01/11", "price": 49.36}, {"date": "04/11", "price": 48.87}, {"date": "07/11", "price": 48.87}]}, {"sku": "a-time-of-torment-charlie-parker-14_657", "title": "A Time of Torment (Charlie Parker #14)", "url": "https://books.toscrape.com/catalogue/a-time-of-torment-charlie-parker-14_657/index.html", "current_price": 48.35, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 5.0, "last_scraped_at": "2026-11-07T06:58:33.478640+00:00", "delta": null, "advice": null, "timeline": [{"date": "01/11", "price": 48.83}, {"date": "04/11", "price": 48.35}, {"date": "07/11", "price": 48.35}]}, {"sku": "sharp-objects_997", "title": "Sharp Objects", "url": "https://books.toscrape.com/catalogue/sharp-objects_997/index.html", "current_price": 47.82, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "last_scraped_at": "2026-11-07T06:58:33.475856+00:00", "delta": {"type": "PRICE_DROP", "old_price": 59.99, "new_price": 47.82, "diff": -12.17, "percent": -20.29, "badge": "NGUY C\u01a0 M\u1ea4T KH\u00c1CH", "badge_class": "badge-danger"}, "advice": {"threat_level": "CRITICAL", "intent_diagnosis": "X\u1ea3 kho c\u1eaft l\u1ed7 ho\u1eb7c chi\u1ebfn d\u1ecbch k\u00edch c\u1ea7u \u0111\u1ed9t ng\u1ed9t (Flash Sale / Liquidation)", "recommended_counter_price": 46.86, "projected_margin_pct": 29.6, "tactical_action": "H\u1ea1 gi\u00e1 \u0111\u1ed1i \u1ee9ng v\u1ec1 46.86 GBP (th\u1ea5p h\u01a1n 2%). Gi\u1eef bi\u00ean l\u1ee3i nhu\u1eadn r\u00f2ng 29.6%. B\u1eadt qu\u1ea3ng c\u00e1o nh\u1eafm th\u1eb3ng t\u1eeb kh\u00f3a s\u1ea3n ph\u1ea9m.", "executive_briefing": "\u0110\u1ed1i th\u1ee7 v\u1eeba c\u1eaft gi\u1ea3m 20.3% tr\u00ean m\u00e3 sharp-objects_997. \u0110\u00e1nh gi\u00e1 r\u1ee7i ro: [CRITICAL]. X\u1ea3 kho c\u1eaft l\u1ed7 ho\u1eb7c chi\u1ebfn d\u1ecbch k\u00edch c\u1ea7u \u0111\u1ed9t ng\u1ed9t (Flash Sale / Liquidation). Khuy\u1ebfn ngh\u1ecb ph\u1ea3n \u0111\u00f2n: H\u1ea1 gi\u00e1 \u0111\u1ed1i \u1ee9ng v\u1ec1 46.86 GBP (th\u1ea5p h\u01a1n 2%). Gi\u1eef bi\u00ean l\u1ee3i nhu\u1eadn r\u00f2ng 29.6%. B\u1eadt qu\u1ea3ng c\u00e1o nh\u1eafm th\u1eb3ng t\u1eeb kh\u00f3a s\u1ea3n ph\u1ea9m."}, "timeline": [{"date": "01/11", "price": 59.99}, {"date": "03/11", "price": 59.99}, {"date": "05/11", "price": 54.0}, {"date": "07/11", "price": 47.82}]}, {"sku": "its-only-the-himalayas_981", "title": "It's Only the Himalayas", "url": "https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html", "current_price": 45.17, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 2.0, "last_scraped_at": "2026-11-07T06:28:19.944016+00:00", "delta": null, "advice": null, "timeline": [{"date": "01/11", "price": 45.62}, {"date": "04/11", "price": 45.17}, {"date": "07/11", "price": 45.17}]}, {"sku": "a-summer-in-europe_458", "title": "A Summer In Europe", "url": "https://books.toscrape.com/catalogue/a-summer-in-europe_458/index.html", "current_price": 44.34, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 2.0, "last_scraped_at": "2026-11-07T06:28:19.952925+00:00", "delta": null, "advice": null, "timeline": [{"date": "01/11", "price": 44.78}, {"date": "04/11", "price": 44.34}, {"date": "07/11", "price": 44.34}]}, {"sku": "the-murder-of-roger-ackroyd-hercule-poirot-4_852", "title": "The Murder of Roger Ackroyd (Hercule Poirot #4)", "url": "https://books.toscrape.com/catalogue/the-murder-of-roger-ackroyd-hercule-poirot-4_852/index.html", "current_price": 44.1, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "last_scraped_at": "2026-11-07T06:58:33.477467+00:00", "delta": null, "advice": null, "timeline": [{"date": "01/11", "price": 44.54}, {"date": "04/11", "price": 44.1}, {"date": "07/11", "price": 44.1}]}, {"sku": "neither-here-nor-there-travels-in-europe_198", "title": "Neither Here nor There: Travels in Europe", "url": "https://books.toscrape.com/catalogue/neither-here-nor-there-travels-in-europe_198/index.html", "current_price": 38.95, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 3.0, "last_scraped_at": "2026-11-07T06:28:19.955667+00:00", "delta": null, "advice": null, "timeline": [{"date": "01/11", "price": 39.34}, {"date": "04/11", "price": 38.95}, {"date": "07/11", "price": 38.95}]}, {"sku": "under-the-tuscan-sun_504", "title": "Under the Tuscan Sun", "url": "https://books.toscrape.com/catalogue/under-the-tuscan-sun_504/index.html", "current_price": 37.33, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 3.0, "last_scraped_at": "2026-11-07T06:28:19.952268+00:00", "delta": null, "advice": null, "timeline": [{"date": "01/11", "price": 37.7}, {"date": "04/11", "price": 37.33}, {"date": "07/11", "price": 37.33}]}, {"sku": "vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552", "title": "Vagabonding: An Uncommon Guide to the Art of Long-Term World Travel", "url": "https://books.toscrape.com/catalogue/vagabonding-an-uncommon-guide-to-the-art-of-long-term-world-travel_552/index.html", "current_price": 36.94, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 2.0, "last_scraped_at": "2026-11-07T06:28:19.949833+00:00", "delta": null, "advice": null, "timeline": [{"date": "01/11", "price": 37.31}, {"date": "04/11", "price": 36.94}, {"date": "07/11", "price": 36.94}]}, {"sku": "most-wanted_623", "title": "Most Wanted", "url": "https://books.toscrape.com/catalogue/most-wanted_623/index.html", "current_price": 35.28, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 3.0, "last_scraped_at": "2026-11-07T06:58:33.481830+00:00", "delta": null, "advice": null, "timeline": [{"date": "01/11", "price": 35.63}, {"date": "04/11", "price": 35.28}, {"date": "07/11", "price": 35.28}]}, {"sku": "the-great-railway-bazaar_446", "title": "The Great Railway Bazaar", "url": "https://books.toscrape.com/catalogue/the-great-railway-bazaar_446/index.html", "current_price": 30.54, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 1.0, "last_scraped_at": "2026-11-07T06:28:19.953531+00:00", "delta": null, "advice": null, "timeline": [{"date": "01/11", "price": 30.85}, {"date": "04/11", "price": 30.54}, {"date": "07/11", "price": 30.54}]}, {"sku": "the-widow_609", "title": "The Widow", "url": "https://books.toscrape.com/catalogue/the-widow_609/index.html", "current_price": 27.26, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 2.0, "last_scraped_at": "2026-11-07T06:58:33.484387+00:00", "delta": null, "advice": null, "timeline": [{"date": "01/11", "price": 27.53}, {"date": "04/11", "price": 27.26}, {"date": "07/11", "price": 27.26}]}, {"sku": "poisonous-max-revere-novels-3_627", "title": "Poisonous (Max Revere Novels #3)", "url": "https://books.toscrape.com/catalogue/poisonous-max-revere-novels-3_627/index.html", "current_price": 26.8, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 3.0, "last_scraped_at": "2026-11-07T06:58:33.480334+00:00", "delta": null, "advice": null, "timeline": [{"date": "01/11", "price": 27.07}, {"date": "04/11", "price": 26.8}, {"date": "07/11", "price": 26.8}]}, {"sku": "1000-places-to-see-before-you-die_1", "title": "1,000 Places to See Before You Die", "url": "https://books.toscrape.com/catalogue/1000-places-to-see-before-you-die_1/index.html", "current_price": 26.08, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 5.0, "last_scraped_at": "2026-11-07T06:28:19.956455+00:00", "delta": null, "advice": null, "timeline": [{"date": "01/11", "price": 26.34}, {"date": "04/11", "price": 26.08}, {"date": "07/11", "price": 26.08}]}, {"sku": "what-happened-on-beale-street-secrets-of-the-south-mysteries-2_506", "title": "What Happened on Beale Street (Secrets of the South Mysteries #2)", "url": "https://books.toscrape.com/catalogue/what-happened-on-beale-street-secrets-of-the-south-mysteries-2_506/index.html", "current_price": 25.37, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 5.0, "last_scraped_at": "2026-11-07T06:58:33.486032+00:00", "delta": null, "advice": null, "timeline": [{"date": "01/11", "price": 25.62}, {"date": "04/11", "price": 25.37}, {"date": "07/11", "price": 25.37}]}, {"sku": "the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277", "title": "The Road to Little Dribbling: Adventures of an American in Britain (Notes From a Small Island #2)", "url": "https://books.toscrape.com/catalogue/the-road-to-little-dribbling-adventures-of-an-american-in-britain-notes-from-a-small-island-2_277/index.html", "current_price": 23.21, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 1.0, "last_scraped_at": "2026-11-07T06:28:19.954992+00:00", "delta": null, "advice": null, "timeline": [{"date": "01/11", "price": 23.44}, {"date": "04/11", "price": 23.21}, {"date": "07/11", "price": 23.21}]}, {"sku": "delivering-the-truth-quaker-midwife-mystery-1_464", "title": "Delivering the Truth (Quaker Midwife Mystery #1)", "url": "https://books.toscrape.com/catalogue/delivering-the-truth-quaker-midwife-mystery-1_464/index.html", "current_price": 20.89, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 4.0, "last_scraped_at": "2026-11-07T06:58:33.488125+00:00", "delta": null, "advice": null, "timeline": [{"date": "01/11", "price": 21.1}, {"date": "04/11", "price": 20.89}, {"date": "07/11", "price": 20.89}]}, {"sku": "in-a-dark-dark-wood_963", "title": "In a Dark, Dark Wood", "url": "https://books.toscrape.com/catalogue/in-a-dark-dark-wood_963/index.html", "current_price": 19.63, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 1.0, "last_scraped_at": "2026-11-07T06:58:33.476530+00:00", "delta": null, "advice": null, "timeline": [{"date": "01/11", "price": 19.83}, {"date": "04/11", "price": 19.63}, {"date": "07/11", "price": 19.63}]}, {"sku": "a-study-in-scarlet-sherlock-holmes-1_656", "title": "A Study in Scarlet (Sherlock Holmes #1)", "url": "https://books.toscrape.com/catalogue/a-study-in-scarlet-sherlock-holmes-1_656/index.html", "current_price": 16.73, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 2.0, "last_scraped_at": "2026-11-07T06:58:33.479440+00:00", "delta": null, "advice": null, "timeline": [{"date": "01/11", "price": 16.9}, {"date": "04/11", "price": 16.73}, {"date": "07/11", "price": 16.73}]}, {"sku": "a-murder-in-time_877", "title": "A Murder in Time", "url": "https://books.toscrape.com/catalogue/a-murder-in-time_877/index.html", "current_price": 16.64, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 1.0, "last_scraped_at": "2026-11-07T06:58:33.477177+00:00", "delta": null, "advice": null, "timeline": [{"date": "01/11", "price": 16.81}, {"date": "04/11", "price": 16.64}, {"date": "07/11", "price": 16.64}]}, {"sku": "that-darkness-gardiner-and-renner-1_743", "title": "That Darkness (Gardiner and Renner #1)", "url": "https://books.toscrape.com/catalogue/that-darkness-gardiner-and-renner-1_743/index.html", "current_price": 13.92, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 1.0, "last_scraped_at": "2026-11-07T06:58:33.478086+00:00", "delta": null, "advice": null, "timeline": [{"date": "01/11", "price": 14.06}, {"date": "04/11", "price": 13.92}, {"date": "07/11", "price": 13.92}]}, {"sku": "playing-with-fire_602", "title": "Playing with Fire", "url": "https://books.toscrape.com/catalogue/playing-with-fire_602/index.html", "current_price": 13.71, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 3.0, "last_scraped_at": "2026-11-07T06:58:33.485154+00:00", "delta": null, "advice": null, "timeline": [{"date": "01/11", "price": 13.85}, {"date": "04/11", "price": 13.71}, {"date": "07/11", "price": 13.71}]}, {"sku": "hide-away-eve-duncan-20_620", "title": "Hide Away (Eve Duncan #20)", "url": "https://books.toscrape.com/catalogue/hide-away-eve-duncan-20_620/index.html", "current_price": 11.84, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 1.0, "last_scraped_at": "2026-11-07T06:58:33.482775+00:00", "delta": null, "advice": null, "timeline": [{"date": "01/11", "price": 11.96}, {"date": "04/11", "price": 11.84}, {"date": "07/11", "price": 11.84}]}, {"sku": "tastes-like-fear-di-marnie-rome-3_742", "title": "Tastes Like Fear (DI Marnie Rome #3)", "url": "https://books.toscrape.com/catalogue/tastes-like-fear-di-marnie-rome-3_742/index.html", "current_price": 10.69, "currency": "GBP", "stock_status": "IN_STOCK", "rating": 1.0, "last_scraped_at": "2026-11-07T06:58:33.478362+00:00", "delta": null, "advice": null, "timeline": [{"date": "01/11", "price": 10.8}, {"date": "04/11", "price": 10.69}, {"date": "07/11", "price": 10.69}]}]};
+    const DATA = {"summary": {"total_tracked": 8, "drop_count": 1, "hike_count": 1, "safe_count": 6, "min_margin": 15.0, "currency": "\u20ab"}, "action_items": [{"sku": "TEE-OVS-260-BLK", "title": "\u00c1o Thun Heavyweight Oversize 260gsm (Local Brand Unisex - \u0110en)", "url": "https://shopee.vn/ao-thun-heavyweight-oversize-260gsm-unisex-local-brand-i.849201.294104", "platform": "Shopee", "current_price": 189000, "shop_price": 250000, "cost_price": 110000, "currency": "\u20ab", "stock_status": "in_stock", "rating": 4.9, "sold_count": "14.2k", "last_scraped_at": "H\u00f4m nay, 08:15", "delta": {"type": "PRICE_DROP", "old_price": 249000, "new_price": 189000, "diff": -60000, "percent": -24.1, "badge": "\ud83d\udea8 \u0110\u1ed0I TH\u1ee6 PH\u00c1 GI\u00c1", "badge_class": "badge-danger"}, "timeline": [{"date": "01/11", "competitor": 249000, "my_shop": 250000}, {"date": "03/11", "competitor": 249000, "my_shop": 250000}, {"date": "05/11", "competitor": 220000, "my_shop": 250000}, {"date": "07/11", "competitor": 189000, "my_shop": 250000}], "advice": {"threat_level": "CRITICAL", "intent_diagnosis": "\u0110\u1ed1i th\u1ee7 Shop X (120k followers) \u0111ang ch\u1ea1y Flash Sale x\u1ea3 kho t\u1ed3n m\u00f9a tr\u01b0\u1edbc \u0111\u1ec3 xoay v\u00f2ng v\u1ed1n v\u00e0 gi\u1eadt top ng\u00e0nh h\u00e0ng \u00c1o thun nam.", "recommended_counter_price": 185000, "projected_margin_pct": 40.5, "tactical_action": "H\u1ea1 gi\u00e1 \u0111\u1ed1i \u1ee9ng v\u1ec1 185.000\u20ab (th\u1ea5p h\u01a1n \u0111\u1ed1i th\u1ee7 4.000\u20ab) \u0111\u1ec3 \u0111o\u1ea1t l\u1ea1i huy hi\u1ec7u 'R\u1ebb V\u00f4 \u0110\u1ecbch' c\u1ee7a s\u00e0n Shopee. Bi\u00ean l\u00e3i v\u1eabn an to\u00e0n \u1edf m\u1ee9c 40.5% nh\u1edd gi\u00e1 v\u1ed1n x\u01b0\u1edfng 110.000\u20ab.", "executive_briefing": "K\u00e8m qu\u00e0 t\u1eb7ng 1 \u0111\u00f4i t\u1ea5t d\u1ec7t kim tr\u1ecb gi\u00e1 5.000\u20ab cho \u0111\u01a1n t\u1eeb 2 \u00e1o \u0111\u1ec3 gi\u1eef gi\u00e1 tr\u1ecb gi\u1ecf h\u00e0ng (AOV) kh\u00f4ng b\u1ecb s\u1ee5t gi\u1ea3m theo gi\u00e1."}}, {"sku": "JEAN-WID-BLU-02", "title": "Qu\u1ea7n Jean Baggy \u1ed0ng Su\u00f4ng R\u1ed9ng Unisex (Denim 13oz Cao C\u1ea5p)", "url": "https://tiktok.com/@streetwear_studio/video/quan-jean-baggy-ong-suong-denim", "platform": "TikTok Shop", "current_price": 460000, "shop_price": 390000, "cost_price": 210000, "currency": "\u20ab", "stock_status": "in_stock", "rating": 4.8, "sold_count": "8.5k", "last_scraped_at": "H\u00f4m nay, 08:20", "delta": {"type": "PRICE_HIKE", "old_price": 390000, "new_price": 460000, "diff": 70000, "percent": 17.9, "badge": "\ud83d\udcc8 C\u01a0 H\u1ed8I T\u0102NG L\u00c3I", "badge_class": "badge-success"}, "timeline": [{"date": "01/11", "competitor": 390000, "my_shop": 390000}, {"date": "03/11", "competitor": 390000, "my_shop": 390000}, {"date": "05/11", "competitor": 420000, "my_shop": 390000}, {"date": "07/11", "competitor": 460000, "my_shop": 390000}], "advice": {"threat_level": "OPPORTUNITY", "intent_diagnosis": "\u0110\u1ed1i th\u1ee7 \u0111ang t\u1eafc bi\u00ean ngu\u1ed3n v\u1ea3i Jean ho\u1eb7c ch\u00e1y h\u00e0ng c\u00e1c size hot (L, XL), ph\u1ea3i n\u00e2ng gi\u00e1 \u0111\u1ec3 h\u1ea1n ch\u1ebf s\u1ed1 \u0111\u01a1n b\u1ecb tr\u1ec5 giao h\u00e0ng.", "recommended_counter_price": 420000, "projected_margin_pct": 50.0, "tactical_action": "T\u0103ng nh\u1eb9 gi\u00e1 l\u00ean 420.000\u20ab (v\u1eabn r\u1ebb h\u01a1n \u0111\u1ed1i th\u1ee7 40.000\u20ab) \u0111\u1ec3 thu th\u00eam 30.000\u20ab ti\u1ec1n l\u00e3i r\u00f2ng tr\u00ean m\u1ed7i chi\u1ebfc b\u00e1n ra m\u00e0 kh\u00e1ch v\u1eabn ch\u1ecdn mua b\u00ean m\u00ecnh.", "executive_briefing": "B\u1eadt hashtag 'H\u00e0ng s\u1eb5n kho - Giao h\u1ecfa t\u1ed1c 2h' tr\u00ean Livestream TikTok \u0111\u1ec3 v\u1ee3t s\u1ea1ch l\u01b0\u1ee3ng kh\u00e1ch \u0111ang th\u1ea5t v\u1ecdng v\u00ec gi\u00e1 cao b\u00ean \u0111\u1ed1i th\u1ee7."}}], "products": [{"sku": "TEE-OVS-260-BLK", "title": "\u00c1o Thun Heavyweight Oversize 260gsm (Local Brand Unisex - \u0110en)", "url": "https://shopee.vn/ao-thun-heavyweight-oversize-260gsm-unisex-local-brand-i.849201.294104", "platform": "Shopee", "current_price": 189000, "shop_price": 250000, "cost_price": 110000, "currency": "\u20ab", "stock_status": "in_stock", "rating": 4.9, "sold_count": "14.2k", "last_scraped_at": "H\u00f4m nay, 08:15", "delta": {"type": "PRICE_DROP", "old_price": 249000, "new_price": 189000, "diff": -60000, "percent": -24.1, "badge": "\ud83d\udea8 \u0110\u1ed0I TH\u1ee6 PH\u00c1 GI\u00c1", "badge_class": "badge-danger"}, "timeline": [{"date": "01/11", "competitor": 249000, "my_shop": 250000}, {"date": "03/11", "competitor": 249000, "my_shop": 250000}, {"date": "05/11", "competitor": 220000, "my_shop": 250000}, {"date": "07/11", "competitor": 189000, "my_shop": 250000}], "advice": {"threat_level": "CRITICAL", "intent_diagnosis": "\u0110\u1ed1i th\u1ee7 Shop X (120k followers) \u0111ang ch\u1ea1y Flash Sale x\u1ea3 kho t\u1ed3n m\u00f9a tr\u01b0\u1edbc \u0111\u1ec3 xoay v\u00f2ng v\u1ed1n v\u00e0 gi\u1eadt top ng\u00e0nh h\u00e0ng \u00c1o thun nam.", "recommended_counter_price": 185000, "projected_margin_pct": 40.5, "tactical_action": "H\u1ea1 gi\u00e1 \u0111\u1ed1i \u1ee9ng v\u1ec1 185.000\u20ab (th\u1ea5p h\u01a1n \u0111\u1ed1i th\u1ee7 4.000\u20ab) \u0111\u1ec3 \u0111o\u1ea1t l\u1ea1i huy hi\u1ec7u 'R\u1ebb V\u00f4 \u0110\u1ecbch' c\u1ee7a s\u00e0n Shopee. Bi\u00ean l\u00e3i v\u1eabn an to\u00e0n \u1edf m\u1ee9c 40.5% nh\u1edd gi\u00e1 v\u1ed1n x\u01b0\u1edfng 110.000\u20ab.", "executive_briefing": "K\u00e8m qu\u00e0 t\u1eb7ng 1 \u0111\u00f4i t\u1ea5t d\u1ec7t kim tr\u1ecb gi\u00e1 5.000\u20ab cho \u0111\u01a1n t\u1eeb 2 \u00e1o \u0111\u1ec3 gi\u1eef gi\u00e1 tr\u1ecb gi\u1ecf h\u00e0ng (AOV) kh\u00f4ng b\u1ecb s\u1ee5t gi\u1ea3m theo gi\u00e1."}}, {"sku": "JEAN-WID-BLU-02", "title": "Qu\u1ea7n Jean Baggy \u1ed0ng Su\u00f4ng R\u1ed9ng Unisex (Denim 13oz Cao C\u1ea5p)", "url": "https://tiktok.com/@streetwear_studio/video/quan-jean-baggy-ong-suong-denim", "platform": "TikTok Shop", "current_price": 460000, "shop_price": 390000, "cost_price": 210000, "currency": "\u20ab", "stock_status": "in_stock", "rating": 4.8, "sold_count": "8.5k", "last_scraped_at": "H\u00f4m nay, 08:20", "delta": {"type": "PRICE_HIKE", "old_price": 390000, "new_price": 460000, "diff": 70000, "percent": 17.9, "badge": "\ud83d\udcc8 C\u01a0 H\u1ed8I T\u0102NG L\u00c3I", "badge_class": "badge-success"}, "timeline": [{"date": "01/11", "competitor": 390000, "my_shop": 390000}, {"date": "03/11", "competitor": 390000, "my_shop": 390000}, {"date": "05/11", "competitor": 420000, "my_shop": 390000}, {"date": "07/11", "competitor": 460000, "my_shop": 390000}], "advice": {"threat_level": "OPPORTUNITY", "intent_diagnosis": "\u0110\u1ed1i th\u1ee7 \u0111ang t\u1eafc bi\u00ean ngu\u1ed3n v\u1ea3i Jean ho\u1eb7c ch\u00e1y h\u00e0ng c\u00e1c size hot (L, XL), ph\u1ea3i n\u00e2ng gi\u00e1 \u0111\u1ec3 h\u1ea1n ch\u1ebf s\u1ed1 \u0111\u01a1n b\u1ecb tr\u1ec5 giao h\u00e0ng.", "recommended_counter_price": 420000, "projected_margin_pct": 50.0, "tactical_action": "T\u0103ng nh\u1eb9 gi\u00e1 l\u00ean 420.000\u20ab (v\u1eabn r\u1ebb h\u01a1n \u0111\u1ed1i th\u1ee7 40.000\u20ab) \u0111\u1ec3 thu th\u00eam 30.000\u20ab ti\u1ec1n l\u00e3i r\u00f2ng tr\u00ean m\u1ed7i chi\u1ebfc b\u00e1n ra m\u00e0 kh\u00e1ch v\u1eabn ch\u1ecdn mua b\u00ean m\u00ecnh.", "executive_briefing": "B\u1eadt hashtag 'H\u00e0ng s\u1eb5n kho - Giao h\u1ecfa t\u1ed1c 2h' tr\u00ean Livestream TikTok \u0111\u1ec3 v\u1ee3t s\u1ea1ch l\u01b0\u1ee3ng kh\u00e1ch \u0111ang th\u1ea5t v\u1ecdng v\u00ec gi\u00e1 cao b\u00ean \u0111\u1ed1i th\u1ee7."}}, {"sku": "JKT-BMB-WTR-03", "title": "\u00c1o Kho\u00e1c Gi\u00f3 Bomber 2 L\u1edbp Ch\u1ed1ng N\u01b0\u1edbc (Tr\u01b0\u1ee3t N\u01b0\u1edbc G\u00e2n Qu\u1ea3 Tr\u00e1m)", "url": "https://shopee.vn/ao-khoac-gio-bomber-chong-nuoc-localbrand-i.51203.91823", "platform": "Shopee", "current_price": 350000, "shop_price": 350000, "cost_price": 175000, "currency": "\u20ab", "stock_status": "in_stock", "rating": 4.9, "sold_count": "5.3k", "last_scraped_at": "H\u00f4m nay, 07:50", "delta": null, "timeline": [{"date": "01/11", "competitor": 350000, "my_shop": 350000}, {"date": "04/11", "competitor": 350000, "my_shop": 350000}, {"date": "07/11", "competitor": 350000, "my_shop": 350000}]}, {"sku": "POL-PIQ-NAV-04", "title": "\u00c1o Polo Pique Cotton Ph\u1ed1i C\u1ed5 Bo D\u1ec7t (Form Regular Nam T\u00ednh)", "url": "https://lazada.vn/products/ao-polo-pique-cotton-nam-co-bo-i829104.html", "platform": "Lazada", "current_price": 285000, "shop_price": 280000, "cost_price": 130000, "currency": "\u20ab", "stock_status": "in_stock", "rating": 4.7, "sold_count": "3.1k", "last_scraped_at": "H\u00f4m nay, 08:00", "delta": null, "timeline": [{"date": "01/11", "competitor": 285000, "my_shop": 280000}, {"date": "04/11", "competitor": 285000, "my_shop": 280000}, {"date": "07/11", "competitor": 285000, "my_shop": 280000}]}, {"sku": "SHT-LIN-KHA-05", "title": "Qu\u1ea7n Short \u0110\u0169i T\u00fai H\u1ed9p Co Gi\u00e3n 4 Chi\u1ec1u (M\u1eb7c Nh\u00e0 & D\u1ea1o Ph\u1ed1)", "url": "https://shopee.vn/quan-short-dui-nam-tui-hop-i.389104.18491", "platform": "Shopee", "current_price": 165000, "shop_price": 165000, "cost_price": 75000, "currency": "\u20ab", "stock_status": "in_stock", "rating": 4.6, "sold_count": "9.8k", "last_scraped_at": "H\u00f4m nay, 07:30", "delta": null, "timeline": [{"date": "01/11", "competitor": 165000, "my_shop": 165000}, {"date": "04/11", "competitor": 165000, "my_shop": 165000}, {"date": "07/11", "competitor": 165000, "my_shop": 165000}]}, {"sku": "HD-FLC-GRY-06", "title": "\u00c1o Hoodie N\u1ec9 B\u00f4ng D\u00e0y 380gsm Form Boxy (Streetwear M\u00f9a Thu \u0110\u00f4ng)", "url": "https://tiktok.com/@localbrand_official/video/ao-hoodie-ni-bong-380gsm", "platform": "TikTok Shop", "current_price": 420000, "shop_price": 420000, "cost_price": 220000, "currency": "\u20ab", "stock_status": "in_stock", "rating": 4.9, "sold_count": "6.2k", "last_scraped_at": "H\u00f4m qua, 22:15", "delta": null, "timeline": [{"date": "01/11", "competitor": 420000, "my_shop": 420000}, {"date": "04/11", "competitor": 420000, "my_shop": 420000}, {"date": "07/11", "competitor": 420000, "my_shop": 420000}]}, {"sku": "PNT-CAR-BLK-07", "title": "Qu\u1ea7n D\u00e0i T\u00fai H\u1ed9p Parachute Kaki Co Gi\u00e3n (D\u00e2y R\u00fat G\u1ea5u \u1ed0ng R\u1ed9ng)", "url": "https://shopee.vn/quan-kaki-tui-hop-parachute-i.190284.48192", "platform": "Shopee", "current_price": 320000, "shop_price": 320000, "cost_price": 160000, "currency": "\u20ab", "stock_status": "in_stock", "rating": 4.8, "sold_count": "4.1k", "last_scraped_at": "H\u00f4m nay, 06:40", "delta": null, "timeline": [{"date": "01/11", "competitor": 320000, "my_shop": 320000}, {"date": "04/11", "competitor": 320000, "my_shop": 320000}, {"date": "07/11", "competitor": 320000, "my_shop": 320000}]}, {"sku": "SHT-CBN-RET-08", "title": "\u00c1o S\u01a1 Mi Cuban Collar Tay Ng\u1eafn H\u1ecda Ti\u1ebft Retro (Ch\u1ea5t L\u1ee5a H\u00e0n M\u00e1t)", "url": "https://shopee.vn/ao-so-mi-cuban-collar-retro-lua-han-i.94012.38194", "platform": "Shopee", "current_price": 275000, "shop_price": 275000, "cost_price": 135000, "currency": "\u20ab", "stock_status": "in_stock", "rating": 4.7, "sold_count": "2.9k", "last_scraped_at": "H\u00f4m nay, 07:10", "delta": null, "timeline": [{"date": "01/11", "competitor": 275000, "my_shop": 275000}, {"date": "04/11", "competitor": 275000, "my_shop": 275000}, {"date": "07/11", "competitor": 275000, "my_shop": 275000}]}]};
     const chartInstances = {};
     let currentFilter = 'all';
+
+    function fillSampleUrl(type) {
+      const input = document.getElementById('trackUrlInput');
+      if (type === 'shopee') {
+        input.value = 'https://shopee.vn/ao-thun-heavyweight-oversize-260gsm-unisex-local-brand-i.849201.294104';
+      } else if (type === 'tiktok') {
+        input.value = 'https://tiktok.com/@streetwear_studio/video/quan-jean-baggy-ong-suong-denim';
+      } else {
+        input.value = 'https://shopee.vn/ao-polo-the-thao-nam-coolmate-dry-fit-i.10294.5819';
+      }
+      showToast('Đã điền link mẫu! Bấm "+ Bắt đầu theo dõi" để thêm.');
+    }
 
     function addTrackUrl() {
       const input = document.getElementById('trackUrlInput');
       const val = input.value.trim();
       if (!val) {
-        showToast('Vui lòng dán link sản phẩm đối thủ!');
+        showToast('⚠️ Vui lòng dán link sản phẩm Shopee / TikTok Shop đối thủ!');
         return;
       }
-      showToast('Đang kết nối web đối thủ để bóc tách giá...');
+      showToast('⚡ Đang kết nối bot bóc tách giá và tình trạng kho...');
       input.value = '';
       setTimeout(() => {
-        showToast('✅ Đã thêm sản phẩm thành công vào danh sách theo dõi!');
+        showToast('✅ Đã thêm sản phẩm thành công vào danh mục theo dõi 24/7!');
       }, 1000);
     }
 
     function applyCounterPrice(sku, price) {
-      showToast(`✅ Đã đồng ý đổi giá thành £${price.toFixed(2)} cho SKU: ${sku}`);
+      const btns = document.getElementById(`action-btns-${sku}`);
+      if (btns) {
+        btns.innerHTML = `<span style="color:#10b981; font-weight:600; font-size:12.5px;">✓ Đã đồng bộ giá ${price.toLocaleString('vi-VN')}₫ lên shop!</span>`;
+      }
+      const priceTd = document.getElementById(`shop-price-${sku}`);
+      if (priceTd) {
+        priceTd.innerText = `${price.toLocaleString('vi-VN')}₫`;
+        priceTd.style.color = '#38bdf8';
+      }
+      showToast(`✅ Đã phê duyệt! Giá bán mới ${price.toLocaleString('vi-VN')}₫ đã được cập nhật thành công lên gian hàng.`);
+    }
+
+    function ignoreDelta(sku) {
+      const card = document.getElementById(`card-${sku}`);
+      if (card) {
+        card.style.opacity = '0.5';
+      }
+      showToast(`Đã bỏ qua cảnh báo biến động giá của mã ${sku}.`);
     }
 
     function toggleChart(sku) {
@@ -1421,31 +1203,53 @@
         if (!item) return;
 
         const ctx = document.getElementById(`chart-${sku}`).getContext('2d');
-        const color = item.delta.type === 'PRICE_DROP' ? '#ef4444' : '#10b981';
+        const isDrop = item.delta.type === 'PRICE_DROP';
 
         chartInstances[sku] = new Chart(ctx, {
           type: 'line',
           data: {
             labels: item.timeline.map(t => t.date),
-            datasets: [{
-              label: 'Giá bán (£)',
-              data: item.timeline.map(t => t.price),
-              borderColor: color,
-              backgroundColor: color === '#ef4444' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)',
-              borderWidth: 2,
-              fill: true,
-              tension: 0.3,
-              pointRadius: 4,
-              pointBackgroundColor: color
-            }]
+            datasets: [
+              {
+                label: 'Giá đối thủ',
+                data: item.timeline.map(t => t.competitor),
+                borderColor: isDrop ? '#ef4444' : '#10b981',
+                backgroundColor: isDrop ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.3,
+                pointRadius: 4,
+              },
+              {
+                label: 'Giá shop mình',
+                data: item.timeline.map(t => t.my_shop),
+                borderColor: '#38bdf8',
+                borderDash: [5, 5],
+                borderWidth: 2,
+                fill: false,
+                tension: 0.1,
+                pointRadius: 3,
+              }
+            ]
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
+            plugins: {
+              legend: {
+                display: true,
+                labels: { color: '#94a3b8', font: { size: 11 } }
+              }
+            },
             scales: {
               x: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8' } },
-              y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8' } }
+              y: { 
+                grid: { color: 'rgba(255, 255, 255, 0.05)' }, 
+                ticks: { 
+                  color: '#94a3b8',
+                  callback: function(value) { return (value / 1000) + 'k₫'; }
+                } 
+              }
             }
           }
         });
@@ -1469,7 +1273,9 @@
         const item = DATA.products.find(p => p.sku === sku);
         if (!item) return;
 
-        const matchSearch = item.sku.toLowerCase().includes(q) || item.title.toLowerCase().includes(q);
+        const matchSearch = item.sku.toLowerCase().includes(q) || 
+                            item.title.toLowerCase().includes(q) || 
+                            item.platform.toLowerCase().includes(q);
         let matchFilter = true;
         if (currentFilter === 'action') matchFilter = hasAction;
         else if (currentFilter === 'safe') matchFilter = !hasAction;
@@ -1479,22 +1285,31 @@
     }
 
     function triggerScan() {
-      showToast('⚡ Đang tự động quét giá 31 sản phẩm đối thủ...');
+      showToast('⚡ Đang tự động quét giá 8 mẫu áo quần đối thủ trên Shopee & TikTok...');
       setTimeout(() => {
-        showToast('✅ Quét hoàn tất! Đã kiểm tra giá mới nhất.');
+        showToast('✅ Quét hoàn tất! Đã cập nhật giá và tồn kho thời gian thực.');
       }, 1200);
     }
 
     function exportData() {
-      const headers = ['Mã SKU', 'Tên sản phẩm', 'Giá đối thủ (£)', 'Tình trạng', 'Link'];
-      const rows = DATA.products.map(p => [p.sku, `"${p.title.replace(/"/g, '""')}"`, p.current_price, p.stock_status, p.url]);
-      const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const headers = ['Mã SKU', 'Tên sản phẩm', 'Nền tảng', 'Giá shop mình (VND)', 'Giá đối thủ (VND)', 'Tồn kho', 'Link đối thủ'];
+      const rows = DATA.products.map(p => [
+        p.sku, 
+        `"${p.title.replace(/"/g, '""')}"`, 
+        p.platform,
+        p.shop_price,
+        p.current_price, 
+        p.stock_status, 
+        p.url
+      ]);
+      // UTF-8 BOM so Excel opens Vietnamese characters without broken accents
+      const csv = '\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = 'Bao_cao_gia_Market_Sentinel.csv';
+      a.download = 'Bao_cao_gia_thoi_trang_Market_Sentinel.csv';
       a.click();
-      showToast('Đã tải xuống file Excel/CSV báo cáo thành công!');
+      showToast('📥 Đã tải xuống file Excel/CSV báo cáo giá thời trang chuẩn tiếng Việt!');
     }
 
     function openTelegramModal() {
@@ -1505,6 +1320,10 @@
       if (!e || e.target.id === 'tgModal' || e.target.tagName === 'BUTTON') {
         document.getElementById('tgModal').style.display = 'none';
       }
+    }
+
+    function testSendTelegram() {
+      showToast('📲 [Telegram Bot] Đã gửi thông báo tình báo giá về điện thoại của m!');
     }
 
     function showToast(msg) {
