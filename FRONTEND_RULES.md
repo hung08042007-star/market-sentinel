@@ -1,19 +1,19 @@
-# Frontend Development Rules
+# Frontend Development Rules — Commercial B2B SaaS for Sellers
 
-## Persona & Standard
-You are a Senior Frontend Engineer building clean, high-density, anti-slop developer tooling.
-Target Standard: Vercel, Linear, Raycast, Supabase scraper & intelligence consoles.
+## Persona & Product Standard
+You are building **Market Sentinel** — a commercial B2B Price Intelligence & Margin Protection SaaS for e-commerce sellers, shop owners, and brand managers.
+Target Reference: Stripe Dashboard, Shopify Polaris, Linear, modern clean SaaS.
 
 ## Core Directives
-1. **Density (4pt/8pt Discipline):** Use compact sizing (`py-1.5`, `px-2.5`, `text-xs`/`text-sm`). Avoid bloated padding and empty cartoonish whitespace. Monospace font for IDs, URLs, HTTP codes, prices, latencies, and timestamps.
-2. **Restrained Semantic Palette:** Zinc neutral canvas (`bg-zinc-950`, `bg-zinc-900`, `border-zinc-800`, `text-zinc-100`, `text-zinc-400`). Strictly semantic colors for statuses:
-   - Success / Active: Emerald (`text-emerald-400`, `bg-emerald-500/10`)
-   - Opportunity / Info: Sky (`text-sky-400`, `bg-sky-500/10`)
-   - Warning / Throttled: Amber (`text-amber-400`, `bg-amber-500/10`)
-   - Critical / Error: Rose (`text-rose-400`, `bg-rose-500/10`)
-3. **Scraper Console Architecture:**
-   - **Control Bar:** Target URL input, Concurrency, Rate-limit throttling, Ingest trigger.
-   - **Metrics Ribbon:** Live crawled count, avg latency, success rate, delta count.
-   - **Split Pane:** Live monospace log terminal (40%) + high-density data table (60%).
-   - **Slide-Over Inspector:** Click any row to slide open inspection drawer (Extracted fields, AI Businessman strategic advice, Raw JSON with 1-click copy).
-4. **No Slop:** No rainbow gradients, no oversized buttons, no unearned glassmorphism, zero layout shifts. Every interactive element has instant visual affordance.
+1. **Zero Developer Slop:**
+   - NEVER show raw technical internals to shop owners: No `GET 200 OK`, no `ETag`, no `SQLite WAL`, no `Latency (ms)`, no raw JSON dumps or terminal logs on the primary screen.
+   - Use plain business terminology: "Giá đối thủ", "Biên lợi nhuận", "Nguy cơ mất khách", "Cơ hội tăng lãi", "Đề xuất đối sách".
+2. **Action-First Architecture:**
+   - **Hero Alert Banner:** Highlight immediate items requiring decisions today (who dropped price, competitor intent, counter-price recommendation, preserved net margin).
+   - **1-Click Intake:** Clear, welcoming URL paste bar for Shopee/Lazada/Tiki/web competitor links.
+   - **Shopkeeper Data Table:** Clear product titles, current prices, stock status, comparison badges (Đang rẻ hơn / Đang đắt hơn).
+   - **Telegram 1-Tap Connect:** Instant preview of 8 AM morning mobile digest.
+3. **Aesthetic & Density:**
+   - Zinc/Slate dark theme (`#0c0d12`, surface cards `#151720`, crisp 1px borders `rgba(255,255,255,0.08)`).
+   - Crisp semantic colors: Emerald for profit gains & safe margins, Coral/Rose for competitor price cuts, Sky/Indigo for primary buttons.
+   - Legible typography: Inter for Vietnamese UI copy, JetBrains Mono strictly for prices and SKU numbers.
